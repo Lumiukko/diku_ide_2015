@@ -3,3 +3,12 @@
 html {
     font-family:    sans-serif;
 }
+
+table, tr, td {
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+
+td {
+    padding: 3pt 6pt;
+}
