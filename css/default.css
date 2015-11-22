@@ -16,6 +16,10 @@ td {
     padding: 4px 8px;
 }
 
+p {
+    text-align: justify;
+}
+
 div.section {
     border: 1px solid #cecece;
     background-color: #eeeeee;
@@ -52,4 +56,27 @@ div.mockup {
     background-color: white;
     border-radius: 16px;
     box-shadow: 4px 4px 6px #454545;
+}
+
+#toc {
+    font-size: 0.8em;
+    position: fixed;
+    right: 80px;
+    top: 0px;
+    display: inline-block;
+    background-color: white;
+    border: 1px solid black;
+    border-top: none;
+    padding: 3pt 6pt;
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+}
+
+#toc span {
+    font-weight: bold;
+    margin-bottom: 0px;
+}
+
+#toc ul {
+    margin-top: 0px;
 }
