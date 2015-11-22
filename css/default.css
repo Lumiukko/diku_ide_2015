@@ -45,3 +45,11 @@ a.vis_page {
     margin-left: 20px;
     box-shadow: 3px 3px 3px #454545;
 }
+
+div.mockup {
+    display: block;
+    text-align: center;
+    background-color: white;
+    border-radius: 16px;
+    box-shadow: 4px 4px 6px #454545;
+}

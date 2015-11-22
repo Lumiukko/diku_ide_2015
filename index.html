@@ -26,28 +26,37 @@
             <div class="section">
                 <h2>2. Interactive Visualizations</h2>
 
-                <div class="subsection">
-                    <h3>2.1 Gapminder World, by Hans Rosling et al.</h3>
-                    <a class="vis_page" href="http://www.gapminder.org/">Gapminder.org</a>
 
+                <div class="subsection">
+                    <h3>2.1 Google Public Data</h3>
+                    <a class="vis_page" href="https://www.google.com/publicdata/explore?ds=d5bncppjof8f9_&ctype=b&strail=false&nselm=s&met_x=sp_dyn_le00_in&scale_x=lin&ind_x=false&met_y=sp_dyn_tfrt_in&scale_y=lin&ind_y=false&met_s=sp_pop_totl&scale_s=lin&ind_s=false&dimp_c=country:region&ifdim=country&hl=en&iconSize=0.5&uniSize=0.035#!ctype=b&strail=false&bcs=d&nselm=s&met_x=sp_dyn_le00_in&scale_x=lin&ind_x=false&met_y=sp_dyn_tfrt_in&scale_y=lin&ind_y=false&met_s=sp_pop_totl&scale_s=lin&ind_s=false&dimp_c=country:region&ifdim=country&pit=1385074800000&hl=en_US&dl=en_US&ind=false">google.com/publicdata</a>
                     <h4>Description</h4>
-                    <p>Gapminder was developed by Prof. Hans Rosling and his teamt to display the development of health and wealth across the past few decades for a multitude of countries. The diagram shows each country as a circle, where the size of the circle corresponds to the size of its population, the position on the x-axis corresponds to the wealth, and the position on the y-axis corresponds to health. The time progression over the years is additionally shown as an animation. Additionally, the circles are color coded by continent.</p>
-                    <p>The original visualization contained interactive elements. For example, each country could be seperated into its regions by clicking on the corresponding circle. Furthermore, the time animation can be controlled with a slider widget.</p>
-                    
+                    <p>The diagram shows each country as a circle, where the size of the circle corresponds to the size of its population, the position on the x-axis corresponds to the life expectancy, and the position on the y-axis corresponds to the fertility rate. The data corresponding to the axes can be freely chosen among all data that is available in the <a href="http://www.worldbank.org/">World Bank</a>. The time progression over the years is additionally shown as an animation. Additionally, the circles are color coded by continent.
+                    <p>In this particular example most of the countries have moved towards the bottom right corner of the diagram over time, which signifies that the fertility rate dropped and the life expectancy raised.</p>
+                    <p>The visualization tool <a href="http://www.gapminder.org/">Gapminder.org</a> shows the same visualization developed by Hans Rosling and his team. In an older version of this tool it was further possible to separate the circles on click into their respective regions or provinces.</p>
+
                     <h4>Positive and Negative Aspects</h4>
                     <ul>
                         <li>Positive</li>
                         <ul>
-                            <li>Lots of features in one visualization: wealth, health, population size, continent, and time progression.</li>
-                            <li>Original version included a way to break down the circles into a countries regions.</li>
+                            <li>Lots of features in one visualization: data for both axes, population size as bubble size, continent by color code, and time progression by interactive slider or animation.</li>
+                            <li>On mouse-over, information for each country is shown.</li>
+							<li>There is the possibility to show only countries from a specific region (i.e. filtering).</li>
+							<li>Countries can be compared based on a number of different values, e.g. the income level, gender or urban/rural areas.</li>
+							<li>The chart is showing the data over time progression.</li>
+                            <li>There are 4 different chart types (Line Chart, Bar Chart, Map Chart, Bubble Chart), which can be used to visualize the data.</li>
+                            <li>Scaling of the data can be chosen between linear and logarithmic.</li>
+                            <li>Vast number of options for the axes, based on information of the <a href="http://www.worldbank.org/">World Bank</a></li>
+                            <li>Option to show the trails in the animation to clearly show the development over time.</li>
+                            <li>Possibility to upload own datasets to explore.</li>
                         </ul>
                         <li>Negative</li>
                         <ul>
-                            <li>Interactivity or animation required to see the time progression.</li>
-                            <li>Very slow. The online version uses Flash.</li>
+                            <li>Number of options can be overwhelming.</li>
                         </ul>
                     </ul>
                 </div>
+
 
                 <div class="subsection">
                     <h3>2.2 World's Top Arms Exporters 2013 (Chord Diagram)</h3>
@@ -74,29 +83,8 @@
                 </div>
 
                 <div class="subsection">
-                    <h3>2.3 Google Public Data - Fertility Rate vs Life Expectancy</h3>
-                    <a class="vis_page" href="https://www.google.com/publicdata/explore?ds=d5bncppjof8f9_&ctype=b&strail=false&nselm=s&met_x=sp_dyn_le00_in&scale_x=lin&ind_x=false&met_y=sp_dyn_tfrt_in&scale_y=lin&ind_y=false&met_s=sp_pop_totl&scale_s=lin&ind_s=false&dimp_c=country:region&ifdim=country&hl=en&iconSize=0.5&uniSize=0.035#!ctype=b&strail=false&bcs=d&nselm=s&met_x=sp_dyn_le00_in&scale_x=lin&ind_x=false&met_y=sp_dyn_tfrt_in&scale_y=lin&ind_y=false&met_s=sp_pop_totl&scale_s=lin&ind_s=false&dimp_c=country:region&ifdim=country&pit=1385074800000&hl=en_US&dl=en_US&ind=false">google.com/publicdata</a>
-                    <h4>Description</h4>
-                    <p>This diagram shows the correlation between the number of children per women and the life expectancy. The bubles are colored by region and the size of each buble corresponds to the size of country's population.</p>
-					<p>The graph is based on data from <a href="http://www.worldbank.org/">World Bank</a>.</p>
-                    <p>Over the time, most of the countries have moved towards the bottom right corner of the diagram, which signifies that the fertility rate dropped and the life expectancy raised.</p>
-
-                    <h4>Positive and Negative Aspects</h4>
-                    <ul>
-                        <li>Positive</li>
-                        <ul>
-                            <li>Countries are coloured by region</li>
-                            <li>On mouseover, information for each country is showned</li>
-							<li>There is the possibility to show only countries from a specific region</li>
-							<li>Countries can be compared based on the income level, gender or urban/rural areas</li>
-							<li>The chart is showing the data over time progression</li>
-                            <li>There are 4 different chart types (Line Chart, Bar Chart, Map Chart, Bubble Chart), which can be used to visualize the data</li>
-                        </ul>
-                        <li>Negative</li>
-                        <ul>
-                            <li>...</li>
-                        </ul>
-                    </ul>
+                    <h3>2.3 Placeholder for Visualization 4</h3>
+                    <p>Placeholder for description, pro/con, etc...</p>
                 </div>
 
                 <div class="subsection">
@@ -129,18 +117,30 @@
                 <h2>3. Individual Parts</h2>
                 
                 <div class="subsection">
-                    <h3>3.1 B</h3>
+                    <h3>3.1 Bogdan</h3>
                     <p>TODO</p>
                 </div>
 
                 <div class="subsection">
-                    <h3>3.2 H</h3>
+                    <h3>3.2 Hauke</h3>
                     <p>TODO</p>
                 </div>
 
                 <div class="subsection">
-                    <h3>3.3 M</h3>
-                    <p>TODO</p>
+                    <h3>3.3 Marco</h3>
+                    <h4>3.3.1 Premise</h4>
+                    <p>I do not have a definite data set at this moment. Therefore, the current idea is only tentative. It is quite difficult to think about a visualization without knowing the exact features of the data I will get.</p>
+                    </p>I am using the following scenario as a premise: I would like to get a dataset of measurements done by healthcare professionals or individuals with access to equipment in order to make their own measurements (e.g. blood pressure, blood glucose, body temperature, oxygenation, heart rate, etc.). Additionally, there should be some labels available, which show the current health status of the corresponding (e.g. healthy, experiencing symptom X or ill with a specific disease Y).</p>
+                    <h4>3.3.2 What should the accompanying text say about the visualization?</h4>
+                    <p>The accompanying text should explain how to interpret the visualization and explain the controls, i.e. the interactive elements of the visualization. The interactivity could be switching between different types of measurements. At a later stage, the visualization could “follow” the development of the measurements for one specific individual.</p>
+                    <h4>3.3.3 What story would the combination of text and visualization tell?</h4>
+                    <p>The combination of text and visualization would tell how to see correlations between the measurements and the health status of the user, and in the future the trend or development for a specific user over time. It would be used to find correlations or to simply show the current estimation (or prediction) of the user’s health.</p>
+                    <h4>3.3.4 Who is the intended audience?</h4>
+                    <p>The intended audience are health professionals and users who are interested in an indicator for their health based on their measurements.</p>
+                    <h4>3.3.5 Where would you get the dataset from?</h4>
+                    <p>Healthcare facilities/departments or lifelogging communities. However, healthcare facilities have often rigorous non-disclosure requirements and rules for anonymization of data, which might cause a time issue. Lifelogging enthusiasts are often more willing to offer their data with the prospect of gaining some insight. Furthermore, their data often includes relevant data, as they collect a vast number of information. Unfortunately, their data may be quite sparse or “dirty”, i.e. the measurements may be very infrequent and have missing or wrong information.</p>
+                    <h4>3.3.6 A sketch or mockup of the visualization.</h4>
+                    <div class="mockup"><img src="img/hon_complete.png" /></div>
                 </div>
             </div>
 
