@@ -14,47 +14,95 @@
         </header>
         <section>
 
-            <h2>1. Web-Server Limitations</h2>
+            <div class="section">
+                <h2>1. Web-Server Limitations</h2>
+                <table>
+                    <tr><td>Free Disk Quota</td><td>ca. 80GB</td></tr>
+                    <tr><td>Traffic Limit</td><td>None / Unlimited</td></tr>
+                    <tr><td>Other Features</td><td>PHP 5.5 (incl. Imagick Module) &amp; MySQL</td></tr>
+                </table>
+            </div>
 
-            <table>
-                <tr><td>Free Disk Quota</td><td>ca. 80GB</td></tr>
-                <tr><td>Traffic Limit</td><td>None / Unlimited</td></tr>
-                <tr><td>Other Features</td><td>PHP 5.5, MySQL, Imagick</td></tr>
-            </table>
+            <div class="section">
+                <h2>2. Interactive Visualizations</h2>
 
-            <h2>2. Interactive Visualizations</h2>
+                <div class="subsection">
+                    <h3>2.1 Gapminder World, by Hans Rosling et al.</h3>
+                    <a class="vis_page" href="http://www.gapminder.org/">Gapminder.org</a>
 
-            <h3>2.1 Gapminder World, by Hans Rosling et al.</h3>
-            <a href="http://www.gapminder.org/">Gapminder.org</a>
-            <p>Gapminder was developed by Prof. Hans Rosling and his teamt to display the development of health and wealth across the past few decades for a multitude of countries. The diagram shows each country as a circle, where the size of the circle corresponds to the size of its population, the position on the x-axis corresponds to the wealth, and the position on the y-axis corresponds to health. The time progression over the years is additionally shown as an animation.</p>
-            <p>The original visualization contained interactive elements. For example, each country could be seperated into its regions by clicking on the corresponding circle. Furthermore, the time animation can be controlled with a slider widget.</p>
-            <p>TODO: Pros/Cons, example image, etc.</p>
+                    <h4>Description</h4>
+                    <p>Gapminder was developed by Prof. Hans Rosling and his teamt to display the development of health and wealth across the past few decades for a multitude of countries. The diagram shows each country as a circle, where the size of the circle corresponds to the size of its population, the position on the x-axis corresponds to the wealth, and the position on the y-axis corresponds to health. The time progression over the years is additionally shown as an animation. Additionally, the circles are color coded by continent.</p>
+                    <p>The original visualization contained interactive elements. For example, each country could be seperated into its regions by clicking on the corresponding circle. Furthermore, the time animation can be controlled with a slider widget.</p>
+                    
+                    <h4>Positive and Negative Aspects</h4>
+                    <ul>
+                        <li>Positive</li>
+                        <ul>
+                            <li>Lots of features in one visualization: wealth, health, population size, continent, and time progression.</li>
+                            <li>Original version included a way to break down the circles into a countries regions.</li>
+                        </ul>
+                        <li>Negative</li>
+                        <ul>
+                            <li>Interactivity or animation required to see the time progression.</li>
+                            <li>Very slow. The online version uses Flash.</li>
+                        </ul>
+                    </ul>
+                </div>
 
-            <h3>2.2 World's Top Arms Exporters 2013</h3>
-            <a href="http://insightfulinteraction.com/armsexport.html">insightfulinteraction.com</a>
-            <p>This chord diagram shows the origin and destination countries of weapon exports in 2013. It was developed by <a href="http://insightfulinteraction.com/about.html">Natalia Bronshtein</a> using d3.js and is based on data from the <a href="http://www.sipri.org/databases/armstransfers">SIPRI Arms Transfers Database</a>. The work is licensed under the Creative Commons Attribution 4.0 International License.</p>
-            <p>The diagram lists countries (or fighting factions) alphabetically on the outside of a circle and shows connections between weapon exporter and importer, where the volume of the export in $USD is indicated by the thickness of the connection at its base at the exporting country.</p>
-            <h4>List of Pros and Cons</h4>
-            <ul>
-                <li>Pros</li>
-                <ul>
-                    <li>Diagram type suited to show volume of many-to-many relationships</li>
-                    <li>More detailed information is available on mouseover</li>
-                    <li>Countries are listed alphabetically and therefore easier to find</li>
-                </ul>
-                <li>Cons</li>
-                <ul>
-                    <li>Countries are listed alphabetically, no visual indication of export volume by order</li>
-                    <li>Lacks of drill down functionality especially for small weapon exporters</li>
-                    <li>The visualizaton does not show the share of a country of the total weapon imports of a customer country. There is another <a href="http://insightfulinteraction.com/armsimport.html">visualization</a> which shows the imports</li>
-                </ul>
-            </ul>
+                <div class="subsection">
+                    <h3>2.2 World's Top Arms Exporters 2013 (Chord Diagram)</h3>
+                    <a class="vis_page" href="http://insightfulinteraction.com/armsexport.html">insightfulinteraction.com</a>
+                    <h4>Description</h4>
+                    <p>This chord diagram shows the origin and destination countries of weapon exports in 2013. It was developed by <a href="http://insightfulinteraction.com/about.html">Natalia Bronshtein</a> using d3.js and is based on data from the <a href="http://www.sipri.org/databases/armstransfers">SIPRI Arms Transfers Database</a>. The work is licensed under the Creative Commons Attribution 4.0 International License.</p>
+                    <p>The diagram lists countries (or fighting factions) alphabetically on the outside of a circle and shows connections between weapon exporter and importer, where the volume of the export in $USD is indicated by the thickness of the connection at its base at the exporting country.</p>
 
-            <h3>2.3 Placeholder for Visualization 3</h3>
-            <p>Placeholder for description, pro/con, etc...</p>
+                    <h4>Positive and Negative Aspects</h4>
+                    <ul>
+                        <li>Positive</li>
+                        <ul>
+                            <li>Diagram type suited to show volume of many-to-many relationships</li>
+                            <li>More detailed information is available on mouseover</li>
+                            <li>Countries are listed alphabetically and therefore easier to find</li>
+                        </ul>
+                        <li>Negative</li>
+                        <ul>
+                            <li>Countries are listed alphabetically, no visual indication of export volume by order</li>
+                            <li>Lacks of drill down functionality especially for small weapon exporters</li>
+                            <li>The visualizaton does not show the share of a country of the total weapon imports of a customer country. There is another <a href="http://insightfulinteraction.com/armsimport.html">visualization</a> which shows the imports</li>
+                        </ul>
+                    </ul>
+                </div>
 
-            <h3>2.4 Placeholder for Visualization 4</h3>
-            <p>Placeholder for description, pro/con, etc...</p>
+                <div class="subsection">
+                    <h3>2.3 Placeholder for Visualization 3</h3>
+                    <p>Placeholder for description, pro/con, etc...</p>
+                </div>
+
+                <div class="subsection">
+                    <h3>2.4 Placeholder for Visualization 4</h3>
+                    <p>Placeholder for description, pro/con, etc...</p>
+                </div>
+
+            </div>
+
+            <div class="section">
+                <h2>3. Individual Parts</h2>
+                
+                <div class="subsection">
+                    <h3>3.1 B</h3>
+                    <p>TODO</p>
+                </div>
+
+                <div class="subsection">
+                    <h3>3.2 H</h3>
+                    <p>TODO</p>
+                </div>
+
+                <div class="subsection">
+                    <h3>3.3 M</h3>
+                    <p>TODO</p>
+                </div>
+            </div>
 
         </section>
         <footer></footer>   

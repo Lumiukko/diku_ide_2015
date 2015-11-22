@@ -1,7 +1,10 @@
+﻿@charset "utf-8";
 /* Default Style */
+
 
 html {
     font-family:    sans-serif;
+
 }
 
 table, tr, td {
@@ -10,5 +13,35 @@ table, tr, td {
 }
 
 td {
-    padding: 3pt 6pt;
+    padding: 4px 8px;
+}
+
+div.section {
+    border: 1px solid #cecece;
+    background-color: #eeeeee;
+    padding: 0px 8px 12px 8px;
+    border-radius: 16px;
+    margin-bottom: 12px;
+}
+
+div.subsection {
+    border: 1px solid #666666;
+    background-color: #dddddd;
+    padding: 0px 8px 12px 8px;
+    border-radius: 16px;
+    margin-bottom: 12px;
+}
+
+ul {
+    margin-bottom: 8px;
+}
+
+a.vis_page {
+    display: inline-block;
+    width: auto;
+    border: 1px solid black;
+    padding: 4px 10px;
+    text-decoration: none;
+    margin-left: 20px;
+    box-shadow: 3px 3px 3px #454545;
 }
