@@ -16,14 +16,12 @@ td {
 }
 
 p {
-    display: inline;
     text-align: justify;
 }
 
 img.preview {
     width: 400px;
     float: right;
-    clear: right;
     border-radius: 16px;
     box-shadow: 2px 2px 4px #454545;
     margin: 18px;
