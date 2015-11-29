@@ -14,7 +14,7 @@ $(document).ready(function() {
 
     function show_heatmap_table(input) {
         d3.select("#d3js_vis1")
-          .html("<h4>Temperateure in Dregee Celsius in Ankara, Turkey</h4>")
+          .html("<h4>Temperature in °C in Ankara, Turkey</h4>")
           .append("table")
           .style("border", "1px solid black")
           .style("text-align", "right")
@@ -39,6 +39,13 @@ $(document).ready(function() {
                 ret += "<td style=\"background-color: " + color(d.DEC) + "\">" + d.DEC + "</td>";
                 return ret;
           });
+        
+        // Add the header row.
+        d3.select("#d3js_vis1 table")
+          .insert("tr", ":first-child")
+          .html(function(d, i) {
+                return "<tr><th>YEAR</th><th>JAN</th><th>FEB</th><th>MAR</th><th>APR</th><th>MAY</th><th>JUN</th><th>JUL</th><th>AUG</th><th>SEP</th><th>OCT</th><th>NOV</th><th>DEC</th></tr>";
+           });
     }
 
     function show_data(input) {
