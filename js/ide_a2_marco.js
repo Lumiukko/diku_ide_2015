@@ -9,8 +9,36 @@ $(document).ready(function() {
     data = d3.csv.parse(csv);
     //$("#d3js_vis1").append(JSON.stringify(data));
     //show_data(data);
-    show_heatmap_table(data);
+    //show_heatmap_table(data);
+    show_svg(data);
     
+    function show_svg(input) {
+        var h = 300;
+        var bar_w = 15;
+        var w = input.length * bar_w + input.length;
+
+        var svg = d3.select("#d3js_vis1")
+                    .html("<h4>SVG of the April Temperatures in °C in Ankara, Turkey</h4>")
+                    .append("svg")
+                    .style("border", "1px solid black")
+                    .attr("width", w)
+                    .attr("height", h)
+                    .selectAll("rect")
+                    .data(input)
+                    .enter()
+                    .append("rect")
+                    .attr("x", function(d, i) {
+                        return i*(bar_w+1);
+                    })
+                    .attr("y", function(d) { return h - (d.APR*10) })
+                    .attr("width", bar_w)
+                    .attr("height", function(d, i) {
+                        return (d.APR*10);
+                    })
+                    .attr("fill", function(d) {
+                        return color(d.APR);
+                    });
+    };
 
     function show_heatmap_table(input) {
         d3.select("#d3js_vis1")
