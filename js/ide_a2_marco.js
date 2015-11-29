@@ -12,19 +12,23 @@ $(document).ready(function() {
     //$("#d3js_vis1").append(JSON.stringify(data));
     //show_data(data);
     //show_heatmap_table(data);
-    show_svg(data);
     
-    function show_svg(input) {
+    $(months).each(function(i, m) {
+        show_svg(data, m);
+    });
+
+    
+    
+    function show_svg(input, month="JAN") {
         var max_v = 40;
         var h = 300;
         var bar_w = 10;
         var w = input.length * bar_w + input.length;
         var zero_line = 10*h/max_v;
-
-        var month = "JAN"
+        
+        d3.select("#d3js_vis1").append("h4").html("SVG of the Temperatures for " + month + " in °C in Ankara, Turkey")
 
         var svg = d3.select("#d3js_vis1")
-                    .html("<h4>SVG of the Temperatures for " + month + " in °C in Ankara, Turkey</h4>")
                     .append("svg")
                     .style("border", "1px solid black")
                     .attr("width", w)
@@ -51,11 +55,6 @@ $(document).ready(function() {
                     .attr("fill", function(d) {
                         return color(d[month]);
                     });
-
-        svg.append("line")
-           .attr("x", function(i, d) {return i*20; })
-           .attr("y", function(d) {return h-100; })
-           .style("stroke", "black")
     };
 
     function show_heatmap_table(input) {
