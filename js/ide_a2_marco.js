@@ -4,14 +4,19 @@ $(document).ready(function() {
     var months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
 
     var color = d3.scale.linear()
-                  .domain([-10, 5, 30, 900])
+                  .domain([-15, 5, 30, 900])
                   .range(["blue", "lightblue", "red", "yellow"]);
+
 
     
     // Available datasets
     var data_options = [
         {"city": "Ankara, Turkey", "file": "data/ankara_central.txt"},
-        {"city": "Copenhagen, Denmark", "file": "data/copenhagen.txt"}
+        {"city": "Copenhagen, Denmark", "file": "data/copenhagen.txt"},
+        {"city": "Hamburg, Germany", "file": "data/hamburg.txt"},
+        {"city": "Turku, Finland", "file": "data/turku.txt"},
+        {"city": "Sodankylä, Finland", "file": "data/sodankyla.txt"},
+        {"city": "Sydney, Australia", "file": "data/sydney.txt"}
     ];
 
     // Default options
@@ -65,15 +70,16 @@ $(document).ready(function() {
     
     
     function show_svg(input, month="JAN", selector="#d3js_vis1") {
-        var max_abs_value = 40;
+        var max_abs_value = 60;
+        var cold_area = 25;
         var h = 300;
-        var w = 800 - 20;  // 20 to leave some space right of the diagram
+        var w = 750 - 20;  // 20 to leave some space right of the diagram
 
         var label_width = 50;
         var label_height = 50;
-        var zero_line = 10*h/max_abs_value;
+        var zero_line = cold_area*h/max_abs_value;
         var bar_w = (w - label_width - input.length) / (input.length);
-        var yticks = [-10, -5, 0, 5, 10, 15, 20, 25];
+        var yticks = [-25, -20, -15, -10, -5, 0, 5, 10, 15, 20, 25];
         
         // Title
         d3.select(selector).append("h4").html("Barchart SVG of the Temperatures for " + month + " in °C in " + city)
