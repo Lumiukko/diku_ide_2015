@@ -72,8 +72,10 @@
 
                 <div class="subsection">
                     <h3>2.2 Method</h3>
-                    <p>TODO: Add more, this is just one of the paragraphs.</p>
+                    <p>We used data provided by <a href="http://www.giss.nasa.gov/">NASAs Goddard Institute for Space Studies</a> as part of the GISS Surface Temperature Analysis. The data was adjusted for homogeneity "based on night light radiance data" by the GISS (<a href="http://data.giss.nasa.gov/gistemp/station_data/">source</a>). We selected the stations Ankara (Turkey), Copenhagen (Denmark), Hamburg (Germany), Turku (Finland), Sodankylä (Finland) and Sydney (Australia) because they were close to personally significant places for the authors (as given in the task).</p>
                     <p>Since the original data is saved in a file where the values are separated by an arbitrary amount of spaces, we had the choice to either convert the data first into an easier readable format, or to write an own conversion method in JavaScript. We decided for the latter for the simple reason, that we do not have to pre-process the data before using it. This enables us to link directly into the source file and offers the possibility to let the user use any weather data with our visualization he desires.</p>
+                    <p>We visualized the data as a series of bar plots, each showing the average temperatures of a single month over the available years. The bars are color-coded, where blue indicates relative coldness, red warmness and yellow indicates missing data. We also visualized it as a heatmap showing each month of a year in a table row, using the same color coding as before. This was done using only d3js and jQuery.</p>
+                    <p>The third graph was developed using <a href="http://dimplejs.org/">dimple.js</a> as a third-party library. It shows each available month per year as a circle, while the bar chart shows the average over all months of the year. Exact data is available on mouseover.</p>
                 </div>
 
                 <div class="subsection">
