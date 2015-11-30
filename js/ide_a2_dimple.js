@@ -2,7 +2,7 @@ $(document).ready(function() {
     var svg = dimple.newSvg("#chartContainer", 590, 400);
     $.get("data/ankara_central.txt", function (data) {
         console.log(data);
-        data = assv2csv(data);
+        data = assv2json(data);
         console.log(data);
         var myChart = new dimple.chart(svg, data);
         myChart.setBounds(60, 30, 505, 305)
@@ -23,7 +23,7 @@ $(document).ready(function() {
     });
 });
 
-function assv2csv(data) {
+function assv2json(data) {
     month_name = [
         "January", "February", "March", "April", "May", "June",
         "July", "August", "September", "October", "November", "December"
