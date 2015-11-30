@@ -7,20 +7,23 @@ $(document).ready(function() {
                   .domain([-10, 5, 30, 900])
                   .range(["blue", "lightblue", "red", "yellow"]);
 
-    var csv = assv2csv("data/ankara_central.txt");
-    var city = "Ankara, Turkey";
-    //var csv = assv2csv("data/copenhagen.txt");
+    
     //var city = "Copenhagen, Denmark";
+    //$.get("data/copenhagen.txt", function (data) {
+    var city = "Ankara, Turkey";
+    $.get("data/ankara_central.txt", function (data) {
+        csv = assv2csv(data);  
+        data = d3.csv.parse(csv);
+        //show_data(data);
+        
+        $(months).each(function(i, m) {
+            show_svg(data, m, "#d3js_vis1_1");
+        });
+        
+        show_heatmap_table(data, "#d3js_vis1_2");
+    }, "text");
 
-
-    data = d3.csv.parse(csv);
-    //show_data(data);
     
-    $(months).each(function(i, m) {
-        show_svg(data, m, "#d3js_vis1_1");
-    });
-    
-    show_heatmap_table(data, "#d3js_vis1_2");
     
     
 
@@ -226,24 +229,21 @@ $(document).ready(function() {
         
     }
 
-    function assv2csv(filepath) {
+    function assv2csv(data) {
         // Converts arbitrary space separated values into comma separated values.
         var csv = "";
-        $.get(filepath, function(data) {
-            data = data.split("\n");
-            $(data).each(function(i, d) {
-                dv = d.split(" ");
-                if (dv.length > 1) {
-                    $(dv).each(function(j, value) {
-                        if (value != "") {
-                            csv += value + ",";
-                        }
-                    });
-                    csv += "\n";
-                }
-            });
-        }, "text");
-        alert("This is a distraction box.\nIts sole purpose is to distract you, so this asynchronous piece of s...\n...oftware has time to process everything in the background until it is actually ready.");
+        data = data.split("\n");
+        $(data).each(function(i, d) {
+            dv = d.split(" ");
+            if (dv.length > 1) {
+                $(dv).each(function(j, value) {
+                    if (value != "") {
+                        csv += value + ",";
+                    }
+                });
+                csv += "\n";
+            }
+        });
         return csv;
     }
 
