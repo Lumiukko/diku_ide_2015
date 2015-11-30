@@ -1,7 +1,8 @@
 $(document).ready(function() { 
     auto_toc();
    
-    var months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+    var months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC", "metANN"];
+    var month_names = {"JAN": "January", "FEB": "February", "MAR":"March", "APR":"April", "MAY":"May", "JUN":"June", "JUL":"July", "AUG":"August", "SEP":"September", "OCT":"October", "NOV":"November", "DEC":"December", "metANN":"the whole year averages"};
 
     var color = d3.scale.linear()
                   .domain([-15, 5, 30, 900])
@@ -82,7 +83,7 @@ $(document).ready(function() {
         var yticks = [-25, -20, -15, -10, -5, 0, 5, 10, 15, 20, 25];
         
         // Title
-        d3.select(selector).append("h4").html("Barchart SVG of the Temperatures for " + month + " in °C in " + city)
+        d3.select(selector).append("h4").html("Barchart SVG of the Temperatures for " + month_names[month] + " in °C in " + city)
 
         // SVG setup
         var svg = d3.select(selector)
@@ -242,6 +243,7 @@ $(document).ready(function() {
                 ret += "<td style=\"background-color: " + color(d.OCT) + "\">" + d.OCT + "</td>";
                 ret += "<td style=\"background-color: " + color(d.NOV) + "\">" + d.NOV + "</td>";
                 ret += "<td style=\"background-color: " + color(d.DEC) + "\">" + d.DEC + "</td>";
+                ret += "<th style=\"background-color: " + color(d.metANN) + "\">" + d.metANN + "</th>";
                 return ret;
           });
         
@@ -249,7 +251,7 @@ $(document).ready(function() {
         d3.select(selector + " table")
           .insert("tr", ":first-child")
           .html(function(d, i) {
-                return "<tr><th>YEAR</th><th>JAN</th><th>FEB</th><th>MAR</th><th>APR</th><th>MAY</th><th>JUN</th><th>JUL</th><th>AUG</th><th>SEP</th><th>OCT</th><th>NOV</th><th>DEC</th></tr>";
+                return "<tr><th>YEAR</th><th>JAN</th><th>FEB</th><th>MAR</th><th>APR</th><th>MAY</th><th>JUN</th><th>JUL</th><th>AUG</th><th>SEP</th><th>OCT</th><th>NOV</th><th>DEC</th><th>AVG</th></tr>";
            });
 
     }
