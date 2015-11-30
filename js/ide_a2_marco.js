@@ -8,20 +8,55 @@ $(document).ready(function() {
                   .range(["blue", "lightblue", "red", "yellow"]);
 
     
-    //var city = "Copenhagen, Denmark";
-    //$.get("data/copenhagen.txt", function (data) {
-    var city = "Ankara, Turkey";
-    $.get("data/ankara_central.txt", function (data) {
-        csv = assv2csv(data);  
-        data = d3.csv.parse(csv);
-        //show_data(data);
-        
-        $(months).each(function(i, m) {
-            show_svg(data, m, "#d3js_vis1_1");
+    // Available datasets
+    var data_options = [
+        {"city": "Ankara, Turkey", "file": "data/ankara_central.txt"},
+        {"city": "Copenhagen, Denmark", "file": "data/copenhagen.txt"}
+    ];
+
+    // Default options
+    var selection = 0
+    setup(selection);
+
+    
+
+
+    function setup(sel) {
+        $("#d3js_vis1_1").text("");
+        $("#d3js_vis1_2").text("");
+
+        $("#d3js_vis1_1").append("<h4>Dataset Selection</h4>");
+        $("#d3js_vis1_1").append("<p>This also changes the dataset for the visualization in 1.2 (Heatmap Table)</p>");
+        $("#d3js_vis1_1").append("<select id=\"dataset\"></select>");
+        $(data_options).each(function(i, option) {
+            $("#d3js_vis1_1 select").append("<option id=\"dset" + i + "\" value=\"" + i + " \">" + option.city + "</option>");
         });
-        
-        show_heatmap_table(data, "#d3js_vis1_2");
-    }, "text");
+        $("#dset" + sel).attr("selected", "selected");
+
+        city = data_options[sel].city;
+        file = data_options[sel].file;
+
+        $("#dataset").change(function(event) {
+            setup(parseInt($(this).val()));
+        });
+
+
+        $.get(file, function (data) {
+            csv = assv2csv(data);  
+            data = d3.csv.parse(csv);
+            //show_data(data);
+            
+            $(months).each(function(i, m) {
+                show_svg(data, m, "#d3js_vis1_1");
+            });
+            
+            show_heatmap_table(data, "#d3js_vis1_2");
+        }, "text");
+
+    };
+
+    
+
 
     
     
@@ -188,7 +223,7 @@ $(document).ready(function() {
           .append("tr")
           .html(function(d, i) {
                 ret = "";
-                ret += "<td>" + d.YEAR + "</td>";
+                ret += "<th>" + d.YEAR + "</th>";
                 ret += "<td style=\"background-color: " + color(d.JAN) + "\">" + d.JAN + "</td>";
                 ret += "<td style=\"background-color: " + color(d.FEB) + "\">" + d.FEB + "</td>";
                 ret += "<td style=\"background-color: " + color(d.MAR) + "\">" + d.MAR + "</td>";

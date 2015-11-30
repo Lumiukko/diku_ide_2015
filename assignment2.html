@@ -22,12 +22,25 @@
                 <h2>1. D3.js Visualizations</h2>
 
                 <div class="subsection">
-                    <h3>1.1 Visualization 1, Self-made with D3</h3>
+                    <h3>1.1 Self-made visualization 1, Monthly Bar Chart SVGs</h3>
+                    <h4>Features:</h4>
+                    <ul>
+                        <li>Color mapping for cold (blue) and warm (red) temperatures, as well as missing data (yellow).</li>
+                        <li>Resizing of bar width and font-sizes depending on SVG dimensions.</li>
+                        <li>Horizontal spacing of grid lines and x-axis labels depending on the size of the dataset.</li>
+                        <li>Conversion of arbitrary space separated values to comma separated values for usage in D3.js is done on the fly. No pre-processing necessary and allows direct-linking of remote dataset (which is not used here, this is a self contained version).</li>
+                    </ul>
                     <div id="d3js_vis1_1"></div>
                 </div>
 
                 <div class="subsection">
-                    <h3>1.2 Visualization 2, Self-made with D3</h3>
+                    <h3>1.2 Self-made visualization 2, Overall Heatmap Table</h3>
+                    <h4>Features:</h4>
+                    <ul>
+                        <li>Color mapping for cold (blue) and warm (red) temperatures, as well as missing data (yellow).</li>
+                        <li>Visualization only uses HTML Table elements, but looks like a heatmap.</li>
+                        <li>This was actually done as a test on the way to the bar charts above, but it looked quite nice and more holistic, so it was included as well.</li>
+                    </ul>
                     <div id="d3js_vis1_2"></div>
                 </div>
 
@@ -108,6 +121,28 @@
 
                 <div class="subsection">
                     <h3>3.3 Marco</h3>
+
+                    <h4>How big data sets are reasonable to load in d3 visualizations?</h4>
+                    <p>In order to answer these questions, I’d like to separate the problem into technical and practical issues that arise with certain sizes of data sets.</p>
+                    <p>From the technical perspective, we have to consider that JavaScript is executed on the client side. Therefore, the amount of data the client can handle depends on the machine running the client, as well as the client and its JavaScript engine itself. This especially holds if tje dataset consists of a very large amount of data points, or if the data set is used in a visualization which requires a lot of calculations, e.g. graphically demanding visualizations.</p>
+                    <p>From the practical perspective, the most important issue is that the user is not getting lost in a huge amount of data points. Again, this highly depends on the visualization itself. For instance, a scatterplot can display a huge amount of data points and the user can still see clusters or regressions. However, if the regression is plotted as well, the data-points may obscure the visibility of the regression line.</p>
+
+                    <h4>What types of visualizations does a limit like that exclude?</h4>
+                    <p>This limitation excludes data that is very large considering the size in memory, e.g. image or video data. Data sets that include a vast amount of features, e.g. Markov chains of huge textual datasets.</p>
+                    <p>Additionally, raw/unprocessed display of big data is excluded, which is often not particularly useful anyway.</p>
+
+                    <h4>Give examples of visualizations that must be based on large data sets and discuss how they deal with this.</h4>
+                    <p>I was unable to find examples at this time. Perhaps my understanding of what constitutes a large dataset is too restrictive. However, following I am describing techniques that can help with the issue of large data sets.</p>
+                    <p>One can deal with large data sets in different ways. One way of doing it is to reduce the size of the data sets as a pre-processing step. This can be done by sampling or by convolution.</p>
+                    <p>The sampling method can vary vastly, so the choice is important. If the data itself is very similar, the sampling method may be very simple and choose every n-th data point. If the choice of data points can have a bigger impact on the meaning of the data, one has to choose a more sophisticated method, taking into account the properties of the dataset. This can be done by some machine learning methods, such as Principle Component Analysis (PCA), or and method that provides feature reduction. If only a certain part of the data is important, one could simply focus on this particular part and visually hint that there is more, but this part is the most important.</p>
+                    <p>Equally important is the choice for a convolution method. A simple example would be to calculate the mean over several data points, thus reduce the size by a factor equal to the number of data points included in the new mean value. </p>
+                    <p>Another way of dealing with visualizations of huge data sets is to use non-interactive visualizations and render them into pixel graphics or even videos. This task can be done by high performance systems. Contrary to vector graphics, which still require the client to render each element, pixel graphics do not require much effort to be displayed. Unfortunately, they cannot be enlarged without quality loss.</p>
+
+        
+
+                    <h4>Could you have reduced the size of the data sets in this assignment?</h4>
+                    <p>Yes, and actually the NASA already did exactly this in their own visualizations. They have calculated the mean of the temperatures for each year, and in the dataset itself even for each season. However, for this assignment only the mean did not seem very enlightening and the sizes of the data sets were quite manageable, so that we could process the monthly data on the fly.</p>
+
                 </div>
 
             </div>
