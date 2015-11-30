@@ -18,8 +18,9 @@ $(document).ready(function() {
         
         myChart.addLegend(0, 10, 505, 40, "right");
         
-        
         myChart.draw();
+        
+        y_axis.titleShape.text("Surface Temperature in Degree Celsius");
     });
 });
 
