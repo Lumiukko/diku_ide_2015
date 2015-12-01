@@ -4,8 +4,7 @@ $(document).ready(function() {
 
     load_hands();
     load_hand_pcs();
-
-    draw_stuff();
+	
 
     function plot_scatter() {
         if (pcs === undefined) return;
@@ -59,7 +58,7 @@ $(document).ready(function() {
             });
             hands = hdata;
             // @Bogdan: You can call callback functions here and use the global variable "hands[index]".
-            draw_stuff(); // EXAMPLE
+            draw_hand(hands[0]);
         }, "text");
     };
 
@@ -74,7 +73,46 @@ $(document).ready(function() {
             plot_scatter();
         }, "text");
     }
+	
+	function draw_hand(points){
+		var w = 600
+		var h = 600
+		
+		var x = points[0].map(function(x) { return x * 150; });
+		var y = points[1].map(function(y) { return y * 150; });
+		var hand_points = zip([x,y])
+	
+		var svg = d3.select("#handvis")
+			.append("svg")
+			.attr("width", w)
+			.attr("height", h)
+			.style("border", "1px solid black");
+	
+		var lineFunction = d3.svg.line()
+		  .x(function(d) { return d[0]; })
+		  .y(function(d) { return d[1]; })
+		  .interpolate("cardinal");
 
+		var lineGraph = svg.append("path")
+		  .attr("d", lineFunction(hand_points))
+		  .attr("stroke", "red")
+		  .attr("stroke-width", 1)
+		  .attr("fill", "pink")
+		  .attr("opacity", "0.6");
+	
+	};
+	
+	function zip(arrays) {
+    return arrays.reduce(function (acc, arr, i) {
+        while (acc.length < arr.length) {
+            acc.push([]);
+        }
+        for (var j = 0; j < arr.length; ++j) {
+            acc[j][i] = arr[j];
+        }
+        return acc;
+    }, []);
+	};
     
 
 });
