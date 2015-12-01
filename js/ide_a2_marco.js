@@ -70,7 +70,7 @@ $(document).ready(function() {
 
     
     
-    function show_svg(input, month="JAN", selector="#d3js_vis1") {
+    function show_svg(input, month, selector) {
         var max_abs_value = 60;
         var cold_area = 25;
         var h = 300;
@@ -218,7 +218,7 @@ $(document).ready(function() {
 
 
 
-    function show_heatmap_table(input, selector="#d3js_vis1") {
+    function show_heatmap_table(input, selector) {
         d3.select(selector)
           .html("<h4>Heatmap Table: Temperature in °C in " + city + "</h4>")
           .append("table")
@@ -256,7 +256,7 @@ $(document).ready(function() {
 
     }
 
-    function show_data(input, selector="#d3js_vis1") {
+    function show_data(input, selector) {
         d3.select(selector)
           .append("table")
           .style("border", "1px solid black")
