@@ -1,16 +1,22 @@
-$(document).ready(function() { 
+$(document).ready(function() {
+    hands = undefined;
+    pcs = undefined;
 
-    data = get_hand_2pc();
-    draw_scatter(data);
-    
-    function draw_scatter(data) {
+    load_hands();
+    load_hand_pcs();
+
+    draw_stuff();
+
+    function plot_scatter() {
+        if (pcs === undefined) return;
+        
         var h = 300;
         var w = 300;        
         
         var x_values = [];
-        data.forEach(function (d){ x_values.push(d[0]); });
+        pcs.forEach(function (d){ x_values.push(d[0]); });
         var y_values = [];
-        data.forEach(function (d){ y_values.push(d[1]); });
+        pcs.forEach(function (d){ y_values.push(d[1]); });
         
         var max_x = d3.max(x_values);
         var min_x = d3.min(x_values);
@@ -23,7 +29,7 @@ $(document).ready(function() {
                     .style("border", "1px solid black");
         
         svg.selectAll("circle.scatterpoint")
-           .data(data)
+           .data(pcs)
            .enter()
            .append("circle")
            .attr("cx", function(d, i) {
@@ -35,13 +41,40 @@ $(document).ready(function() {
            .attr("r", 3);
     }
 
-    function get_hand_2pc(index) {
-        return [[-0.36273476,-0.03003287], [-0.19788622, -0.01479966], [-0.06533481,-0.01564985]];
+    function draw_stuff() {
+        if (hands != undefined) {
+            console.log(hands)
+        }
     }
 
-    function get_hand_all(index) {
-        return [1.00350000,0.93228000,0.86911000,0.77503000,0.74949000,0.71589000,0.69035000,0.66750000,0.67019000,0.69573000,0.74277000,0.72798000,0.64465000,0.48336000,0.36508000,0.33148000,0.29116000,0.27099000,0.27099000,0.30863000,0.34492000,0.46185000,0.55997000,0.44707000,0.31401000,0.26965000,0.23202000,0.21723000,0.23336000,0.28309000,0.32745000,0.45917000,0.56804000,0.50352000,0.39331000,0.35970000,0.32745000,0.32745000,0.35030000,0.39062000,0.41884000,0.54788000,0.63927000,0.60164000,0.55325000,0.51427000,0.49142000,0.49680000,0.51696000,0.55460000,0.59895000,0.65272000,0.74008000,0.81938000,0.91212000,0.99142000,0.46187000,0.39066000,0.32616000,0.22404000,0.17567000,0.12865000,0.12999000,0.14611000,0.21330000,0.26570000,0.35572000,0.42156000,0.44843000,0.41081000,0.37722000,0.37184000,0.37184000,0.38931000,0.41887000,0.44171000,0.45112000,0.49277000,0.55324000,0.57876000,0.60564000,0.61504000,0.62445000,0.66207000,0.68894000,0.68760000,0.67551000,0.66610000,0.66341000,0.72791000,0.79778000,0.81256000,0.83540000,0.87168000,0.88780000,0.87571000,0.85958000,0.79912000,0.76419000,0.82599000,0.87436000,0.90527000,0.93751000,0.96170000,0.96842000,0.95229000,0.92542000,0.87302000,0.81659000,0.79912000,0.78300000,0.75612000];
+    function load_hands() {       
+        $.get("data/hands.csv", function (fcontent) {
+            data = d3.csv.parseRows(fcontent);
+            hdata = [];
+            $(data).each(function(i, d) {
+                d = d.map(parseFloat);
+                xs = d.slice(0, 56);
+                ys = d.slice(56, 112);
+                hdata.push([xs, ys]);
+            });
+            hands = hdata;
+            // @Bogdan: You can call callback functions here and use the global variable "hands[index]".
+            draw_stuff(); // EXAMPLE
+        }, "text");
+    };
+
+    function load_hand_pcs() {
+        $.get("data/hands_pca.csv", function (fcontent) {
+            data = d3.csv.parseRows(fcontent);
+            pcsdata = []
+            $(data).each(function(i, d) {
+                pcsdata.push([parseFloat(d[0]), parseFloat(d[1])]);
+            });
+            pcs = pcsdata;
+            plot_scatter();
+        }, "text");
     }
 
+    
 
 });
