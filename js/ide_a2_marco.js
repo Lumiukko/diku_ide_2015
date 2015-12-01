@@ -281,7 +281,8 @@ $(document).ready(function() {
             if (dv.length > 1) {
                 $(dv).each(function(j, value) {
                     if (value != "") {
-                        csv += value + ",";
+                        csv += value;
+                        if (j != dv.length-1) csv += ",";
                     }
                 });
                 csv += "\n";
