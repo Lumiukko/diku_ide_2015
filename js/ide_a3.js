@@ -6,12 +6,12 @@ $(document).ready(function() {
     load_hand_pcs();
 	
 
-    function plot_scatter() {
-        if (pcs === undefined) return;
-        
+    function plot_scatter() {        
         var h = 300;
-        var w = 300;        
-        
+        var w = 300;    
+        var margin = 20;
+        var values_flat_abs = [];
+        pcs.forEach(function (d){ values_flat_abs.push(Math.abs(d[0])); });
         var x_values = [];
         pcs.forEach(function (d){ x_values.push(d[0]); });
         var y_values = [];
@@ -22,22 +22,48 @@ $(document).ready(function() {
         var max_y = d3.max(y_values);
         var min_y = d3.min(y_values);
         
+        var max_abs = d3.max(values_flat_abs);
+        
         var svg = d3.select("#scattervis")
-                    .attr("width", w+20)
-                    .attr("height", h+20)
-                    .style("border", "1px solid black");
+                    .attr("width", w+margin)
+                    .attr("height", h+margin)
+                    .style("border", "1px solid black")
+                    .style("background-color", "white");
+        
+        function transscale(x) {
+            return (x*h)/(max_abs*2) + (h/2);   
+        }
+        
+        svg.append("line")
+           .attr("x1", (w+margin)/2)
+           .attr("x2", (w+margin)/2)
+           .attr("y1", h+margin/2)
+           .attr("y2", 0+margin/2)
+           .style("stroke", "black")
+           .attr('marker-end', "url(#arrow_head)");
+        
+        svg.append("line")
+           .attr("x1", 0+margin/2)
+           .attr("x2", w+margin/2)
+           .attr("y1", (h+margin)/2)
+           .attr("y2", (h+margin)/2)
+           .style("stroke", "black")
+           .attr('marker-end', "url(#arrow_head)");
         
         svg.selectAll("circle.scatterpoint")
            .data(pcs)
            .enter()
            .append("circle")
            .attr("cx", function(d, i) {
-               var x=(d[0] - min_x) * (w - 0) / (max_x - min_x) + 0; console.log(x);return x;
+               return transscale(d[0]);
            })
            .attr("cy", function(d, i) {
-               var y=(d[1] - min_y) * (h - 0) / (max_y - min_y) + 0; console.log(y);return y;
+               return h - transscale(d[1]);
            })
-           .attr("r", 3);
+           .attr("r", 5)
+           .attr("stroke", "black")
+           .attr("fill", "blue")
+           .attr("fill-opacity", "0.5");
     }
 
     function draw_stuff() {
