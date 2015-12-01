@@ -1,9 +1,42 @@
 $(document).ready(function() { 
 
-   
+    data = get_hand_2pc();
+    draw_scatter(data);
+    
+    function draw_scatter(data) {
+        var h = 300;
+        var w = 300;        
+        
+        var x_values = [];
+        data.forEach(function (d){ x_values.push(d[0]); });
+        var y_values = [];
+        data.forEach(function (d){ y_values.push(d[1]); });
+        
+        var max_x = d3.max(x_values);
+        var min_x = d3.min(x_values);
+        var max_y = d3.max(y_values);
+        var min_y = d3.min(y_values);
+        
+        var svg = d3.select("#scattervis")
+                    .attr("width", w+20)
+                    .attr("height", h+20)
+                    .style("border", "1px solid black");
+        
+        svg.selectAll("circle.scatterpoint")
+           .data(data)
+           .enter()
+           .append("circle")
+           .attr("cx", function(d, i) {
+               var x=(d[0] - min_x) * (w - 0) / (max_x - min_x) + 0; console.log(x);return x;
+           })
+           .attr("cy", function(d, i) {
+               var y=(d[1] - min_y) * (h - 0) / (max_y - min_y) + 0; console.log(y);return y;
+           })
+           .attr("r", 3);
+    }
 
     function get_hand_2pc(index) {
-        return [-0.36273476,-0.03003287];
+        return [[-0.36273476,-0.03003287], [-0.19788622, -0.01479966], [-0.06533481,-0.01564985]];
     }
 
     function get_hand_all(index) {
