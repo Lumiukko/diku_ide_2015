@@ -84,7 +84,7 @@ $(document).ready(function() {
             });
             hands = hdata;
             // @Bogdan: You can call callback functions here and use the global variable "hands[index]".
-            draw_hand(hands[0]);
+            draw_hand(hands);
         }, "text");
     };
 
@@ -100,19 +100,20 @@ $(document).ready(function() {
         }, "text");
     }
 	
-	function draw_hand(points){
-		var w = 600
-		var h = 600
+	function draw_hand(all_points){
+		var width = 320
+		var height = 320
 		
-		var x = points[0].map(function(x) { return x * 150; });
-		var y = points[1].map(function(y) { return y * 150; });
+		var points = all_points[0]
+		var x = points[0].map(function(x) { return x * 300; });
+		var y = points[1].map(function(y) { return y * 300; });
 		var hand_points = zip([x,y])
 	
 		var svg = d3.select("#handvis")
-			.append("svg")
-			.attr("width", w)
-			.attr("height", h)
-			.style("border", "1px solid black");
+			.attr("width", width)
+			.attr("height", height)
+			.style("border", "1px solid black")
+			.style("background-color", "white");
 	
 		var lineFunction = d3.svg.line()
 		  .x(function(d) { return d[0]; })
@@ -124,6 +125,7 @@ $(document).ready(function() {
 		  .attr("stroke", "red")
 		  .attr("stroke-width", 1)
 		  .attr("fill", "pink")
+		  .attr("transform", "translate(-30,-10)")
 		  .attr("opacity", "0.6");
 	
 	};
