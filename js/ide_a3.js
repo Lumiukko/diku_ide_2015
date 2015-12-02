@@ -1,5 +1,6 @@
 $(document).ready(function() {
-    hands = undefined;
+    hands = [];
+	hand_index = 0;
     pcs = undefined;
 
     load_hands();
@@ -63,7 +64,15 @@ $(document).ready(function() {
            .attr("r", 5)
            .attr("stroke", "black")
            .attr("fill", "blue")
-           .attr("fill-opacity", "0.5");
+           .attr("fill-opacity", "0.5")		    
+		   .on('mouseover',function(d){
+			   //NOTE hand_index is randomly changed for the moment
+				hand_index = Math.floor(Math.random() * 40);
+				$("#handvis").empty();
+				draw_hand(hand_index)
+			});
+		   
+	    draw_hand(0);
     }
 
     function draw_stuff() {
@@ -82,9 +91,13 @@ $(document).ready(function() {
                 ys = d.slice(56, 112);
                 hdata.push([xs, ys]);
             });
-            hands = hdata;
-            // @Bogdan: You can call callback functions here and use the global variable "hands[index]".
-            draw_hand(hands);
+
+			for (var i in hdata) {
+				var points = hdata[i]
+				var x = points[0].map(function(x) { return x * 300; });
+				var y = points[1].map(function(y) { return y * 300; });
+				hands.push(zip([x,y]))
+			}
         }, "text");
     };
 
@@ -100,35 +113,31 @@ $(document).ready(function() {
         }, "text");
     }
 	
-	function draw_hand(all_points){
+	function draw_hand(index){
 		var width = 320
-		var height = 320
-		
-		var points = all_points[0]
-		var x = points[0].map(function(x) { return x * 300; });
-		var y = points[1].map(function(y) { return y * 300; });
-		var hand_points = zip([x,y])
+		var height = 320	
 	
 		var svg = d3.select("#handvis")
 			.attr("width", width)
 			.attr("height", height)
 			.style("border", "1px solid black")
 			.style("background-color", "white");
-	
+
 		var lineFunction = d3.svg.line()
 		  .x(function(d) { return d[0]; })
 		  .y(function(d) { return d[1]; })
 		  .interpolate("cardinal");
+	
 
 		var lineGraph = svg.append("path")
-		  .attr("d", lineFunction(hand_points))
-		  .attr("stroke", "red")
+		  .attr("d", lineFunction(hands[hand_index]))
+		  .attr("stroke", "#FEB186")
 		  .attr("stroke-width", 1)
-		  .attr("fill", "pink")
-		  .attr("transform", "translate(-30,-10)")
+		  .attr("fill", "#FFCC99")
+		  .attr("transform", "translate(-50,-10)")
 		  .attr("opacity", "0.6");
-	
 	};
+	
 	
 	function zip(arrays) {
     return arrays.reduce(function (acc, arr, i) {
