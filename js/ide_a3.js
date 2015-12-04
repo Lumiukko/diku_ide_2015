@@ -65,11 +65,9 @@ $(document).ready(function() {
            .attr("stroke", "black")
            .attr("fill", "blue")
            .attr("fill-opacity", "0.5")		    
-		   .on('mouseover',function(d){
-			   //NOTE hand_index is randomly changed for the moment
-				hand_index = Math.floor(Math.random() * 40);
+		   .on('mouseover',function(d, i){
 				$("#handvis").empty();
-				draw_hand(hand_index)
+				draw_hand(i)
 			});
 		   
 	    draw_hand(0);
@@ -130,7 +128,7 @@ $(document).ready(function() {
 	
 
 		var lineGraph = svg.append("path")
-		  .attr("d", lineFunction(hands[hand_index]))
+		  .attr("d", lineFunction(hands[index]))
 		  .attr("stroke", "#FEB186")
 		  .attr("stroke-width", 1)
 		  .attr("fill", "#FFCC99")
