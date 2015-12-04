@@ -65,19 +65,22 @@ $(document).ready(function() {
            .attr("stroke", "black")
            .attr("fill", "blue")
            .attr("fill-opacity", "0.5")		    
-		   .on('mouseover',function(d, i){
+		   .on("mouseover",function(d, i) {
 				$("#handvis").empty();
-				draw_hand(i)
+				draw_hand(i);
+                d3.selectAll("circle")
+                  .sort(function (a, b) {  // Reordering to bring the selected point to the top.
+                      if (a != d) return -1;
+                      else return 1;
+                  })
+                  .attr("fill", "blue");
+                $(this).attr("fill", "yellow");
+
 			});
 		   
 	    draw_hand(0);
     }
 
-    function draw_stuff() {
-        if (hands != undefined) {
-            console.log(hands)
-        }
-    }
 
     function load_hands() {       
         $.get("data/hands.csv", function (fcontent) {
@@ -98,6 +101,7 @@ $(document).ready(function() {
 			}
         }, "text");
     };
+
 
     function load_hand_pcs() {
         $.get("data/hands_pca.csv", function (fcontent) {
@@ -138,15 +142,15 @@ $(document).ready(function() {
 	
 	
 	function zip(arrays) {
-    return arrays.reduce(function (acc, arr, i) {
-        while (acc.length < arr.length) {
-            acc.push([]);
-        }
-        for (var j = 0; j < arr.length; ++j) {
-            acc[j][i] = arr[j];
-        }
-        return acc;
-    }, []);
+        return arrays.reduce(function (acc, arr, i) {
+            while (acc.length < arr.length) {
+                acc.push([]);
+            }
+            for (var j = 0; j < arr.length; ++j) {
+                acc[j][i] = arr[j];
+            }
+            return acc;
+        }, []);
 	};
     
 
