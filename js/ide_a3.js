@@ -133,11 +133,34 @@ $(document).ready(function() {
             data = d3.csv.parseRows(fcontent);
             pcsdata = []
             $(data).each(function(i, d) {
-                pcsdata.push([parseFloat(d[0]), parseFloat(d[1])]);
+                var hand_data = [];
+                $(d).each(function(i, d) {
+                    hand_data.push(parseFloat(d));    
+                });
+                pcsdata.push(hand_data);
             });
             pcs = pcsdata;
+            render_dim_selection("x_axis");
+            render_dim_selection("y_axis");
             plot_scatter();
         }, "text");
+    }
+    
+    // render PCA dimension selection fields
+    function render_dim_selection(axis) {
+        d3.select("#"+axis+"_dim")
+          .selectAll("option")
+          .data(pcs)
+          .enter()
+          .append("option")
+          .attr("value", function(d, i){
+              return i;
+          })
+          .text(function(d, i){
+              return 'PCA Dimension '+i;
+          });
+        d3.select("#"+axis+"_dim")
+          .attr("disabled", null);
     }
 	
 	function draw_hand(index){
