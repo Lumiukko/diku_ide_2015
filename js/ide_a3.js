@@ -91,7 +91,7 @@ $(document).ready(function() {
                 // show tooltip
                 mouse_pos = d3.mouse(document.body);
                 d3.select("#tooltip_scattervis p")
-                  .text("Hand Index: "+i);
+                  .html("Hand Index: "+i+"<br />("+d[0]+", "+d[1]+")");
                 d3.select("#tooltip_scattervis")
                   .style("opacity", "0")
                   .style("display", "inline")
