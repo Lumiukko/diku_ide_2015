@@ -11,12 +11,17 @@ $(document).ready(function() {
         var h = 300;
         var w = 300;    
         var margin = 20;
+        
+        var y_axis_pc = parseInt(d3.select("#y_axis_dim").node().value, 10);
+        var x_axis_pc = parseInt(d3.select("#x_axis_dim").node().value, 10);
+        
         var values_flat_abs = [];
-        pcs.forEach(function (d){ values_flat_abs.push(Math.abs(d[0])); });
+        pcs.forEach(function (d){ values_flat_abs.push(Math.abs(d[x_axis_pc])); });
+        pcs.forEach(function (d){ values_flat_abs.push(Math.abs(d[y_axis_pc])); });
         var x_values = [];
-        pcs.forEach(function (d){ x_values.push(d[0]); });
+        pcs.forEach(function (d){ x_values.push(d[x_axis_pc]); });
         var y_values = [];
-        pcs.forEach(function (d){ y_values.push(d[1]); });
+        pcs.forEach(function (d){ y_values.push(d[y_axis_pc]); });
         
         var max_x = d3.max(x_values);
         var min_x = d3.min(x_values);
@@ -30,6 +35,7 @@ $(document).ready(function() {
                     .attr("height", h+margin)
                     .style("border", "1px solid black")
                     .style("background-color", "white");
+        svg.selectAll("text").remove();
         
         function transscale(x) {
             return (x*h)/(max_abs*2) + (h/2);   
@@ -44,10 +50,11 @@ $(document).ready(function() {
            .style("stroke", "black")
            .attr('marker-end', "url(#arrow_head)");
         svg.append("text")
+           .attr("class", "axislabel")
            .attr("x", ((w+margin)/2)+5)
            .attr("y", (0+margin/2)+5)
            .style("font-size", 10)
-           .text("PC2");
+           .text("PC "+(y_axis_pc+1));
         // x-axis
         svg.append("line")
            .attr("x1", 0+margin/2)
@@ -57,27 +64,23 @@ $(document).ready(function() {
            .style("stroke", "black")
            .attr('marker-end', "url(#arrow_head)");
         svg.append("text")
+           .attr("class", "axislabel")
            .attr("x", (w+margin/2))
            .attr("y", (h+margin)/2+15)
            .style("font-size", 10)
-           .text("PC1")
+           .text("PC "+(x_axis_pc+1))
            .attr("text-anchor", "end");
         
-        svg.selectAll("circle.scatterpoint")
-           .data(pcs)
-           .enter()
-           .append("circle")
-           .attr("cx", function(d, i) {
-               return transscale(d[0]);
-           })
-           .attr("cy", function(d, i) {
-               return h - transscale(d[1]);
-           })
-           .attr("r", 5)
-           .attr("stroke", "black")
-           .attr("fill", "blue")
-           .attr("fill-opacity", "0.5")		    
-		   .on("mouseover",function(d, i) {
+        var points = svg.selectAll("circle")
+                        .data(pcs);
+        
+        points.enter()
+              .append("circle")	
+              .attr("stroke", "black")
+              .attr("r", 0)
+              .attr("fill", "blue")
+              .attr("fill-opacity", "0.5")
+              .on("mouseover",function(d, i) {
                 // draw respective hand
                 $("#handvis").empty();
                 draw_hand(i);
@@ -92,7 +95,7 @@ $(document).ready(function() {
                 // show tooltip
                 mouse_pos = d3.mouse(document.body);
                 d3.select("#tooltip_scattervis p")
-                  .html("Hand Index: "+i+"<br />("+d[0]+", "+d[1]+")");
+                  .html("Hand Index: "+i+"<br />("+d[x_axis_pc]+", "+d[y_axis_pc]+")");
                 d3.select("#tooltip_scattervis")
                   .style("opacity", "0")
                   .style("display", "inline")
@@ -100,9 +103,19 @@ $(document).ready(function() {
                   .style("top", mouse_pos[1]+"px")
                   .transition()
                   .style("opacity", 0.8);
-			}).on("mouseout", function() {
+              }).on("mouseout", function() {
                 d3.select("#tooltip_scattervis").style("display", "none");
-            });
+              });
+        points.transition()
+              .attr("cx", function(d, i) {
+                return transscale(d[x_axis_pc]);
+              })
+              .attr("cy", function(d, i) {
+                return h - transscale(d[y_axis_pc]);
+              })
+              .attr("r", 5);
+                
+        points.exit().remove();
 		   
 	    draw_hand(0);
     }
@@ -149,6 +162,10 @@ $(document).ready(function() {
     
     // render PCA dimension selection fields
     function render_dim_selection(axis) {
+        axis_default_pc = {
+          'x_axis': 0,  
+          'y_axis': 1,  
+        };
         d3.select("#"+axis+"_dim")
           .selectAll("option")
           .data(pcs)
@@ -158,10 +175,12 @@ $(document).ready(function() {
               return i;
           })
           .text(function(d, i){
-              return 'PCA Dimension '+i;
+              return 'PC '+(i+1);
           });
         d3.select("#"+axis+"_dim")
-          .attr("disabled", null);
+          .attr("disabled", null)
+          .property("value", axis_default_pc[axis])
+          .on("change", plot_scatter);
     }
 	
 	function draw_hand(index){
