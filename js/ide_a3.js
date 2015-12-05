@@ -35,6 +35,7 @@ $(document).ready(function() {
             return (x*h)/(max_abs*2) + (h/2);   
         }
         
+        // y-axis
         svg.append("line")
            .attr("x1", (w+margin)/2)
            .attr("x2", (w+margin)/2)
@@ -42,7 +43,12 @@ $(document).ready(function() {
            .attr("y2", 0+margin/2)
            .style("stroke", "black")
            .attr('marker-end', "url(#arrow_head)");
-        
+        svg.append("text")
+           .attr("x", ((w+margin)/2)+5)
+           .attr("y", (0+margin/2)+5)
+           .style("font-size", 10)
+           .text("PCA2");
+        // x-axis
         svg.append("line")
            .attr("x1", 0+margin/2)
            .attr("x2", w+margin/2)
@@ -50,6 +56,11 @@ $(document).ready(function() {
            .attr("y2", (h+margin)/2)
            .style("stroke", "black")
            .attr('marker-end', "url(#arrow_head)");
+        svg.append("text")
+           .attr("x", (w+margin/2)-15)
+           .attr("y", (h+margin)/2+15)
+           .style("font-size", 10)
+           .text("PCA1");
         
         svg.selectAll("circle.scatterpoint")
            .data(pcs)
