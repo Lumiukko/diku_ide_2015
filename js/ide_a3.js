@@ -66,8 +66,10 @@ $(document).ready(function() {
            .attr("fill", "blue")
            .attr("fill-opacity", "0.5")		    
 		   .on("mouseover",function(d, i) {
-				$("#handvis").empty();
-				draw_hand(i);
+                // draw respective hand
+                $("#handvis").empty();
+                draw_hand(i);
+                // highlight PCA point
                 d3.selectAll("circle")
                   .sort(function (a, b) {  // Reordering to bring the selected point to the top.
                       if (a != d) return -1;
@@ -75,8 +77,20 @@ $(document).ready(function() {
                   })
                   .attr("fill", "blue");
                 $(this).attr("fill", "yellow");
-
-			});
+                // show tooltip
+                mouse_pos = d3.mouse(document.body);
+                d3.select("#tooltip_scattervis p")
+                  .text("Hand Index: "+i);
+                d3.select("#tooltip_scattervis")
+                  .style("opacity", "0")
+                  .style("display", "inline")
+                  .style("left", mouse_pos[0]+"px")
+                  .style("top", mouse_pos[1]+"px")
+                  .transition()
+                  .style("opacity", 0.8);
+			}).on("mouseout", function() {
+                d3.select("#tooltip_scattervis").style("display", "none");
+            });
 		   
 	    draw_hand(0);
     }
