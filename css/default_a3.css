@@ -16,7 +16,7 @@
 }
 
 section, header {
-    max-width: 750px;
+    max-width: 670px;
     margin: auto;
 }
 
@@ -24,4 +24,13 @@ span {
     cursor: pointer;
     text-decoration: underline;
     color: blue;
+}
+
+#visbox {
+    text-align: center;
+    margin-bottom: 8pt;
+}
+
+#dim_selection {
+    margin-bottom: 3pt;
 }
