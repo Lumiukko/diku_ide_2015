@@ -1,6 +1,7 @@
+var hand_hover; 
+
 $(document).ready(function() {
     hands = [];
-	hand_index = 0;
     pcs = undefined;
 
     load_hands();
@@ -67,6 +68,9 @@ $(document).ready(function() {
            .data(pcs)
            .enter()
            .append("circle")
+           .attr("id", function(d, i) {
+                return "p" + i;
+           })
            .attr("cx", function(d, i) {
                return transscale(d[0]);
            })
@@ -77,34 +81,41 @@ $(document).ready(function() {
            .attr("stroke", "black")
            .attr("fill", "blue")
            .attr("fill-opacity", "0.5")		    
-		   .on("mouseover",function(d, i) {
-                // draw respective hand
-                update_hand(i);
-                // highlight PCA point
-                d3.selectAll("circle")
-                  .sort(function (a, b) {  // Reordering to bring the selected point to the top.
-                      if (a != d) return -1;
-                      else return 1;
-                  })
-                  .attr("fill", "blue");
-                $(this).attr("fill", "yellow");
-                // show tooltip
-                mouse_pos = d3.mouse(document.body);
-                d3.select("#tooltip_scattervis p")
-                  .html("Hand Index: "+i+"<br />("+d[0]+", "+d[1]+")");
-                d3.select("#tooltip_scattervis")
-                  .style("opacity", "0")
-                  .style("display", "inline")
-                  .style("left", mouse_pos[0]+"px")
-                  .style("top", mouse_pos[1]+"px")
-                  .transition()
-                  .style("opacity", 0.8);
+		   .on("mouseover", function(d, i) {
+                hand_hover(i);
 			}).on("mouseout", function() {
                 d3.select("#tooltip_scattervis").style("display", "none");
             });
 		   
 	    draw_hand(0);
     }
+
+
+    hand_hover = function (i) {
+        d = pcs[i];
+        // draw respective hand
+        update_hand(i);
+        // highlight PCA point
+        d3.selectAll("circle")
+          .sort(function (a, b) {  // Reordering to bring the selected point to the top.
+              if (a != d) return -1;
+              else return 1;
+          })
+          .attr("fill", "blue");
+        d3.select("#p" + i)
+          .attr("fill", "yellow");
+        // show tooltip
+        mouse_pos = d3.mouse(document.body);
+        d3.select("#tooltip_scattervis p")
+          .html("Hand Index: "+i+"<br />("+d[0]+", "+d[1]+")");
+        d3.select("#tooltip_scattervis")
+          .style("opacity", "0")
+          .style("display", "inline")
+          .style("left", mouse_pos[0]+"px")
+          .style("top", mouse_pos[1]+"px")
+          .transition()
+          .style("opacity", 0.8);
+    };
 
 
     function load_hands() {       
@@ -172,11 +183,6 @@ $(document).ready(function() {
 			.attr("height", height)
 			.style("border", "1px solid black")
 			.style("background-color", "white");
-
-		var lineFunction = d3.svg.line()
-		  .x(function(d) { return d[0]; })
-		  .y(function(d) { return d[1]; })
-		  .interpolate("cardinal");
 	
 		var lineGraph = svg.append("path")
 		  .attr("stroke", "#FEB186")

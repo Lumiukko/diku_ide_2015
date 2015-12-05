@@ -19,3 +19,9 @@ section, header {
     max-width: 750px;
     margin: auto;
 }
+
+span {
+    cursor: pointer;
+    text-decoration: underline;
+    color: blue;
+}
