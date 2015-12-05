@@ -79,8 +79,7 @@ $(document).ready(function() {
            .attr("fill-opacity", "0.5")		    
 		   .on("mouseover",function(d, i) {
                 // draw respective hand
-                $("#handvis").empty();
-                draw_hand(i);
+                update_hand(i);
                 // highlight PCA point
                 d3.selectAll("circle")
                   .sort(function (a, b) {  // Reordering to bring the selected point to the top.
@@ -179,16 +178,27 @@ $(document).ready(function() {
 		  .y(function(d) { return d[1]; })
 		  .interpolate("cardinal");
 	
-
 		var lineGraph = svg.append("path")
-		  .attr("d", lineFunction(hands[index]))
 		  .attr("stroke", "#FEB186")
 		  .attr("stroke-width", 1)
 		  .attr("fill", "#FFCC99")
-		  .attr("transform", "translate(-50,-10)")
 		  .attr("opacity", "0.6");
+
+        update_hand(index);
 	};
 	
+    function update_hand(index) {    
+        var lineFunction = d3.svg.line()
+		  .x(function(d) { return d[0]; })
+		  .y(function(d) { return d[1]; })
+		  .interpolate("cardinal");
+
+        d3.select("svg path")
+          .attr("transform", "translate(-50,-10)")
+          .transition()
+          .attr("d", lineFunction(hands[index]))
+          .duration(500);
+    };
 	
 	function zip(arrays) {
         return arrays.reduce(function (acc, arr, i) {
