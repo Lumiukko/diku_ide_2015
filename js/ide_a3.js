@@ -47,7 +47,7 @@ $(document).ready(function() {
            .attr("x", ((w+margin)/2)+5)
            .attr("y", (0+margin/2)+5)
            .style("font-size", 10)
-           .text("PCA2");
+           .text("PC2");
         // x-axis
         svg.append("line")
            .attr("x1", 0+margin/2)
@@ -57,10 +57,11 @@ $(document).ready(function() {
            .style("stroke", "black")
            .attr('marker-end', "url(#arrow_head)");
         svg.append("text")
-           .attr("x", (w+margin/2)-15)
+           .attr("x", (w+margin/2))
            .attr("y", (h+margin)/2+15)
            .style("font-size", 10)
-           .text("PCA1");
+           .text("PC1")
+           .attr("text-anchor", "end");
         
         svg.selectAll("circle.scatterpoint")
            .data(pcs)
