@@ -150,9 +150,7 @@ $(document).ready(function() {
               if (a != d) return -1;
               else return 1;
           })
-          .attr("fill-opacity", "0.6");
-
-        d3.selectAll("circle").classed({"highlighted": false});
+          .classed({"highlighted": false});
         d3.select("#p" + i).classed({"highlighted": true});
 
 
