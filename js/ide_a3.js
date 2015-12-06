@@ -28,8 +28,8 @@ $(document).ready(function() {
         var min_x = d3.min(x_values);
         var max_y = d3.max(y_values);
         var min_y = d3.min(y_values);
-        
-        var max_abs = d3.max(values_flat_abs);
+		
+		var max_abs = d3.max(values_flat_abs);
         
         var svg = d3.select("#scattervis")
                     .attr("width", w+margin)
@@ -38,9 +38,6 @@ $(document).ready(function() {
                     .style("background-color", "white");
         svg.selectAll("text").remove();
         
-        function transscale(x) {
-            return (x*h)/(max_abs*2) + (h/2);   
-        }
         
         // y-axis
         svg.append("line")
@@ -71,18 +68,22 @@ $(document).ready(function() {
            .style("font-size", 10)
            .text("PC "+(x_axis_pc+1))
            .attr("text-anchor", "end");
-
-        var points = svg.selectAll("circle")
-                        .data(pcs);
-        
-        points.enter()
+		   
+		function transscale(x) {
+            return (x*h)/(max_abs*2) + (h/2);   
+        }
+		
+		
+		var points = svg.selectAll("circle")
+				.data(pcs);
+		
+		points.enter()
               .append("circle")	
               .attr("id", function(d, i) {
                 return "p" + i;
               })
               .attr("stroke", "black")
               .attr("r", 0)
-              .attr("fill", "blue")
               .attr("fill-opacity", "0.5")
               .on("mouseover",function(d, i) {
                 hand_hover(i);
@@ -100,10 +101,36 @@ $(document).ready(function() {
               .attr("r", 5);
                 
         points.exit().remove();
-		   
+		  
+		//clustering
+		var  clusters = k_means(pcs)
+		console.log(clusters)
+		cluster_one = []
+		cluster_two = []
+		cluster_three = []
+		clusters[0].forEach(function(entry) {
+				cluster_one.push(entry);
+		});
+		clusters[1].forEach(function(entry) {
+				cluster_two.push(entry);
+		});
+		clusters[2].forEach(function(entry) {
+				cluster_three.push(entry);
+		});
+
+		draw_clusters(cluster_one, "green", points)
+		draw_clusters(cluster_two, "red", points)
+		draw_clusters(cluster_three, "blue", points)
+		
 	    draw_hand(0);
     }
-
+	
+	function draw_clusters(cluster, colour, points){
+	   cluster.forEach(function(entry){
+			d3.select(points[0][entry]).attr("fill",colour);
+	   })		
+	};
+	
 
     hand_hover = function (i) {
         var y_axis_pc = parseInt(d3.select("#y_axis_dim").node().value, 10);
@@ -227,6 +254,21 @@ $(document).ready(function() {
           .attr("d", lineFunction(hands[index]))
           .duration(500);
     };
+	
+	function k_means(data){
+		var km = new kMeans({
+			K: 3
+		});
+
+		km.cluster(data);
+		while (km.step()) {
+			km.findClosestCentroids();
+			km.moveCentroids();
+
+			if(km.hasConverged()) break;
+		}
+		return km.clusters
+	};
 	
 	function zip(arrays) {
         return arrays.reduce(function (acc, arr, i) {
