@@ -35,10 +35,13 @@ $(document).ready(function() {
                     .attr("width", w+margin)
                     .attr("height", h+margin)
                     .style("border", "1px solid black")
-                    .style("background-color", "white");
+					.style("background-color", "white")
+					.call(d3.behavior.zoom().scaleExtent([1, 4]).on("zoom", function () {
+						svg.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")")
+					  }));
         svg.selectAll("text").remove();
-        
-        
+
+		
         // y-axis
         svg.append("line")
            .attr("x1", (w+margin)/2)
@@ -104,7 +107,6 @@ $(document).ready(function() {
 		  
 		//clustering
 		var  clusters = k_means(pcs)
-		console.log(clusters)
 		cluster_one = []
 		cluster_two = []
 		cluster_three = []
@@ -145,10 +147,8 @@ $(document).ready(function() {
               else return 1;
           })
           .attr("fill-opacity", "0.4")
-		  .attr("r", 5)
         d3.select("#p" + i)
           .attr("fill-opacity", "1")
-		  .attr("r", 7)
         // show tooltip
         mouse_pos = d3.mouse(document.body);
         d3.select("#tooltip_scattervis p")
