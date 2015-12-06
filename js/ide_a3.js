@@ -84,7 +84,7 @@ $(document).ready(function() {
               })
               .attr("stroke", "black")
               .attr("r", 0)
-              .attr("fill-opacity", "0.5")
+              .attr("fill-opacity", "0.4")
               .on("mouseover",function(d, i) {
                 hand_hover(i);
               })
@@ -144,9 +144,11 @@ $(document).ready(function() {
               if (a != d) return -1;
               else return 1;
           })
-          .attr("fill", "blue");
+          .attr("fill-opacity", "0.4")
+		  .attr("r", 5)
         d3.select("#p" + i)
-          .attr("fill", "yellow");
+          .attr("fill-opacity", "1")
+		  .attr("r", 7)
         // show tooltip
         mouse_pos = d3.mouse(document.body);
         d3.select("#tooltip_scattervis p")
