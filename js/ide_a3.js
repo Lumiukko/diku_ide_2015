@@ -8,7 +8,7 @@ $(document).ready(function() {
     load_hand_pcs();
 	
 
-    function plot_scatter() {        
+    function plot_scatter(draw_axis) {        
         var h = 300;
         var w = 300;    
         var margin = 20;
@@ -40,31 +40,33 @@ $(document).ready(function() {
 					.call(d3.behavior.zoom().scaleExtent([1, 4]).on("zoom", function () {
 						svg.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")")
 					  }));
-        svg.selectAll("text").remove();
 
-		
-        // y-axis
-        svg.append("line")
-           .attr("x1", (w+margin/2)/2)
-           .attr("x2", (w+margin/2)/2)
-           .attr("y1", h+margin/2)
-           .attr("y2", 0+margin/2)
-           .style("stroke", "black")
-           .attr('marker-end', "url(#arrow_head)");
+		if (draw_axis) {
+            // y-axis
+            svg.append("line")
+               .attr("x1", (w+margin/2)/2)
+               .attr("x2", (w+margin/2)/2)
+               .attr("y1", h+margin/2)
+               .attr("y2", 0+margin/2)
+               .style("stroke", "black")
+               .attr('marker-end', "url(#arrow_head)");
+            // x-axis
+            svg.append("line")
+               .attr("x1", 0+margin/2)
+               .attr("x2", w+margin/2)
+               .attr("y1", (h+margin/2)/2)
+               .attr("y2", (h+margin/2)/2)
+               .style("stroke", "black")
+               .attr('marker-end', "url(#arrow_head)");
+        }
+        // label
+        svg.selectAll("text").remove();
         svg.append("text")
            .attr("class", "axislabel")
            .attr("x", ((w+margin)/2)+5)
            .attr("y", (0+margin/2)+5)
            .style("font-size", 10)
            .text("PC "+(y_axis_pc+1));
-        // x-axis
-        svg.append("line")
-           .attr("x1", 0+margin/2)
-           .attr("x2", w+margin/2)
-           .attr("y1", (h+margin/2)/2)
-           .attr("y2", (h+margin/2)/2)
-           .style("stroke", "black")
-           .attr('marker-end', "url(#arrow_head)");
         svg.append("text")
            .attr("class", "axislabel")
            .attr("x", (w+margin/2))
@@ -72,8 +74,8 @@ $(document).ready(function() {
            .style("font-size", 10)
            .text("PC "+(x_axis_pc+1))
            .attr("text-anchor", "end");
-		   
-		function transscale(x) {
+
+        function transscale(x) {
             return (x*h)/(max_abs*2) + (h/2);   
         }
 		
@@ -200,7 +202,7 @@ $(document).ready(function() {
             pcs = pcsdata;
             render_dim_selection("x_axis");
             render_dim_selection("y_axis");
-            plot_scatter();
+            plot_scatter(true);
         }, "text");
     }
     
