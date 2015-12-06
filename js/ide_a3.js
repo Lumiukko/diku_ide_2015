@@ -91,13 +91,14 @@ $(document).ready(function() {
               .attr("stroke", "black")
               .attr("r", 0)
               .attr("fill-opacity", "0.6")
-              .on("mouseover",function(d, i) {
-                hand_hover(i);
-              })
               .on("mouseout", function() {
                 d3.select("#tooltip_scattervis").style("display", "none");
               });
-        points.transition()
+        points.on("mouseover", null)
+              .on("mouseover",function(d, i) {
+                hand_hover(i);
+              })
+              .transition()
               .attr("cx", function(d, i) {
                 return transscale(d[x_axis_pc]) - circle_radius + margin/2;
               })
@@ -137,7 +138,7 @@ $(document).ready(function() {
 	};
 	
 
-    hand_hover = function (i) {
+    function hand_hover(i) {
         var y_axis_pc = parseInt(d3.select("#y_axis_dim").node().value, 10);
         var x_axis_pc = parseInt(d3.select("#x_axis_dim").node().value, 10);
         d = pcs[i];
