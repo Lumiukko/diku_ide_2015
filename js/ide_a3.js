@@ -156,6 +156,7 @@ $(document).ready(function() {
         d3.select("#tooltip_scattervis")
           .style("opacity", "0")
           .style("display", "inline")
+		  .style("z-index", "1000")
           .style("left", mouse_pos[0]+"px")
           .style("top", mouse_pos[1]+"px")
           .transition()
