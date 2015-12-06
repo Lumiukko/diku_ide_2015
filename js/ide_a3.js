@@ -12,6 +12,7 @@ $(document).ready(function() {
         var h = 300;
         var w = 300;    
         var margin = 20;
+        var circle_radius = 5;
         
         var y_axis_pc = parseInt(d3.select("#y_axis_dim").node().value, 10);
         var x_axis_pc = parseInt(d3.select("#x_axis_dim").node().value, 10);
@@ -44,8 +45,8 @@ $(document).ready(function() {
 		
         // y-axis
         svg.append("line")
-           .attr("x1", (w+margin)/2)
-           .attr("x2", (w+margin)/2)
+           .attr("x1", (w+margin/2)/2)
+           .attr("x2", (w+margin/2)/2)
            .attr("y1", h+margin/2)
            .attr("y2", 0+margin/2)
            .style("stroke", "black")
@@ -60,8 +61,8 @@ $(document).ready(function() {
         svg.append("line")
            .attr("x1", 0+margin/2)
            .attr("x2", w+margin/2)
-           .attr("y1", (h+margin)/2)
-           .attr("y2", (h+margin)/2)
+           .attr("y1", (h+margin/2)/2)
+           .attr("y2", (h+margin/2)/2)
            .style("stroke", "black")
            .attr('marker-end', "url(#arrow_head)");
         svg.append("text")
@@ -96,12 +97,12 @@ $(document).ready(function() {
               });
         points.transition()
               .attr("cx", function(d, i) {
-                return transscale(d[x_axis_pc]);
+                return transscale(d[x_axis_pc]) - circle_radius + margin/2;
               })
               .attr("cy", function(d, i) {
-                return h - transscale(d[y_axis_pc]);
+                return h + margin/2 - transscale(d[y_axis_pc]) - circle_radius;
               })
-              .attr("r", 5);
+              .attr("r", circle_radius);
                 
         points.exit().remove();
 		  
