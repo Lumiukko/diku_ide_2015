@@ -34,3 +34,7 @@ span {
 #dim_selection {
     margin-bottom: 3pt;
 }
+
+.highlighted {
+    fill: yellow;
+}
