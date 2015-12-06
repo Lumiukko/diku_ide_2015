@@ -1,5 +1,8 @@
-var hand_hover; 
-
+var hand_hover;
+var h = 300;
+var w = 300;    
+var margin = 20;
+var circle_radius = 5;
 $(document).ready(function() {
     hands = [];
     pcs = undefined;
@@ -9,10 +12,6 @@ $(document).ready(function() {
 	
 
     function plot_scatter(draw_axis) {        
-        var h = 300;
-        var w = 300;    
-        var margin = 20;
-        var circle_radius = 5;
         
         var y_axis_pc = parseInt(d3.select("#y_axis_dim").node().value, 10);
         var x_axis_pc = parseInt(d3.select("#x_axis_dim").node().value, 10);
@@ -90,15 +89,8 @@ $(document).ready(function() {
               })
               .attr("stroke", "black")
               .attr("r", 0)
-              .attr("fill-opacity", "0.6")
-              .on("mouseout", function() {
-                d3.select("#tooltip_scattervis").style("display", "none");
-              });
-        points.on("mouseover", null)
-              .on("mouseover",function(d, i) {
-                hand_hover(i);
-              })
-              .transition()
+              .attr("fill-opacity", "0.6");
+        points.transition()
               .attr("cx", function(d, i) {
                 return transscale(d[x_axis_pc]) - circle_radius + margin/2;
               })
@@ -106,9 +98,16 @@ $(document).ready(function() {
                 return h + margin/2 - transscale(d[y_axis_pc]) - circle_radius;
               })
               .attr("r", circle_radius);
-                
+        points.on("mouseover",function(d, i) {
+                hand_hover(i);
+              })
+              .on("mouseout", function() {
+                d3.select("#tooltip_scattervis").style("display", "none");
+              })
+              .attr("id", function(d, i) {
+                return "p" + i;
+              });
         points.exit().remove();
-		  
 		//clustering
 		var  clusters = k_means(pcs)
 		cluster_one = []
@@ -138,10 +137,12 @@ $(document).ready(function() {
 	};
 	
 
-    function hand_hover(i) {
+    hand_hover = function(i) {
         var y_axis_pc = parseInt(d3.select("#y_axis_dim").node().value, 10);
         var x_axis_pc = parseInt(d3.select("#x_axis_dim").node().value, 10);
         d = pcs[i];
+        console.log("index "+i);
+        console.log(d);
         // draw respective hand
         update_hand(i);
         // highlight PCA point
