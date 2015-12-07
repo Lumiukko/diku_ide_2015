@@ -134,6 +134,7 @@ $(document).ready(function() {
 		draw_clusters(cluster_three, "blue", points)
 		
 	    draw_hand(0);
+        hand_hover(0);
     }
 	
 	function draw_clusters(cluster, colour, points){
