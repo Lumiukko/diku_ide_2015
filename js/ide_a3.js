@@ -3,6 +3,7 @@ var h = 300;
 var w = 300;    
 var margin = 20;
 var circle_radius = 5;
+
 $(document).ready(function() {
     hands = [];
     pcs = undefined;
@@ -16,8 +17,12 @@ $(document).ready(function() {
         var y_axis_pc = parseInt(d3.select("#y_axis_dim").node().value, 10);
         var x_axis_pc = parseInt(d3.select("#x_axis_dim").node().value, 10);
         
-        var get_id_regex = /^#show(\d+)$/
-        var selected_index = get_id_regex.exec(location.hash)[1];
+        // update url
+        var url_hash_values = get_url_hash_values();
+        url_hash_values["x_axis"] = x_axis_pc;
+        url_hash_values["y_axis"] = y_axis_pc;
+        set_url_hash_values(url_hash_values);
+        
         
         var values_flat_abs = [];
         pcs.forEach(function (d){ values_flat_abs.push(Math.abs(d[x_axis_pc])); });
@@ -132,13 +137,49 @@ $(document).ready(function() {
 				cluster_three.push(entry);
 		});
 
-		draw_clusters(cluster_one, "green", points)
-		draw_clusters(cluster_two, "red", points)
-		draw_clusters(cluster_three, "blue", points)
+		draw_clusters(cluster_one, "green", points);
+		draw_clusters(cluster_two, "red", points);
+		draw_clusters(cluster_three, "blue", points);
+        
+        selected_index = get_url_hash_values()['show'];
+        
 	    draw_hand(selected_index);
         hand_hover(selected_index);
     }
 	
+    function get_url_hash_values() {
+        var url_hash_values = {
+            "show": 0,
+            "y_axis": 1,
+            "x_axis": 0,
+        };
+        var get_id_regex = /^#show(\d+).*$/
+        var selected_index = get_id_regex.exec(document.location.hash);
+        var get_y_axis_regex = /^#.*y_axis(\d+).*$/
+        var selected_y_axis = get_y_axis_regex.exec(document.location.hash);
+        var get_x_axis_regex = /^#.*x_axis(\d+).*$/
+        var selected_x_axis = get_x_axis_regex.exec(document.location.hash);
+        if (selected_index) {
+            url_hash_values["show"] = selected_index[1];
+        }        
+        if (selected_y_axis) {
+            url_hash_values["y_axis"] = selected_y_axis[1];
+        }
+        if (selected_x_axis) {
+            url_hash_values["x_axis"] = selected_x_axis[1];
+        }
+        return url_hash_values;
+    }
+    
+    function set_url_hash_values(url_hash_values) {
+        var hash = "";
+        for (var key in url_hash_values) {
+            hash += key+url_hash_values[key];
+        }
+        // update url
+        document.location.hash = hash;
+    }
+    
 	function draw_clusters(cluster, colour, points){
 	   cluster.forEach(function(entry){
 			d3.select(points[0][entry]).attr("fill",colour);
@@ -176,7 +217,9 @@ $(document).ready(function() {
           .style("opacity", 0.8);
         
         // update url
-        document.location.hash = "show"+i;
+        var url_hash_values = get_url_hash_values();
+        url_hash_values["show"] = i;
+        set_url_hash_values(url_hash_values);
     };
 
 
@@ -221,10 +264,7 @@ $(document).ready(function() {
     
     // render PCA dimension selection fields
     function render_dim_selection(axis) {
-        axis_default_pc = {
-          'x_axis': 0,  
-          'y_axis': 1,  
-        };
+        url_hash_values = get_url_hash_values();
         d3.select("#"+axis+"_dim")
           .selectAll("option")
           .data(pcs)
@@ -238,7 +278,7 @@ $(document).ready(function() {
           });
         d3.select("#"+axis+"_dim")
           .attr("disabled", null)
-          .property("value", axis_default_pc[axis])
+          .property("value", url_hash_values[axis])
           .on("change", plot_scatter);
     }
 	
