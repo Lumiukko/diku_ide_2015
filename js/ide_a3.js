@@ -16,6 +16,9 @@ $(document).ready(function() {
         var y_axis_pc = parseInt(d3.select("#y_axis_dim").node().value, 10);
         var x_axis_pc = parseInt(d3.select("#x_axis_dim").node().value, 10);
         
+        var get_id_regex = /^#show(\d+)$/
+        var selected_index = get_id_regex.exec(location.hash)[1];
+        
         var values_flat_abs = [];
         pcs.forEach(function (d){ values_flat_abs.push(Math.abs(d[x_axis_pc])); });
         pcs.forEach(function (d){ values_flat_abs.push(Math.abs(d[y_axis_pc])); });
@@ -132,8 +135,8 @@ $(document).ready(function() {
 		draw_clusters(cluster_one, "green", points)
 		draw_clusters(cluster_two, "red", points)
 		draw_clusters(cluster_three, "blue", points)
-	    draw_hand(0);
-        hand_hover(0);
+	    draw_hand(selected_index);
+        hand_hover(selected_index);
     }
 	
 	function draw_clusters(cluster, colour, points){
@@ -171,6 +174,9 @@ $(document).ready(function() {
           .style("top", mouse_pos[1]+"px")
           .transition()
           .style("opacity", 0.8);
+        
+        // update url
+        document.location.hash = "show"+i;
     };
 
 
