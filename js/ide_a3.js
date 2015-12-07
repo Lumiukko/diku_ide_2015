@@ -79,17 +79,23 @@ $(document).ready(function() {
         }
 		
 		
-		var points = svg.selectAll("circle")
-				.data(pcs);
+		var points = svg.selectAll("circle").data(pcs);
 		
 		points.enter()
-              .append("circle")	
+              .append("circle")
               .attr("id", function(d, i) {
                 return "p" + i;
               })
               .attr("stroke", "black")
               .attr("r", 0)
+              .attr("cx", function(d, i) {
+                return transscale(d[x_axis_pc]) - circle_radius + margin/2;
+              })
+              .attr("cy", function(d, i) {
+                return h + margin/2 - transscale(d[y_axis_pc]) - circle_radius;
+              })
               .attr("fill-opacity", "0.6");
+        
         points.transition()
               .attr("cx", function(d, i) {
                 return transscale(d[x_axis_pc]) - circle_radius + margin/2;
@@ -98,18 +104,18 @@ $(document).ready(function() {
                 return h + margin/2 - transscale(d[y_axis_pc]) - circle_radius;
               })
               .attr("r", circle_radius);
+        
         points.on("mouseover",function(d, i) {
                 hand_hover(i);
               })
               .on("mouseout", function() {
                 d3.select("#tooltip_scattervis").style("display", "none");
-              })
-              .attr("id", function(d, i) {
-                return "p" + i;
               });
         points.exit().remove();
 		//clustering
-		var  clusters = k_means(pcs)
+        // deep copy pcs, because k_means sometimes messes with it
+        var pcs_copy = jQuery.extend(true, [], pcs);
+		var clusters = k_means(pcs_copy)
 		cluster_one = []
 		cluster_two = []
 		cluster_three = []
@@ -141,8 +147,6 @@ $(document).ready(function() {
         var y_axis_pc = parseInt(d3.select("#y_axis_dim").node().value, 10);
         var x_axis_pc = parseInt(d3.select("#x_axis_dim").node().value, 10);
         d = pcs[i];
-        console.log("index "+i);
-        console.log(d);
         // draw respective hand
         update_hand(i);
         // highlight PCA point
