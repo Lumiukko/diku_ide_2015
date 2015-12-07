@@ -83,9 +83,6 @@ $(document).ready(function() {
 		
 		points.enter()
               .append("circle")
-              .attr("id", function(d, i) {
-                return "p" + i;
-              })
               .attr("stroke", "black")
               .attr("r", 0)
               .attr("cx", function(d, i) {
@@ -110,6 +107,9 @@ $(document).ready(function() {
               })
               .on("mouseout", function() {
                 d3.select("#tooltip_scattervis").style("display", "none");
+              })
+              .attr("id", function(d, i) {
+                return "p" + i;
               });
         points.exit().remove();
 		//clustering
@@ -132,7 +132,6 @@ $(document).ready(function() {
 		draw_clusters(cluster_one, "green", points)
 		draw_clusters(cluster_two, "red", points)
 		draw_clusters(cluster_three, "blue", points)
-		
 	    draw_hand(0);
         hand_hover(0);
     }
