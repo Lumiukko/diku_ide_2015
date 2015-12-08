@@ -108,11 +108,11 @@ $(document).ready(function() {
         
         min_date_string = d3.min(crime_data, function(d) { return d.properties.Dates });
         max_date_string = d3.max(crime_data, function(d) { return d.properties.Dates });
-        var date_format = /(\d{4})-(\d{2})-(\d{2}).*/;
-        var date_fields = date_format.exec(min_date_string); 
-        var min_date = new Date(date_fields[1], date_fields[2]-1, date_fields[3]);
-        date_fields = date_format.exec(max_date_string); 
-        var max_date = new Date(date_fields[1], date_fields[2]-1, date_fields[3]);
+        
+        var min_date = parseCrimeDate(min_date_string);
+        var max_date = parseCrimeDate(max_date_string);
+        
+        
         
         var default_range_start = new Date(min_date.getFullYear() + 1, 0, 1);
         var default_range_end = new Date(default_range_start).setYear(min_date.getYear() + 2);
@@ -126,6 +126,7 @@ $(document).ready(function() {
                 min: default_range_start,
                 max: default_range_end
             },
+            step: {days: 1},
             scales: [{
                 first: function(value){ return value; },
                 end: function(value) {return value; },
@@ -141,7 +142,26 @@ $(document).ready(function() {
                 }
             }],
             arrows: false
-        });    
+        });
+        $("#timerange").bind("valuesChanged", function(e, data){
+            var newdata = filter_by_daterange(crime_data);
+            console.log(newdata.length);
+        });
+    }
+    
+    function filter_by_daterange(crime_data) {
+        range = $("#timerange").dateRangeSlider("values");
+        range.max.setDate(range.max.getDate() + 1);
+        return crime_data.filter(function (d) {
+            date = parseCrimeDate(d.properties.Dates);
+            return date >=  range.min && date <= range.max;
+        });
+    }
+                                 
+    function parseCrimeDate(date_string) {
+        var date_format = /(\d{4})-(\d{2})-(\d{2}).*/;
+        var date_fields = date_format.exec(date_string); 
+        return new Date(date_fields[1], date_fields[2]-1, date_fields[3]);       
     }
 });
 
