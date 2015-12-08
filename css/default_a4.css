@@ -9,6 +9,14 @@ section, header {
   stroke-width: 1pt;
 }
 
+#filter {
+    -webkit-columns: 100px 3;
+    -moz-columns: 100px 3;
+    columns: 100px 3;
+	border: 1px solid black;
+	background-color: #99CEFE;
+}
+
 /* timerange */
 
 #timerange {
