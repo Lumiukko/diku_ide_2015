@@ -18,6 +18,22 @@ $(document).ready(function() {
         .attr("height", h)
         .style("background-color", "lightblue")
         .style("border", "1px solid black");
+		
+	var filters = d3.selectAll(".checkbox")
+		.on("click", function() {
+			if (d3.select(this).attr("checked") == "checked") {
+				d3.select(this).attr("checked", 'unchecked')
+				crime_category = this.value;
+				console.log(crime_category);
+				update_map()
+			} else {
+				d3.select(this).attr("checked", 'checked')
+				crime_category = this.value;
+				console.log(crime_category);
+				update_map()
+			}
+		});
+	
     
     load_crime_data();
     
