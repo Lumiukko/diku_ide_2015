@@ -1,5 +1,32 @@
+section, header {
+    max-width: 740px;
+    margin: auto;
+}
+
 .county {
   fill: #edc9af;
   stroke: #000;
   stroke-width: 1pt;
+}
+
+/* timerange */
+
+#timerange {
+    margin-top: 15px;
+}
+
+.ui-rangeSlider-label {
+    background-color: aliceblue;
+    border-radius: 5px;
+}
+
+.ui-ruler-tick-label {
+    text-decoration: none;
+    color: black;
+    cursor: default;
+}
+
+.timerange-month {
+    margin-left: -1px;
+    font-size: 0.7em;
 }

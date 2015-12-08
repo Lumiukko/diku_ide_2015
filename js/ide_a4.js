@@ -25,6 +25,8 @@ $(document).ready(function() {
         d3.json("data/sf_crime.geojson", function(error, data) {
             if (!error) {
                 draw_map(data);
+                // TODO change ordering once draw_map expects data.features
+                data = data.features;
                 draw_timeline(data);
             } else {
                 console.log("Error" + error);
@@ -87,25 +89,39 @@ $(document).ready(function() {
     };
     
     function draw_timeline(crime_data) {
-        var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"];
+        
+        min_date_string = d3.min(crime_data, function(d) { return d.properties.Dates });
+        max_date_string = d3.max(crime_data, function(d) { return d.properties.Dates });
+        var date_format = /(\d{4})-(\d{2})-(\d{2}).*/;
+        var date_fields = date_format.exec(min_date_string); 
+        var min_date = new Date(date_fields[1], date_fields[2]-1, date_fields[3]);
+        date_fields = date_format.exec(max_date_string); 
+        var max_date = new Date(date_fields[1], date_fields[2]-1, date_fields[3]);
+        
+        var default_range_start = new Date(min_date.getFullYear() + 1, 0, 1);
+        var default_range_end = new Date(default_range_start).setYear(min_date.getYear() + 2);
+        
         $("#timerange").dateRangeSlider({
             bounds: {
-                min: new Date(2012, 0, 1),
-                max: new Date(2012, 11, 31, 12, 59, 59)
+                min: min_date,
+                max: max_date
             },
             defaultValues: {
-                min: new Date(2012, 1, 10),
-                max: new Date(2012, 4, 22)
+                min: default_range_start,
+                max: default_range_end
             },
             scales: [{
                 first: function(value){ return value; },
                 end: function(value) {return value; },
                 next: function(value){
                     var next = new Date(value);
-                    return new Date(next.setMonth(value.getMonth() + 1));
+                    return new Date(next.setFullYear(value.getFullYear() + 1));
                 },
                 label: function(value){
-                    return months[value.getMonth()];
+                    return value.getFullYear();
+                },
+                format: function(tickContainer, tickStart, tickEnd){
+                    tickContainer.addClass("timerange-month");
                 }
             }],
             arrows: false
