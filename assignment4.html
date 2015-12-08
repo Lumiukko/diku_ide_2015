@@ -5,11 +5,15 @@
         <script src="js/jquery-1.11.3.min.js" type="application/javascript"></script>
         <script src="js/d3.min.js" type="application/javascript" charset="utf-8"></script>
         <script src="js/topojson.v0.min.js" type="application/javascript" charset="utf-8"></script>
+        <script src="js/jquery-ui.min.js" type="application/javascript" charset="utf-8"></script>
+        <script src="js/jQDateRangeSlider-withRuler-min.js" type="application/javascript" charset="utf-8"></script>
         <script src="js/ide_a4.js" type="application/javascript"></script>
         <script src="js/autotoc.js" type="application/javascript"></script>
         <link type="text/css" href="css/default_a2.css" rel="stylesheet" />
         <link type="text/css" href="css/default_a3.css" rel="stylesheet" />
         <link type="text/css" href="css/default_a4.css" rel="stylesheet" />
+        <link type="text/css" href="css/jquery-ui.min.css" rel="stylesheet" />
+        <link type="text/css" href="css/classic-min.css" rel="stylesheet" />
     </head>
     <body>
         <header>
@@ -22,7 +26,9 @@
             <div class="section">
                 <h2>1. Visualization(s)</h2>
                 
-                <div id="visbox"></div>
+                <div id="visbox">
+                <div id="timerange"></div>
+                </div>
 				<h3>CartoDB Map</h3>
 				<iframe width="100%" height="750" frameborder="0" src="https://pomobc.cartodb.com/viz/77eb9636-9dbe-11e5-8abf-0e5db1731f59/embed_map" allowfullscreen webkitallowfullscreen mozallowfullscreen oallowfullscreen msallowfullscreen></iframe>
 
