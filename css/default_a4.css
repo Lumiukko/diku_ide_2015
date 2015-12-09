@@ -3,10 +3,22 @@ section, header {
     margin: auto;
 }
 
-.county {
-  fill: #edc9af;
-  stroke: #000;
-  stroke-width: 1pt;
+.coast {
+    fill: none;
+    stroke: black;
+    stroke-width: 0.5pt;
+}
+
+.street {
+    fill: none;
+    stroke: black;
+    stroke-width: 0.3pt;
+}
+
+.crime {
+    fill: blue;
+    stroke: white;
+    stroke-width: 0.2pt;
 }
 
 #filter {

@@ -1,9 +1,9 @@
 $(document).ready(function() {
-    var w = 600;
+    var w = 710;
     var h = 400;
              
     var projection = d3.geo.orthographic()
-        .scale(400000) // Default is 200000, 155000 contains all data points, zoomed in on north east is 400000
+        .scale(155000) // Default is 200000, 155000 contains all data points, zoomed in on north east is 400000
         .rotate([122.43, -37.78, 0.0])
         .translate([w/2, h/2])
         .clipAngle(90)
@@ -17,7 +17,12 @@ $(document).ready(function() {
         .attr("width", w)
         .attr("height", h)
         .style("background-color", "lightblue")
-        .style("border", "1px solid black");
+        .style("border", "1px solid black")
+        .call(d3.behavior.zoom()
+                .scaleExtent([1, 4])
+                .on("zoom", function () {
+                    svg.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")")
+                }));
 		
 	var filters = d3.selectAll(".checkbox")
 		.on("click", function() {
@@ -57,51 +62,81 @@ $(document).ready(function() {
     
     
     function draw_map(crime_data) {
-
-        d3.json("data/sfstreets.json", function(error, topology) {
+    
+        var lineFunction = d3.svg.line()
+                             .x(function(d) { return d[0]; })
+                             .y(function(d) { return d[1]; })
+                             .interpolate("cardinal");
+    
+        
+        // Draw Coastal Lines
+        d3.json("data/sf_coast.geojson", function(error, topology) {
             if (!error) {
+                var coast = topology.features;
                 
+                svg.selectAll("path.coast")
+                   .data(coast)
+                   .enter()
+                   .append("path")
+                   .attr("class", "coast")
+                   .attr("d", function(d, i) {
+                        var projected = d.coordinates.map(projection);
+                        return lineFunction(projected);
+                   });
+
             }
             else {
-                console.log(error);
+                console.log("Error loading coast: " + error);
             }
+            console.log("FINISHED COAST");
         });
         
+        
+        // Draw Streets
+        d3.json("data/sf_streets.geojson", function(error, topology) {
+            if (!error) {
+                var streets = topology.features;
+                
+                svg.selectAll("path.street")
+                   .data(streets)
+                   .enter()
+                   .append("path")
+                   .attr("class", "street")
+                   .attr("d", function(d, i) {
+                        var projected = d.coordinates.map(projection);
+                        return lineFunction(projected);
+                   });
+
+            }
+            else {
+                console.log("Error loading streets: " + error);
+            }
+            console.log("FINISHED STREETS");
+        });
+        
+       
+
         //var world = topojson.object(topology, topology.objects.sfcontours); // This is a topojson
         var world = crime_data.features;  // This is a normal GeoJSON object
 
-        svg.selectAll("circle")
+        svg.selectAll("circle.crime")
            .data(world)
            .enter()
            .append("circle")
-           .attr("r", function(d, i) {
-                if (d.properties.Descript.toLowerCase().indexOf("domestic violence") >= 0) {
-                    return 5;
-                }
-                else {
-                    return 2;
-                }
-           })
+           .attr("class", "crime")
+           .attr("r", 2)
            .attr("cx", function(d, i) {
                 return projection(d.geometry.coordinates)[0];
            })
            .attr("cy", function(d, i) {
                 return projection(d.geometry.coordinates)[1];
            })
-           .attr("opacity", 1.0)
-           .attr("fill", function(d, i) {
-                if (d.properties.Descript.toLowerCase().indexOf("domestic violence") >= 0) {
-                    return "yellow";
-                }
-                else {
-                    return "blue";
-                }
-           })
            .on("mouseover", function(d, i) {
                 console.log("Point " + i + ": " + d.properties.Descript);
            });
 
-        console.log("FINISHED");
+        console.log("FINISHED CRIME OCCURENCES");
+        
     };
     
     function draw_timeline(crime_data) {
