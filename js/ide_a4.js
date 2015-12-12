@@ -1,10 +1,10 @@
 $(document).ready(function() {
-    var w = 600;
-    var h = 400;
+    var w = 710;
+    var h = 600;
              
     var projection = d3.geo.orthographic()
-        .scale(400000) // Default is 200000, 155000 contains all data points, zoomed in on north east is 400000
-        .rotate([122.43, -37.78, 0.0])
+        .scale(260000)
+        .rotate([122.43, -37.77, 0.0])
         .translate([w/2, h/2])
         .clipAngle(90)
         .precision(.1);
@@ -17,8 +17,13 @@ $(document).ready(function() {
         .attr("width", w)
         .attr("height", h)
         .style("background-color", "lightblue")
-        .style("border", "1px solid black");
-	
+        .style("border", "1px solid black")
+        .call(d3.behavior.zoom()
+                .scaleExtent([1, 4])
+                .on("zoom", function () {
+                    svg.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")")
+                }));
+			
     
     load_crime_data();
 	
@@ -95,62 +100,93 @@ $(document).ready(function() {
     
     
     function draw_map(crime_data) {
-
-        d3.json("data/sfstreets.json", function(error, topology) {
+    
+        var lineFunction = d3.svg.line()
+                             .x(function(d) { return Math.round(d[0]).toFixed(2); })
+                             .y(function(d) { return Math.round(d[1]).toFixed(2); })
+                             .interpolate("cardinal");
+    
+        
+        // Draw Coastal Lines
+        d3.json("data/sf_coast.geojson", function(error, topology) {
             if (!error) {
+                var coast = topology.features;
                 
+                svg.selectAll("path.coast")
+                   .data(coast)
+                   .enter()
+                   .append("path")
+                   .attr("class", "coast")
+                   .attr("d", function(d, i) {
+                        var projected = d.coordinates.map(projection);
+                        return lineFunction(projected);
+                   });
+
             }
             else {
-                console.log(error);
+                console.log("Error loading coast: " + error);
             }
+            console.log("FINISHED COAST");
         });
         
+        
+        // Draw Streets 
+        /*
+        d3.json("data/sf_streets.geojson", function(error, topology) {
+            if (!error) {
+                var streets = topology.features;
+                
+                svg.selectAll("path.street")
+                   .data(streets)
+                   .enter()
+                   .append("path")
+                   .attr("class", "street")
+                   .attr("d", function(d, i) {
+                        var projected = d.coordinates.map(projection);
+                        return lineFunction(projected);
+                   });
+
+            }
+            else {
+                console.log("Error loading streets: " + error);
+            }
+            console.log("FINISHED STREETS");
+        });
+        */
+       
+
         //var world = topojson.object(topology, topology.objects.sfcontours); // This is a topojson
         var world = crime_data.features;  // This is a normal GeoJSON object
 
-        svg.selectAll("circle")
+        svg.selectAll("circle.crime")
            .data(world)
            .enter()
            .append("circle")
-           .attr("r", function(d, i) {
-                if (d.properties.Descript.toLowerCase().indexOf("domestic violence") >= 0) {
-                    return 5;
-                }
-                else {
-                    return 2;
-                }
-           })
+           .attr("class", "crime")
+           .attr("r", 2)
            .attr("cx", function(d, i) {
-                return projection(d.geometry.coordinates)[0];
+                return Math.round(projection(d.geometry.coordinates)[0]).toFixed(2);
            })
            .attr("cy", function(d, i) {
-                return projection(d.geometry.coordinates)[1];
-           })
-           .attr("opacity", 1.0)
-           .attr("fill", function(d, i) {
-                if (d.properties.Descript.toLowerCase().indexOf("domestic violence") >= 0) {
-                    return "yellow";
-                }
-                else {
-                    return "blue";
-                }
+                return Math.round(projection(d.geometry.coordinates)[1]).toFixed(2);
            })
            .on("mouseover", function(d, i) {
                 console.log("Point " + i + ": " + d.properties.Descript);
            });
 
-        console.log("FINISHED");
+        console.log("FINISHED CRIME OCCURENCES");
+        
     };
     
     function draw_timeline(crime_data) {
         
         min_date_string = d3.min(crime_data, function(d) { return d.properties.Dates });
         max_date_string = d3.max(crime_data, function(d) { return d.properties.Dates });
-        var date_format = /(\d{4})-(\d{2})-(\d{2}).*/;
-        var date_fields = date_format.exec(min_date_string); 
-        var min_date = new Date(date_fields[1], date_fields[2]-1, date_fields[3]);
-        date_fields = date_format.exec(max_date_string); 
-        var max_date = new Date(date_fields[1], date_fields[2]-1, date_fields[3]);
+        
+        var min_date = parseCrimeDate(min_date_string);
+        var max_date = parseCrimeDate(max_date_string);
+        
+        
         
         var default_range_start = new Date(min_date.getFullYear() + 1, 0, 1);
         var default_range_end = new Date(default_range_start).setYear(min_date.getYear() + 2);
@@ -164,6 +200,7 @@ $(document).ready(function() {
                 min: default_range_start,
                 max: default_range_end
             },
+            step: {days: 1},
             scales: [{
                 first: function(value){ return value; },
                 end: function(value) {return value; },
@@ -179,7 +216,26 @@ $(document).ready(function() {
                 }
             }],
             arrows: false
-        });    
+        });
+        $("#timerange").bind("valuesChanged", function(e, data){
+            var newdata = filter_by_daterange(crime_data);
+            console.log(newdata.length);
+        });
+    }
+    
+    function filter_by_daterange(crime_data) {
+        range = $("#timerange").dateRangeSlider("values");
+        range.max.setDate(range.max.getDate() + 1);
+        return crime_data.filter(function (d) {
+            date = parseCrimeDate(d.properties.Dates);
+            return date >=  range.min && date <= range.max;
+        });
+    }
+                                 
+    function parseCrimeDate(date_string) {
+        var date_format = /(\d{4})-(\d{2})-(\d{2}).*/;
+        var date_fields = date_format.exec(date_string); 
+        return new Date(date_fields[1], date_fields[2]-1, date_fields[3]);       
     }
 });
 
