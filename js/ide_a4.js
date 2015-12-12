@@ -87,7 +87,7 @@ $(document).ready(function() {
                 crimedata = data;
                 draw_map(crimedata);
                 draw_timeline(crimedata.features);
-				draw_filters(data);
+				draw_filters(crimedata.features);
             } else {
                 console.log("Error" + error);
             }
