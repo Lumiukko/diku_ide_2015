@@ -183,8 +183,10 @@ $(document).ready(function() {
         // ENTER CRIME CORNER MARKERS
         crime_circle.enter()
                     .append("circle")
-                    .attr("class", "crime")
-                    .attr("r", function(d, i) {                
+                    .attr("class", "crime");
+                            
+        // ENTER + UPDATE
+        crime_circle.attr("r", function(d, i) {                
                         var cornercrimes = d.crimes.length;
                         if (cornercrimes > 0) {
                             return 0.7 + (cornercrimes < 5 ? cornercrimes : Math.log(cornercrimes-3)+5);
@@ -203,25 +205,6 @@ $(document).ready(function() {
                     
         // EXIT
         crime_circle.exit().remove();
-        
-        
-        
-        // ENTER + UPDATE
-        crime_circle.attr("r", function(d, i) {                
-                        var cornercrimes = d.crimes.length;
-                        if (cornercrimes > 0) {
-                            return 0.7 + (cornercrimes < 5 ? cornercrimes : Math.log(cornercrimes-3)+5);
-                        };
-                        return 0;
-                    })
-                    .attr("cx", function(d, i) {
-                         return get_rounded_projection(d.crimes[0].geometry.coordinates, 2)[0];
-                    })
-                    .attr("cy", function(d, i) {
-                         return get_rounded_projection(d.crimes[0].geometry.coordinates, 2)[1];
-                    }); 
-         
-
     };
     
     
@@ -235,7 +218,43 @@ $(document).ready(function() {
                              .x(function(d) { return Math.round(d[0]).toFixed(2); })
                              .y(function(d) { return Math.round(d[1]).toFixed(2); })
                              .interpolate("linear");
-    
+                             
+
+        
+        // Draw PD Districts
+        var district_color = {
+            0: "#6a6c44", 1: "#484c00", 2: "#12006f", 3: "#6e3f75", 4: "#006237",
+            5: "#6d0074", 6: "#006369", 7: "#111111", 8: "#444444", 9: "#74001e"
+        }
+        d3.json("data/sfpd_districts.geojson", function(error, topology) {
+            if (!error) {
+                var districts = topology.features;
+                
+                svg.selectAll("polygon.district")
+                   .data(districts)
+                   .enter()
+                   .append("polygon")
+                   .attr("class", "district")
+                   .attr("points", function(d, i) {
+                        var projected = [];
+                        $.each(d.geometry.coordinates[0], (function(k, v) {
+                            projected.push(v.map(projection));
+                        }));
+                        return projected;
+                   })
+                   .attr("fill", function(d, i) {
+                        return district_color[i];
+                   });
+
+            }
+            else {
+                console.log("Error loading districts: " + error);
+            }
+            console.log("FINISHED DISTRICTS");
+        });
+        
+        
+        
         
         // Draw Coastal Lines
         d3.json("data/sf_coast.geojson", function(error, topology) {
@@ -260,6 +279,9 @@ $(document).ready(function() {
         });
         
         
+        
+        
+        
         // Draw Streets 
         d3.json("data/sf_streets.geojson", function(error, topology) {
             if (!error) {
@@ -281,6 +303,8 @@ $(document).ready(function() {
             }
             console.log("FINISHED STREETS");
         });
+        
+        
         
         
     };

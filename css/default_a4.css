@@ -31,6 +31,12 @@ svg {
     stroke-width: 0.3pt;
 }
 
+.district {
+    fill-opacity: 0.5;
+    stroke: lime;
+    stroke-width: 0.5pt;
+}
+
 circle.crime {
     fill: orange;
     stroke: yellow;
