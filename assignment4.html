@@ -8,7 +8,7 @@
         <script src="js/jquery-ui.min.js" type="application/javascript" charset="utf-8"></script>
         <script src="js/jQDateRangeSlider-withRuler-min.js" type="application/javascript" charset="utf-8"></script>
         <script src="js/ide_a4.js" type="application/javascript"></script>
-        <script src="js/autotoc.js" type="application/javascript"></script>
+        <script src="js/autotoc2.js" type="application/javascript"></script>
         <link type="text/css" href="css/default_a4.css" rel="stylesheet" />
         <link type="text/css" href="css/jquery-ui.min.css" rel="stylesheet" />
         <link type="text/css" href="css/classic-min.css" rel="stylesheet" />
@@ -24,35 +24,38 @@
             <div class="section">
                 <h2>1. Visualization(s)</h2>
                 
-                <div id="histogram">
-                    <div class="tooltip" id="tt_histogram"></div>
-                </div>
-				<div id="visbox">
-                    <div id="daytimeoptions">
-                        <label title="Show all crime">
-                            <input type="radio" name="daytime" value="all" checked/>
-                            Show all crimes
-                        </label>
-                        <label title="Crime occurring between 22 and 6">
-                            <input type="radio" name="daytime" value="night"/>
-                            Show night crime only
-                        </label>
-                        <label title="Crime occurring between 6 and 22">
-                            <input type="radio" name="daytime" value="day"/>
-                            Show day crime only
-                        </label>
-                    </div>
-                    <div id="timerange"></div>
-                </div>
-				<div id="filter">
-				</div>
-
-				<h3>CartoDB Map</h3>
-				<iframe width="100%" height="750" frameborder="0" src="https://pomobc.cartodb.com/viz/77eb9636-9dbe-11e5-8abf-0e5db1731f59/embed_map" allowfullscreen webkitallowfullscreen mozallowfullscreen oallowfullscreen msallowfullscreen></iframe>
-
                 <div class="subsection">
+                    <h3>1.1 Self-made Visualization</h3>
                     
+                    <div id="histogram">
+                        <div class="tooltip" id="tt_histogram"></div>
+                    </div>
+                    <div id="visbox">
+                        <div id="daytimeoptions">
+                            <label title="Show all crime">
+                                <input type="radio" name="daytime" value="all" checked/>
+                                Show all crimes
+                            </label>
+                            <label title="Crime occurring between 22 and 6">
+                                <input type="radio" name="daytime" value="night"/>
+                                Show night crime only
+                            </label>
+                            <label title="Crime occurring between 6 and 22">
+                                <input type="radio" name="daytime" value="day"/>
+                                Show day crime only
+                            </label>
+                        </div>
+                        <div id="timerange"></div>
+                    </div>
+                    <div id="filter"></div>
                 </div>
+                
+                <div class="subsection">
+                    <h3>1.2 CartoDB Map</h3>
+                    
+                    <iframe width="100%" height="750" frameborder="0" src="https://pomobc.cartodb.com/viz/77eb9636-9dbe-11e5-8abf-0e5db1731f59/embed_map" allowfullscreen webkitallowfullscreen mozallowfullscreen oallowfullscreen msallowfullscreen></iframe>
+                </div>
+                
             </div>
 
             <div class="section">
@@ -65,7 +68,24 @@
                 <div class="subsection">
                     <h3>2.2 Discovery 2</h3>
                 </div>
-            </div>            
+            </div>
+
+
+            <div class="section">
+                <h2>3. Method</h2>
+
+                <div class="subsection">
+                    <h3>3.1 Data Gathering</h3>
+                </div>
+    
+                <div class="subsection">
+                    <h3>3.2 Preprocessing</h3>
+                </div>
+                
+                <div class="subsection">
+                    <h3>3.3 Visualization Rationale</h3>
+                </div>
+            </div>   
 
         </section>
         <footer></footer>   
