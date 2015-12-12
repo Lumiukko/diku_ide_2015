@@ -41,7 +41,9 @@ $(document).ready(function() {
 		unique_cat.sort(function(a,b){
 			return a.localeCompare(b);
 		});
-				
+		
+		all_categories = unique_cat.slice();
+		
 		unique_cat.forEach(function(entry) {
 			var filters = d3.select("#filter")
 				.append("input")
@@ -53,16 +55,10 @@ $(document).ready(function() {
 				.on("click", function() {
 					if (d3.select(this).attr("checked") == "checked") {
 						d3.select(this).attr("checked", 'unchecked')
-						crime_category = this.value;
-						console.log(crime_category);
-						//TODO
-						// update_map()
+						update_map();
 					} else {
 						d3.select(this).attr("checked", 'checked')
-						crime_category = this.value;
-						console.log(crime_category);
-						//TODO
-						// update_map()
+						update_map();
 					}
 				});
 			var filters = d3.select("#filter")
@@ -74,6 +70,13 @@ $(document).ready(function() {
 		});
 		
 	}
+	 function remove_category(categories, cat_name){
+		var i = categories.indexOf(cat_name);
+			if(i != -1) {
+				categories.splice(i, 1);
+			}
+		return categories;
+	 }
 	
 	function toTitleCase(str){
 		return str.replace(/\w\S*/g, function(txt){return txt.charAt(0) + txt.substr(1).toLowerCase();});
@@ -83,28 +86,28 @@ $(document).ready(function() {
         d3.json("data/sf_crime.geojson", function(error, data) {
             if (!error) {
                 crimedata = data;
-                draw_timeline(crimedata.features);
 				draw_filters(crimedata.features);
+                draw_timeline(crimedata.features);
                 init_daynight_filter();
                 draw_map(crimedata);
             } else {
                 console.log("Error" + error);
             }
         });
-    }
+    };
     
-    
-    function update_map(crime_data) {
-        var crime_corners = {};
-        
+
+    function update_map() {        
         // apply filters
         resulting_data = filter_by_daterange(crimedata.features);
         resulting_data = filter_by_daynight(resulting_data);
-        // TODO apply filter by category
+		final_data = filter_by_category(resulting_data)
+        
+        var crime_corners = {};
         
         data =  d3.select("#visbox svg")
                   .selectAll("circle.crime")
-                  .data(resulting_data);
+                  .data(final_data);
                   
         data.enter()
             .append("circle")
@@ -131,7 +134,7 @@ $(document).ready(function() {
                 var ccy = Math.round(projection(d.geometry.coordinates)[1]);
                 //console.log(crime_corners[ccx + "," + ccy].length)
                 //console.log(d.geometry.coordinates);
-                console.log(JSON.stringify(crime_corners[ccx + "," + ccy]))
+                //console.log(JSON.stringify(crime_corners[ccx + "," + ccy]))
                 d3.selectAll("circle.crime")
                   .sort(function (a, b) {  // Reordering to bring the selected point to the top.
                       if (a != d) return -1;
@@ -218,11 +221,7 @@ $(document).ready(function() {
             }
             console.log("FINISHED STREETS");
         });
-       
-
-        update_map(crime_data);
-
-        console.log("FINISHED CRIME OCCURENCES");
+        
         
     };
     
@@ -312,6 +311,29 @@ $(document).ready(function() {
     function init_daynight_filter() {
         $("input[name=daytime]:radio").on('change', update_map);
     }
-    
-});
 
+	
+	function filter_by_category(crime_data){
+		var selected = [];
+		$(document).ready(function() {
+		  $("input:checkbox[type=checkbox]:checked").each(function() {
+			   selected.push($(this).val());
+		  });
+		});
+		
+		var temp = [{}]; 
+		var result = [{}]; 
+		selected.forEach(function(elem){
+			cat_data = [{}]
+			cat_data = crime_data.filter(function(d){
+				return d.properties.Category === elem
+			})
+			$(document).ready(function(){
+			  $.extend(result,temp, cat_data);
+			});
+			temp = result.slice();
+		})
+		return result;
+	}
+
+});
