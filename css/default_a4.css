@@ -1,6 +1,11 @@
-section, header {
-    max-width: 740px;
-    margin: auto;
+html {
+    font-family:    sans-serif;
+    font-size: 12pt;
+}
+
+body {
+    background-color: #151515;
+    color: #cdcdcd;
 }
 
 .coast {
@@ -36,8 +41,10 @@ section, header {
 }
 
 .ui-rangeSlider-label {
-    background-color: aliceblue;
+    background-color: #333333;
+    height: 12pt;
     border-radius: 5px;
+    
 }
 
 .ui-ruler-tick-label {

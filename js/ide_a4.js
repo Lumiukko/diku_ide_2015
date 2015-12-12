@@ -1,10 +1,10 @@
 $(document).ready(function() {
     var w = 710;
-    var h = 400;
+    var h = 600;
              
     var projection = d3.geo.orthographic()
-        .scale(155000) // Default is 200000, 155000 contains all data points, zoomed in on north east is 400000
-        .rotate([122.43, -37.78, 0.0])
+        .scale(260000)
+        .rotate([122.43, -37.77, 0.0])
         .translate([w/2, h/2])
         .clipAngle(90)
         .precision(.1);
@@ -64,8 +64,8 @@ $(document).ready(function() {
     function draw_map(crime_data) {
     
         var lineFunction = d3.svg.line()
-                             .x(function(d) { return d[0]; })
-                             .y(function(d) { return d[1]; })
+                             .x(function(d) { return Math.round(d[0]).toFixed(2); })
+                             .y(function(d) { return Math.round(d[1]).toFixed(2); })
                              .interpolate("cardinal");
     
         
@@ -92,7 +92,8 @@ $(document).ready(function() {
         });
         
         
-        // Draw Streets
+        // Draw Streets 
+        /*
         d3.json("data/sf_streets.geojson", function(error, topology) {
             if (!error) {
                 var streets = topology.features;
@@ -113,7 +114,7 @@ $(document).ready(function() {
             }
             console.log("FINISHED STREETS");
         });
-        
+        */
        
 
         //var world = topojson.object(topology, topology.objects.sfcontours); // This is a topojson
@@ -126,10 +127,10 @@ $(document).ready(function() {
            .attr("class", "crime")
            .attr("r", 2)
            .attr("cx", function(d, i) {
-                return projection(d.geometry.coordinates)[0];
+                return Math.round(projection(d.geometry.coordinates)[0]).toFixed(2);
            })
            .attr("cy", function(d, i) {
-                return projection(d.geometry.coordinates)[1];
+                return Math.round(projection(d.geometry.coordinates)[1]).toFixed(2);
            })
            .on("mouseover", function(d, i) {
                 console.log("Point " + i + ": " + d.properties.Descript);
