@@ -1,5 +1,5 @@
 $(document).ready(function() {
-    var w = 710;
+    var w = 670;
     var h = 600;
     var r = 3;
     
@@ -95,6 +95,7 @@ $(document).ready(function() {
     
     
     function update_map(crime_data) {
+        var crime_corners = {};
         
         // apply filters
         resulting_data = filter_by_daterange(crimedata.features);
@@ -108,7 +109,17 @@ $(document).ready(function() {
         data.enter()
             .append("circle")
             .attr("class", "crime")
-            .attr("r", r)
+            .attr("r", function(d, i) {
+                var ccx = Math.round(projection(d.geometry.coordinates)[0]);
+                var ccy = Math.round(projection(d.geometry.coordinates)[1]);
+                if (typeof crime_corners[ccx + "," + ccy] == "undefined") {
+                    crime_corners[ccx + "," + ccy] = [];
+                }
+                crime_corners[ccx + "," + ccy].push(d);
+                
+                var cornercrimes = crime_corners[ccx + "," + ccy].length;
+                return 0.7 + (cornercrimes < 5 ? cornercrimes : Math.log(cornercrimes-3)+5);
+            })
             .attr("cx", function(d, i) {
                  return Math.round(projection(d.geometry.coordinates)[0]).toFixed(2);
             })
@@ -116,6 +127,11 @@ $(document).ready(function() {
                  return Math.round(projection(d.geometry.coordinates)[1]).toFixed(2);
             })
             .on("mouseover", function(d, i) {
+                var ccx = Math.round(projection(d.geometry.coordinates)[0]);
+                var ccy = Math.round(projection(d.geometry.coordinates)[1]);
+                //console.log(crime_corners[ccx + "," + ccy].length)
+                //console.log(d.geometry.coordinates);
+                console.log(JSON.stringify(crime_corners[ccx + "," + ccy]))
                 d3.selectAll("circle.crime")
                   .sort(function (a, b) {  // Reordering to bring the selected point to the top.
                       if (a != d) return -1;
@@ -123,6 +139,27 @@ $(document).ready(function() {
                   })
                  //console.log("Point " + i + ": " + d.properties.Descript);
             });
+            
+        data.enter()
+            .append("text")
+            .text(function(d, i) {
+                var ccx = Math.round(projection(d.geometry.coordinates)[0]);
+                var ccy = Math.round(projection(d.geometry.coordinates)[1]);
+                var cornercrimes = crime_corners[ccx + "," + ccy].length;
+                if (cornercrimes == 1) {
+                    return "";
+                }
+                return cornercrimes
+            })
+            .attr("class" , "crime label")
+            .attr("x", function(d, i) {
+                 return Math.round(projection(d.geometry.coordinates)[0]).toFixed(2);
+            })
+            .attr("y", function(d, i) {
+                 return Math.round(projection(d.geometry.coordinates)[1]).toFixed(2);
+            })
+            .attr("dy", 1.5)
+            .attr("text-anchor", "middle")
              
              
         data.exit().remove();
@@ -275,5 +312,6 @@ $(document).ready(function() {
     function init_daynight_filter() {
         $("input[name=daytime]:radio").on('change', update_map);
     }
+    
 });
 
