@@ -18,24 +18,61 @@ $(document).ready(function() {
         .attr("height", h)
         .style("background-color", "lightblue")
         .style("border", "1px solid black");
-		
-	var filters = d3.selectAll(".checkbox")
-		.on("click", function() {
-			if (d3.select(this).attr("checked") == "checked") {
-				d3.select(this).attr("checked", 'unchecked')
-				crime_category = this.value;
-				console.log(crime_category);
-				update_map()
-			} else {
-				d3.select(this).attr("checked", 'checked')
-				crime_category = this.value;
-				console.log(crime_category);
-				update_map()
-			}
-		});
 	
     
     load_crime_data();
+	
+	function draw_filters(data){
+		categories = [];
+		data.forEach(function(entry) {
+				categories.push(entry.properties.Category);
+		});
+		
+		var unique_cat = [];
+		$.each(categories, function(i, el){
+			if($.inArray(el, unique_cat) === -1) unique_cat.push(el);
+		});
+		
+		unique_cat.sort(function(a,b){
+			return a.localeCompare(b);
+		});
+				
+		unique_cat.forEach(function(entry) {
+			var filters = d3.select("#filter")
+				.append("input")
+				.attr("id", entry)
+				.attr("class", "checkbox")
+				.attr("type", "checkbox")
+				.attr("value", entry)
+				.attr("checked", "checked")
+				.on("click", function() {
+					if (d3.select(this).attr("checked") == "checked") {
+						d3.select(this).attr("checked", 'unchecked')
+						crime_category = this.value;
+						console.log(crime_category);
+						//TODO
+						// update_map()
+					} else {
+						d3.select(this).attr("checked", 'checked')
+						crime_category = this.value;
+						console.log(crime_category);
+						//TODO
+						// update_map()
+					}
+				});
+			var filters = d3.select("#filter")
+				.append("label")
+				.attr("for", entry)
+				.text(toTitleCase(entry));
+			var filters = d3.select("#filter")
+				.append("br");
+		});
+		
+	}
+	
+	function toTitleCase(str){
+		return str.replace(/\w\S*/g, function(txt){return txt.charAt(0) + txt.substr(1).toLowerCase();});
+	}
     
     function load_crime_data() {
         d3.json("data/sf_crime.geojson", function(error, data) {
@@ -44,6 +81,7 @@ $(document).ready(function() {
                 // TODO change ordering once draw_map expects data.features
                 data = data.features;
                 draw_timeline(data);
+				draw_filters(data);
             } else {
                 console.log("Error" + error);
             }
