@@ -4,6 +4,7 @@ $(document).ready(function() {
     var r = 3;
     
     var crimedata;
+	var all_categories = [];
              
     var projection = d3.geo.orthographic()
         .scale(260000)
@@ -314,26 +315,34 @@ $(document).ready(function() {
 
 	
 	function filter_by_category(crime_data){
+		Array.prototype.diff = function(a) {
+			return this.filter(function(i) {return a.indexOf(i) < 0;});
+		};
 		var selected = [];
 		$(document).ready(function() {
 		  $("input:checkbox[type=checkbox]:checked").each(function() {
 			   selected.push($(this).val());
 		  });
 		});
-		
 		var temp = [{}]; 
-		var result = [{}]; 
-		selected.forEach(function(elem){
+		var result = [{}];
+		sel = all_categories.diff(selected)
+		if (sel.length == 0){
+			return crime_data
+		} else {
+		sel.forEach(function(elem){
 			cat_data = [{}]
 			cat_data = crime_data.filter(function(d){
-				return d.properties.Category === elem
+				return d.properties.Category !== elem
 			})
 			$(document).ready(function(){
-			  $.extend(result,temp, cat_data);
+			  $.extend(result, temp, cat_data);
 			});
 			temp = result.slice();
 		})
 		return result;
+		}
 	}
+	
 
 });
