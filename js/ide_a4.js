@@ -1,6 +1,8 @@
 $(document).ready(function() {
     var w = 710;
     var h = 600;
+    
+    var crimedata;
              
     var projection = d3.geo.orthographic()
         .scale(260000)
@@ -45,10 +47,9 @@ $(document).ready(function() {
     function load_crime_data() {
         d3.json("data/sf_crime.geojson", function(error, data) {
             if (!error) {
-                draw_map(data);
-                // TODO change ordering once draw_map expects data.features
-                data = data.features;
-                draw_timeline(data);
+                crimedata = data;
+                draw_map(crimedata);
+                draw_timeline(crimedata.features);
             } else {
                 console.log("Error" + error);
             }
@@ -56,8 +57,27 @@ $(document).ready(function() {
     }
     
     
-    function update_map() {
-        console.log("NOT YET IMPLEMENTED");
+    function update_map(crime_data) {
+        data =  d3.select("#visbox svg")
+                  .selectAll("circle.crime")
+                  .data(crime_data);
+                  
+        data.enter()
+            .append("circle")
+            .attr("class", "crime")
+            .attr("r", 2)
+            .attr("cx", function(d, i) {
+                 return Math.round(projection(d.geometry.coordinates)[0]).toFixed(2);
+            })
+            .attr("cy", function(d, i) {
+                 return Math.round(projection(d.geometry.coordinates)[1]).toFixed(2);
+            })
+            .on("mouseover", function(d, i) {
+                 //console.log("Point " + i + ": " + d.properties.Descript);
+            });
+             
+             
+        data.exit().remove();
     };
     
     
@@ -117,24 +137,7 @@ $(document).ready(function() {
         */
        
 
-        //var world = topojson.object(topology, topology.objects.sfcontours); // This is a topojson
-        var world = crime_data.features;  // This is a normal GeoJSON object
-
-        svg.selectAll("circle.crime")
-           .data(world)
-           .enter()
-           .append("circle")
-           .attr("class", "crime")
-           .attr("r", 2)
-           .attr("cx", function(d, i) {
-                return Math.round(projection(d.geometry.coordinates)[0]).toFixed(2);
-           })
-           .attr("cy", function(d, i) {
-                return Math.round(projection(d.geometry.coordinates)[1]).toFixed(2);
-           })
-           .on("mouseover", function(d, i) {
-                console.log("Point " + i + ": " + d.properties.Descript);
-           });
+        update_map(crime_data);
 
         console.log("FINISHED CRIME OCCURENCES");
         
@@ -181,6 +184,7 @@ $(document).ready(function() {
         });
         $("#timerange").bind("valuesChanged", function(e, data){
             var newdata = filter_by_daterange(crime_data);
+            update_map(newdata);
             console.log(newdata.length);
         });
     }
