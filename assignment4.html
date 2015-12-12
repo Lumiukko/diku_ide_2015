@@ -25,7 +25,21 @@
                 <h2>1. Visualization(s)</h2>
                 
 				<div id="visbox">
-					<div id="timerange"></div>
+                    <div id="daytimeoptions">
+                        <label title="Show all crime">
+                            <input type="radio" name="daytime" value="all" checked/>
+                            Show all crimes
+                        </label>
+                        <label title="Crime occurring between 22 and 6">
+                            <input type="radio" name="daytime" value="night"/>
+                            Show night crime only
+                        </label>
+                        <label title="Crime occurring between 6 and 22">
+                            <input type="radio" name="daytime" value="day"/>
+                            Show day crime only
+                        </label>
+                    </div>
+                    <div id="timerange"></div>
                 </div>
 				<div id="filter">
 				</div>

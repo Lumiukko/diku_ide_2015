@@ -86,6 +86,7 @@ $(document).ready(function() {
                 crimedata = data;
                 draw_timeline(crimedata.features);
 				draw_filters(crimedata.features);
+                init_daynight_filter();
                 draw_map(crimedata);
             } else {
                 console.log("Error" + error);
@@ -98,6 +99,7 @@ $(document).ready(function() {
         
         // apply filters
         resulting_data = filter_by_daterange(crimedata.features);
+        resulting_data = filter_by_daynight(resulting_data);
         // TODO apply filter by category
         
         data =  d3.select("#visbox svg")
@@ -222,7 +224,8 @@ $(document).ready(function() {
                     tickContainer.addClass("timerange-month");
                 }
             }],
-            arrows: false
+            arrows: false,
+            valueLabels: "change"
         });
         $("#timerange").bind("valuesChanged", function(e, data){
             update_map();
@@ -237,11 +240,38 @@ $(document).ready(function() {
             return date >=  range.min && date <= range.max;
         });
     }
+    
+    function filter_by_daynight(crime_data) {
+        var timerange = $("input[type=radio][name=daytime]:checked").val();
+        
+        if (timerange == "all") {
+            return crime_data;
+        }
+        else if (timerange == "day") {
+            return filter_by_daytime(crime_data, 6, 22);
+        }
+        return filter_by_daytime(crime_data, 22, 6);
+    }
+    
+    function filter_by_daytime(crime_data, start_hour, end_hour) {
+        return crime_data.filter(function (d) {
+            date = parseCrimeDate(d.properties.Dates);
+            if (start_hour > end_hour) {
+                return !(date.getHours() > end_hour && date.getHours() <= start_hour);
+            } 
+            return date.getHours() > start_hour && date.getHours() <= end_hour;
+        });
+    }
                                  
     function parseCrimeDate(date_string) {
-        var date_format = /(\d{4})-(\d{2})-(\d{2}).*/;
+        var date_format = /(\d{4})-(\d{2})-(\d{2})\s(\d{2}):(\d{2}):(\d{2})/
         var date_fields = date_format.exec(date_string); 
-        return new Date(date_fields[1], date_fields[2]-1, date_fields[3]);       
+        return new Date(date_fields[1], date_fields[2]-1, date_fields[3],
+                        date_fields[4], date_fields[5], date_fields[6]);       
+    }
+    
+    function init_daynight_filter() {
+        $("input[name=daytime]:radio").on('change', update_map);
     }
 });
 
