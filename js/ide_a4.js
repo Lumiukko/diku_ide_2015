@@ -1,6 +1,7 @@
 $(document).ready(function() {
     var w = 710;
     var h = 600;
+    var r = 3;
     
     var crimedata;
              
@@ -18,8 +19,6 @@ $(document).ready(function() {
         .append("svg")
         .attr("width", w)
         .attr("height", h)
-        .style("background-color", "lightblue")
-        .style("border", "1px solid black")
         .call(d3.behavior.zoom()
                 .scaleExtent([1, 4])
                 .on("zoom", function () {
@@ -103,7 +102,7 @@ $(document).ready(function() {
         data.enter()
             .append("circle")
             .attr("class", "crime")
-            .attr("r", 2)
+            .attr("r", r)
             .attr("cx", function(d, i) {
                  return Math.round(projection(d.geometry.coordinates)[0]).toFixed(2);
             })
@@ -111,6 +110,11 @@ $(document).ready(function() {
                  return Math.round(projection(d.geometry.coordinates)[1]).toFixed(2);
             })
             .on("mouseover", function(d, i) {
+                d3.selectAll("circle.crime")
+                  .sort(function (a, b) {  // Reordering to bring the selected point to the top.
+                      if (a != d) return -1;
+                      else return 1;
+                  })
                  //console.log("Point " + i + ": " + d.properties.Descript);
             });
              
@@ -124,7 +128,7 @@ $(document).ready(function() {
         var lineFunction = d3.svg.line()
                              .x(function(d) { return Math.round(d[0]).toFixed(2); })
                              .y(function(d) { return Math.round(d[1]).toFixed(2); })
-                             .interpolate("cardinal");
+                             .interpolate("linear");
     
         
         // Draw Coastal Lines
@@ -151,7 +155,6 @@ $(document).ready(function() {
         
         
         // Draw Streets 
-        /*
         d3.json("data/sf_streets.geojson", function(error, topology) {
             if (!error) {
                 var streets = topology.features;
@@ -172,7 +175,6 @@ $(document).ready(function() {
             }
             console.log("FINISHED STREETS");
         });
-        */
        
 
         update_map(crime_data);

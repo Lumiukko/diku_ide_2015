@@ -8,22 +8,27 @@ body {
     color: #cdcdcd;
 }
 
+svg {
+    border: 1px solid black;
+    background-color: #151515;
+}
+
 .coast {
     fill: none;
-    stroke: black;
+    stroke: lime;
     stroke-width: 0.5pt;
 }
 
 .street {
     fill: none;
-    stroke: black;
+    stroke: silver;
     stroke-width: 0.3pt;
 }
 
 .crime {
-    fill: blue;
-    stroke: white;
-    stroke-width: 0.2pt;
+    fill: orange;
+    stroke: yellow;
+    stroke-width: 0.5pt;
 }
 
 #filter {
