@@ -132,77 +132,96 @@ $(document).ready(function() {
     
     
     /**
+        Takes longitude and latitude coordinates, applys the projection function
+        and rounds the resulting coordinates to 2 digits after the comma.
+        @param {array} coordinates 2-dimensional array containing longitude and latitude coordinates.
+        @param {number} digits The number of digits to which the result is rounded.
+        @return {array} The coordinates for the SVG element rounded to the given amount of digits.
+    */
+    function get_rounded_projection(coordinates, digits) {
+        var ccx = Math.round(projection(coordinates)[0]).toFixed(digits);
+        var ccy = Math.round(projection(coordinates)[1]).toFixed(digits);
+        return [ccx, ccy];
+    };
+    
+    
+    /**
         Redraws all dynamic elements on the map (the SVG).
     */
     function update_map() {        
-        // apply filters
+        // APPLY FILTERS
         resulting_data = filter_by_daterange(crimedata.features);
         resulting_data = filter_by_daynight(resulting_data);
 		final_data = filter_by_category(resulting_data)
         
-        var crime_corners = {};
+        var corners = {};
+        var idx = 0;
+        $(final_data).each(function(i, d) {
+            var cc = get_rounded_projection(d.geometry.coordinates, 0);
+            if (typeof corners[cc] == "undefined") {
+                corners[cc] = {
+                    "id": idx++,
+                    "crimes": [],
+                    "drawn": false
+                };
+            };
+            corners[cc].crimes.push(d);
+        });
         
-        data =  d3.select("#visbox svg")
-                  .selectAll("circle.crime")
-                  .data(final_data);
-                  
-        data.enter()
-            .append("circle")
-            .attr("class", "crime")
-            .attr("r", function(d, i) {
-                var ccx = Math.round(projection(d.geometry.coordinates)[0]);
-                var ccy = Math.round(projection(d.geometry.coordinates)[1]);
-                if (typeof crime_corners[ccx + "," + ccy] == "undefined") {
-                    crime_corners[ccx + "," + ccy] = [];
-                }
-                crime_corners[ccx + "," + ccy].push(d);
-                
-                var cornercrimes = crime_corners[ccx + "," + ccy].length;
-                return 0.7 + (cornercrimes < 5 ? cornercrimes : Math.log(cornercrimes-3)+5);
-            })
-            .attr("cx", function(d, i) {
-                 return Math.round(projection(d.geometry.coordinates)[0]).toFixed(2);
-            })
-            .attr("cy", function(d, i) {
-                 return Math.round(projection(d.geometry.coordinates)[1]).toFixed(2);
-            })
-            .on("mouseover", function(d, i) {
-                var ccx = Math.round(projection(d.geometry.coordinates)[0]);
-                var ccy = Math.round(projection(d.geometry.coordinates)[1]);
-                //console.log(crime_corners[ccx + "," + ccy].length)
-                //console.log(d.geometry.coordinates);
-                //console.log(JSON.stringify(crime_corners[ccx + "," + ccy]))
-                d3.selectAll("circle.crime")
-                  .sort(function (a, b) {  // Reordering to bring the selected point to the top.
-                      if (a != d) return -1;
-                      else return 1;
-                  })
-                 //console.log("Point " + i + ": " + d.properties.Descript);
-            });
-            
-        data.enter()
-            .append("text")
-            .text(function(d, i) {
-                var ccx = Math.round(projection(d.geometry.coordinates)[0]);
-                var ccy = Math.round(projection(d.geometry.coordinates)[1]);
-                var cornercrimes = crime_corners[ccx + "," + ccy].length;
-                if (cornercrimes == 1) {
-                    return "";
-                }
-                return cornercrimes
-            })
-            .attr("class" , "crime label")
-            .attr("x", function(d, i) {
-                 return Math.round(projection(d.geometry.coordinates)[0]).toFixed(2);
-            })
-            .attr("y", function(d, i) {
-                 return Math.round(projection(d.geometry.coordinates)[1]).toFixed(2);
-            })
-            .attr("dy", 1.5)
-            .attr("text-anchor", "middle")
-             
-             
-        data.exit().remove();
+        
+        var corner_data = [];
+        $.each(corners, function(key, value) {
+            value["cc"] = key;
+            corner_data[value.id] = value;
+        });
+
+        
+        // DATA JOIN
+        crime_circle =  svg.selectAll("circle.crime")
+                           .data(corner_data);
+        
+        // ENTER CRIME CORNER MARKERS
+        crime_circle.enter()
+                    .append("circle")
+                    .attr("class", "crime")
+                    .attr("r", function(d, i) {                
+                        var cornercrimes = d.crimes.length;
+                        if (cornercrimes > 0) {
+                            return 0.7 + (cornercrimes < 5 ? cornercrimes : Math.log(cornercrimes-3)+5);
+                        };
+                        return 0;
+                    })
+                    .attr("cx", function(d, i) {
+                         return get_rounded_projection(d.crimes[0].geometry.coordinates, 2)[0];
+                    })
+                    .attr("cy", function(d, i) {
+                         return get_rounded_projection(d.crimes[0].geometry.coordinates, 2)[1];
+                    })
+                    .on("mouseover", function(d, i) {
+                        console.log(d);
+                    });
+                    
+        // EXIT
+        crime_circle.exit().remove();
+        
+        
+        
+        // ENTER + UPDATE
+        crime_circle.attr("r", function(d, i) {                
+                        var cornercrimes = d.crimes.length;
+                        if (cornercrimes > 0) {
+                            return 0.7 + (cornercrimes < 5 ? cornercrimes : Math.log(cornercrimes-3)+5);
+                        };
+                        return 0;
+                    })
+                    .attr("cx", function(d, i) {
+                         return get_rounded_projection(d.crimes[0].geometry.coordinates, 2)[0];
+                    })
+                    .attr("cy", function(d, i) {
+                         return get_rounded_projection(d.crimes[0].geometry.coordinates, 2)[1];
+                    }); 
+         
+
     };
     
     
@@ -514,6 +533,5 @@ $(document).ready(function() {
 		return result;
 		}
 	}
-	
 
 });
