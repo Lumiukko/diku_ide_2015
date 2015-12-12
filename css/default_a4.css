@@ -8,9 +8,15 @@ body {
     color: #cdcdcd;
 }
 
+section, header {
+    max-width: 670px;
+    margin: auto;
+}
+
 svg {
-    border: 1px solid black;
+    border: 3px solid #efefef;
     background-color: #151515;
+    margin-bottom: 6pt;
 }
 
 .coast {
@@ -25,17 +31,23 @@ svg {
     stroke-width: 0.3pt;
 }
 
-.crime {
+circle.crime {
     fill: orange;
     stroke: yellow;
     stroke-width: 0.5pt;
 }
 
+.crime.label {
+    font-size: 4pt;
+    color: black;
+}
+
 #filter {
-    -webkit-columns: 100px 3;
-    -moz-columns: 100px 3;
-    columns: 100px 3;
-	border: 1px solid black;
+    width: 670px;
+    -webkit-columns: 200px 3;
+    -moz-columns: 200px 3;
+    columns: 200px 3;
+	margin: auto;
 }
 
 /* timerange */
@@ -103,4 +115,38 @@ svg {
     font-size: 10;
     color: #fff;
     opacity: 1;
+}
+
+
+/* table of contents */
+#toc {
+    color: silver;
+    font-size: 0.8em;
+    position: fixed;
+    right: 8pt;
+    top: 0px;
+    display: inline-block;
+    background-color: #333;
+    border: 1px solid black;
+    border-top: none;
+    padding: 3pt 6pt;
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+}
+
+#toc a {
+    color: silver;
+}
+
+#toc a:hover {
+    color: white;
+}
+
+#toc span {
+    font-weight: bold;
+    margin-bottom: 0px;
+}
+
+#toc ul {
+    margin-top: 0px;
 }
