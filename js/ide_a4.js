@@ -1,12 +1,17 @@
 $(document).ready(function() {
+    /**
+        Sets semi-global variables and starts the initialization process.
+    */
     var w = 670;
     var h = 600;
     var r = 3;
     
     var crimedata;
+    var all_categories = [];
+    
     var month_name = ['January', 'February', 'March', 'April', 'May', 'June',
                       'July', 'August', 'September', 'October', 'November', 'December']
-	var all_categories = [];
+	
              
     var projection = d3.geo.orthographic()
         .scale(260000)
@@ -30,6 +35,32 @@ $(document).ready(function() {
     
     load_crime_data();
 	
+    
+    /**
+        Loads the sf_crime.geojson file, which contains the crimes and
+        their corresponding information, including geolocations.
+        It also calls further initialization functions. 
+    */
+    function load_crime_data() {
+        d3.json("data/sf_crime.geojson", function(error, data) {
+            if (!error) {
+                crimedata = data;
+				draw_filters(crimedata.features);
+                draw_timeline(crimedata.features);
+                init_daynight_filter();
+                draw_map(crimedata);
+                draw_histogram(crimedata.features);
+            } else {
+                console.log("Error" + error);
+            }
+        });
+    };
+    
+    
+    /**
+        Draws the checkboxes for the different filters based on the provided data.
+        @param {json} data The data containing all the crimes.
+    */
 	function draw_filters(data){
 		categories = [];
 		data.forEach(function(entry) {
@@ -72,35 +103,37 @@ $(document).ready(function() {
 				.append("br");
 		});
 		
+	};
+    
+    
+    /**
+        Removes a category from a given array of categories.
+        @param {array} categories The array of categories.
+        @param {string} cat_name The name of the category to be removed.
+        @return {array} The array without the category to be removed.
+    */
+	function remove_category(categories, cat_name){
+        var i = categories.indexOf(cat_name);
+            if (i != -1) {
+                categories.splice(i, 1);
+            }
+        return categories;
 	}
-	 function remove_category(categories, cat_name){
-		var i = categories.indexOf(cat_name);
-			if(i != -1) {
-				categories.splice(i, 1);
-			}
-		return categories;
-	 }
 	
+    
+    /**
+        Converts a string into title case (every word capitalized).
+        @param {string} str The string to be converted to title case.
+        @return {string} The string converted into title case.
+    */
 	function toTitleCase(str){
 		return str.replace(/\w\S*/g, function(txt){return txt.charAt(0) + txt.substr(1).toLowerCase();});
 	}
     
-    function load_crime_data() {
-        d3.json("data/sf_crime.geojson", function(error, data) {
-            if (!error) {
-                crimedata = data;
-				draw_filters(crimedata.features);
-                draw_timeline(crimedata.features);
-                init_daynight_filter();
-                draw_map(crimedata);
-                draw_histogram(crimedata.features);
-            } else {
-                console.log("Error" + error);
-            }
-        });
-    };
     
-
+    /**
+        Redraws all dynamic elements on the map (the SVG).
+    */
     function update_map() {        
         // apply filters
         resulting_data = filter_by_daterange(crimedata.features);
@@ -173,6 +206,10 @@ $(document).ready(function() {
     };
     
     
+    /**
+        Draws all static elements on the map (the SVG).
+        @param {json} crime_data The JSON object containing all the crime data.
+    */
     function draw_map(crime_data) {
     
         var lineFunction = d3.svg.line()
@@ -229,6 +266,11 @@ $(document).ready(function() {
         
     };
     
+    
+    /**
+        Draws the histogram of crimes occurring in time periods.
+        @param {json} crime_data The JSON object containing all the crime data.
+    */
     function draw_histogram(crime_data) {
         var margin_top = 40;
         var margin_left = 30;
@@ -316,6 +358,11 @@ $(document).ready(function() {
 		           .text("Crimes per month");
     }
     
+    
+    /**
+        Draws the timeline to select the time period of crimes to be displayed.
+        @param {json} crime_data The JSON object containing all the crime data.
+    */
     function draw_timeline(crime_data) {
         
         min_date_string = d3.min(crime_data, function(d) { return d.properties.Dates });
@@ -323,9 +370,7 @@ $(document).ready(function() {
         
         var min_date = parseCrimeDate(min_date_string);
         var max_date = parseCrimeDate(max_date_string);
-        
-        
-        
+
         var default_range_start = new Date(min_date.getFullYear() + 1, 0, 1);
         var default_range_end = new Date(default_range_start).setYear(min_date.getYear() + 2);
         
@@ -361,6 +406,12 @@ $(document).ready(function() {
         });
     }
     
+    
+    /**
+        Filters crimes by time periods and the time period set in the data range slider.
+        @param {json} crime_data The JSON object containing all the crime data.
+        @return {json} Returns the filtered crime data as JSON object.
+    */
     function filter_by_daterange(crime_data) {
         range = $("#timerange").dateRangeSlider("values");
         range.max.setDate(range.max.getDate() + 1);
@@ -370,6 +421,12 @@ $(document).ready(function() {
         });
     }
     
+    
+    /**
+        Filters crimes by day or night time as set by the radio buttons.
+        @param {json} crime_data The JSON object containing all the crime data.
+        @return {json} Returns the filtered crime data as JSON object.
+    */
     function filter_by_daynight(crime_data) {
         var timerange = $("input[type=radio][name=daytime]:checked").val();
         
@@ -382,6 +439,14 @@ $(document).ready(function() {
         return filter_by_daytime(crime_data, 22, 6);
     }
     
+    
+    /**
+        Filters crimes by hours as set by start and end hours.
+        @param {json} crime_data The JSON object containing all the crime data.
+        @param {number} start_hour The starting hour for the filter.
+        @param {number} end_hour The end hour for the filter.
+        @return {json} Returns the filtered crime data as JSON object.
+    */
     function filter_by_daytime(crime_data, start_hour, end_hour) {
         return crime_data.filter(function (d) {
             date = parseCrimeDate(d.properties.Dates);
@@ -391,7 +456,14 @@ $(document).ready(function() {
             return date.getHours() > start_hour && date.getHours() <= end_hour;
         });
     }
-                                 
+     
+     
+    
+    /**
+        Parses the date as taken from the crime data and returns a Date object.
+        @param {string} date_string The date of a crime as string.
+        @return {Date} The corresponding date object.
+    */
     function parseCrimeDate(date_string) {
         var date_format = /(\d{4})-(\d{2})-(\d{2})\s(\d{2}):(\d{2}):(\d{2})/
         var date_fields = date_format.exec(date_string); 
@@ -399,11 +471,20 @@ $(document).ready(function() {
                         date_fields[4], date_fields[5], date_fields[6]);       
     }
     
+    
+    /**
+        Initialization of the day/night filter, also calls map update.
+    */
     function init_daynight_filter() {
         $("input[name=daytime]:radio").on('change', update_map);
     }
 
 	
+    /**
+        Filters crimes by category as set by the category checkboxes.
+        @param {json} crime_data The JSON object containing all the crime data.
+        @return {json} Returns the filtered crime data as JSON object.
+    */
 	function filter_by_category(crime_data){
 		Array.prototype.diff = function(a) {
 			return this.filter(function(i) {return a.indexOf(i) < 0;});
