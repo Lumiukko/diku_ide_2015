@@ -61,3 +61,46 @@ svg {
     margin-left: -1px;
     font-size: 0.5em;
 }
+
+/* histogram */
+
+.histogram_yaxis .tick {
+    color: #fff;
+    font-size: 0.6em;
+}
+
+.histogram_label {
+    color: #fff;
+    font-size: 0.8em;
+}
+
+.bar {
+  fill: steelblue;
+  shape-rendering: crispEdges;
+}
+
+.axis path, .axis line {
+  fill: none;
+  stroke: #000;
+}
+
+.histogram_yaxis .domain {
+    display: none;
+}
+
+.tooltip {
+    position: absolute;
+    display: none;
+    background-color: #333;
+    padding: 3px;
+    border-radius: 5px;
+    margin: 25px 0 0 20px;
+}
+
+.tooltip p {
+    padding: 0;
+    margin: 0;
+    font-size: 10;
+    color: #fff;
+    opacity: 1;
+}

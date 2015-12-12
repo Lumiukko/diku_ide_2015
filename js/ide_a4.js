@@ -4,6 +4,8 @@ $(document).ready(function() {
     var r = 3;
     
     var crimedata;
+    var month_name = ['January', 'February', 'March', 'April', 'May', 'June',
+                      'July', 'August', 'September', 'October', 'November', 'December']
              
     var projection = d3.geo.orthographic()
         .scale(260000)
@@ -90,6 +92,7 @@ $(document).ready(function() {
                 draw_timeline(crimedata.features);
                 init_daynight_filter();
                 draw_map(crimedata);
+                draw_histogram(crimedata.features);
             } else {
                 console.log("Error" + error);
             }
@@ -191,6 +194,93 @@ $(document).ready(function() {
         console.log("FINISHED CRIME OCCURENCES");
         
     };
+    
+    function draw_histogram(crime_data) {
+        var margin_top = 40;
+        var margin_left = 30;
+        var hist_height = 50;
+        var hist_width = w-margin_left;
+        // the following code is based on 
+        // http://bl.ocks.org/sbrudz/ed6454e3d25640d19a41
+        var parseDate = d3.time.format("%Y-%m-%d %H:%M:%S").parse;
+		var formatDate = d3.time.format("%m/%y");        
+		var x = d3.time.scale().range([0, hist_width]);
+		var y = d3.scale.linear().range([hist_height, 0]);
+        
+        var xAxis = d3.svg.axis().scale(x).orient("bottom").tickFormat(formatDate);
+		var yAxis = d3.svg.axis().scale(y).orient("left").ticks(3);
+        
+        var histogram = d3.select("#histogram")
+                          .append("svg")
+                          .attr("width", hist_width+margin_left)
+                          .attr("height", hist_height+margin_top)
+                          .attr("transform", "translate("+margin_left+","+margin_top/2+")");
+        crime_data.forEach(function(d) {
+            d.created_date = parseDate(d.properties.Dates);
+        });
+        // Determine the first and list dates in the data set
+        var monthExtent = d3.extent(crime_data, function(d) { return d.created_date; });
+        
+        // Create one bin per month, use an offset to include the first and last months
+        var monthBins = d3.time.months(d3.time.month.offset(monthExtent[0],-1),
+                                       d3.time.month.offset(monthExtent[1],1));
+        
+        
+        // Use the histogram layout to create a function that will bin the data
+        var binByMonth = d3.layout.histogram()
+                           .value(function(d) { return d.created_date; })
+                           .bins(monthBins);
+        // Bin the data by month
+        var histData = binByMonth(crime_data);
+        
+        // Scale the range of the data by setting the domain
+        x.domain(d3.extent(monthBins));
+        y.domain([0, d3.max(histData, function(d) { return d.y; })]);
+
+        histogram.selectAll(".bar")
+		         .data(histData)
+		         .enter().append("rect")
+		         .attr("class", "bar")
+		         .attr("x", function(d) { return x(d.x); })
+		         .attr("width", function(d) { return x(new Date(d.x.getTime() + d.dx))-x(d.x)-1; })
+		         .attr("y", function(d) { return y(d.y); })
+		         .attr("height", function(d) { return hist_height - y(d.y); })
+                 .on('mouseover', function(d) {
+                    tooltip = d3.select("#tt_histogram");
+                    var date = parseCrimeDate(d[0].properties.Dates);
+                    var mouse_pos = d3.mouse(document.body);
+                    var content = '<p>'+month_name[date.getMonth()]+
+                                  ' '+date.getFullYear()+'<p>'+
+                                  '<p>'+d.length +' incidents on record</p>';
+                    tooltip.html(content)
+                           .style("opacity", "0")
+                           .style("display", "inline")
+                           .style("z-index", "1000")
+                           .style("left", mouse_pos[0]+"px")
+                           .style("top", mouse_pos[1]+"px")
+                           .transition()
+                           .style("opacity", 0.8);
+                 })
+                 .on("mouseout", function() {
+                     d3.select("#tt_histogram").style("display", "none");
+                 });
+
+		  // Add the X Axis
+		  histogram.append("g")
+		           .attr("class", "x axis")
+		           .attr("transform", "translate(0," + hist_height + ")")
+		           .call(xAxis);
+
+		  // Add the Y Axis and label
+		  histogram.append("g")
+		           .attr("class", "histogram_yaxis")
+		           .call(yAxis)
+		           .append("text")
+                   .attr("class", "histogram_label")
+		           .attr("y", -15)
+		           .attr("dy", "0.5em")
+		           .text("Crimes per month");
+    }
     
     function draw_timeline(crime_data) {
         
