@@ -1,6 +1,7 @@
 $(document).ready(function() {
     var w = 710;
     var h = 600;
+    var r = 3;
     
     var crimedata;
              
@@ -18,8 +19,6 @@ $(document).ready(function() {
         .append("svg")
         .attr("width", w)
         .attr("height", h)
-        .style("background-color", "lightblue")
-        .style("border", "1px solid black")
         .call(d3.behavior.zoom()
                 .scaleExtent([1, 4])
                 .on("zoom", function () {
@@ -89,6 +88,7 @@ $(document).ready(function() {
                 crimedata = data;
 				draw_filters(crimedata.features);
                 draw_timeline(crimedata.features);
+                init_daynight_filter();
                 draw_map(crimedata);
             } else {
                 console.log("Error" + error);
@@ -102,6 +102,7 @@ $(document).ready(function() {
         // apply filters
         resulting_data = filter_by_daterange(crimedata.features);
 		final_data = filter_by_category(resulting_data)
+        resulting_data = filter_by_daynight(resulting_data);
         
         data =  d3.select("#visbox svg")
                   .selectAll("circle.crime")
@@ -110,7 +111,7 @@ $(document).ready(function() {
         data.enter()
             .append("circle")
             .attr("class", "crime")
-            .attr("r", 2)
+            .attr("r", r)
             .attr("cx", function(d, i) {
                  return Math.round(projection(d.geometry.coordinates)[0]).toFixed(2);
             })
@@ -118,6 +119,11 @@ $(document).ready(function() {
                  return Math.round(projection(d.geometry.coordinates)[1]).toFixed(2);
             })
             .on("mouseover", function(d, i) {
+                d3.selectAll("circle.crime")
+                  .sort(function (a, b) {  // Reordering to bring the selected point to the top.
+                      if (a != d) return -1;
+                      else return 1;
+                  })
                  //console.log("Point " + i + ": " + d.properties.Descript);
             });
              
@@ -131,7 +137,7 @@ $(document).ready(function() {
         var lineFunction = d3.svg.line()
                              .x(function(d) { return Math.round(d[0]).toFixed(2); })
                              .y(function(d) { return Math.round(d[1]).toFixed(2); })
-                             .interpolate("cardinal");
+                             .interpolate("linear");
     
         
         // Draw Coastal Lines
@@ -158,7 +164,6 @@ $(document).ready(function() {
         
         
         // Draw Streets 
-        /*
         d3.json("data/sf_streets.geojson", function(error, topology) {
             if (!error) {
                 var streets = topology.features;
@@ -179,7 +184,6 @@ $(document).ready(function() {
             }
             console.log("FINISHED STREETS");
         });
-        */
        
 		
         // update_map();
@@ -225,7 +229,8 @@ $(document).ready(function() {
                     tickContainer.addClass("timerange-month");
                 }
             }],
-            arrows: false
+            arrows: false,
+            valueLabels: "change"
         });
         $("#timerange").bind("valuesChanged", function(e, data){
             update_map();
@@ -240,11 +245,38 @@ $(document).ready(function() {
             return date >=  range.min && date <= range.max;
         });
     }
+    
+    function filter_by_daynight(crime_data) {
+        var timerange = $("input[type=radio][name=daytime]:checked").val();
+        
+        if (timerange == "all") {
+            return crime_data;
+        }
+        else if (timerange == "day") {
+            return filter_by_daytime(crime_data, 6, 22);
+        }
+        return filter_by_daytime(crime_data, 22, 6);
+    }
+    
+    function filter_by_daytime(crime_data, start_hour, end_hour) {
+        return crime_data.filter(function (d) {
+            date = parseCrimeDate(d.properties.Dates);
+            if (start_hour > end_hour) {
+                return !(date.getHours() > end_hour && date.getHours() <= start_hour);
+            } 
+            return date.getHours() > start_hour && date.getHours() <= end_hour;
+        });
+    }
                                  
     function parseCrimeDate(date_string) {
-        var date_format = /(\d{4})-(\d{2})-(\d{2}).*/;
+        var date_format = /(\d{4})-(\d{2})-(\d{2})\s(\d{2}):(\d{2}):(\d{2})/
         var date_fields = date_format.exec(date_string); 
-        return new Date(date_fields[1], date_fields[2]-1, date_fields[3]);       
+        return new Date(date_fields[1], date_fields[2]-1, date_fields[3],
+                        date_fields[4], date_fields[5], date_fields[6]);       
+    }
+    
+    function init_daynight_filter() {
+        $("input[name=daytime]:radio").on('change', update_map);
     }
 	
 	function filter_by_category(crime_data){
