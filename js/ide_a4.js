@@ -25,7 +25,6 @@ $(document).ready(function() {
                 .on("zoom", function () {
                     svg.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")")
                 }));
-			
     
     load_crime_data();
 	
@@ -85,9 +84,9 @@ $(document).ready(function() {
         d3.json("data/sf_crime.geojson", function(error, data) {
             if (!error) {
                 crimedata = data;
-                draw_map(crimedata);
                 draw_timeline(crimedata.features);
 				draw_filters(crimedata.features);
+                draw_map(crimedata);
             } else {
                 console.log("Error" + error);
             }
@@ -96,9 +95,14 @@ $(document).ready(function() {
     
     
     function update_map(crime_data) {
+        
+        // apply filters
+        resulting_data = filter_by_daterange(crimedata.features);
+        // TODO apply filter by category
+        
         data =  d3.select("#visbox svg")
                   .selectAll("circle.crime")
-                  .data(crime_data);
+                  .data(resulting_data);
                   
         data.enter()
             .append("circle")
@@ -221,9 +225,7 @@ $(document).ready(function() {
             arrows: false
         });
         $("#timerange").bind("valuesChanged", function(e, data){
-            var newdata = filter_by_daterange(crime_data);
-            update_map(newdata);
-            console.log(newdata.length);
+            update_map();
         });
     }
     
