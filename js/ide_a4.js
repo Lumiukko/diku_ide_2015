@@ -101,8 +101,8 @@ $(document).ready(function() {
         
         // apply filters
         resulting_data = filter_by_daterange(crimedata.features);
-		final_data = filter_by_category(resulting_data)
         resulting_data = filter_by_daynight(resulting_data);
+		final_data = filter_by_category(resulting_data)
         
         data =  d3.select("#visbox svg")
                   .selectAll("circle.crime")
