@@ -31,7 +31,6 @@ body {
     -moz-columns: 100px 3;
     columns: 100px 3;
 	border: 1px solid black;
-	background-color: #99CEFE;
 }
 
 /* timerange */
