@@ -11,7 +11,7 @@ $(document).ready(function() {
     
     var month_name = ['January', 'February', 'March', 'April', 'May', 'June',
                       'July', 'August', 'September', 'October', 'November', 'December']
-	
+    
     
     var cctooltip = d3.select("body")
                       .append("div")
@@ -41,7 +41,7 @@ $(document).ready(function() {
     
     
     load_crime_data();
-	
+    
     
     /**
         Loads the sf_crime.geojson file, which contains the crimes and
@@ -52,7 +52,7 @@ $(document).ready(function() {
         d3.json("data/sf_crime.geojson", function(error, data) {
             if (!error) {
                 crimedata = data;
-				draw_filters(crimedata.features);
+                draw_filters(crimedata.features);
                 draw_timeline(crimedata.features);
                 init_daynight_filter();
                 draw_map(crimedata);
@@ -91,49 +91,49 @@ $(document).ready(function() {
         Draws the checkboxes for the different filters based on the provided data.
         @param {json} data The data containing all the crimes.
     */
-	function draw_filters(data){
-		categories = [];
-		data.forEach(function(entry) {
-				categories.push(entry.properties.Category);
-		});
-		
-		var unique_cat = [];
-		$.each(categories, function(i, el){
-			if($.inArray(el, unique_cat) === -1) unique_cat.push(el);
-		});
-		
-		unique_cat.sort(function(a,b){
-			return a.localeCompare(b);
-		});
-		
-		all_categories = unique_cat.slice();
-		
-		unique_cat.forEach(function(entry) {
-			var filters = d3.select("#filter")
-				.append("input")
-				.attr("id", entry)
-				.attr("class", "checkbox")
-				.attr("type", "checkbox")
-				.attr("value", entry)
-				.attr("checked", "checked")
-				.on("click", function() {
-					if (d3.select(this).attr("checked") == "checked") {
-						d3.select(this).attr("checked", 'unchecked')
-						update_map();
-					} else {
-						d3.select(this).attr("checked", 'checked')
-						update_map();
-					}
-				});
-			var filters = d3.select("#filter")
-				.append("label")
-				.attr("for", entry)
-				.text(toTitleCase(entry));
-			var filters = d3.select("#filter")
-				.append("br");
-		});
-		
-	};
+    function draw_filters(data){
+        categories = [];
+        data.forEach(function(entry) {
+                categories.push(entry.properties.Category);
+        });
+        
+        var unique_cat = [];
+        $.each(categories, function(i, el){
+            if($.inArray(el, unique_cat) === -1) unique_cat.push(el);
+        });
+        
+        unique_cat.sort(function(a,b){
+            return a.localeCompare(b);
+        });
+        
+        all_categories = unique_cat.slice();
+        
+        unique_cat.forEach(function(entry) {
+            var filters = d3.select("#filter")
+                .append("input")
+                .attr("id", entry)
+                .attr("class", "checkbox")
+                .attr("type", "checkbox")
+                .attr("value", entry)
+                .attr("checked", "checked")
+                .on("click", function() {
+                    if (d3.select(this).attr("checked") == "checked") {
+                        d3.select(this).attr("checked", 'unchecked')
+                        update_map();
+                    } else {
+                        d3.select(this).attr("checked", 'checked')
+                        update_map();
+                    }
+                });
+            var filters = d3.select("#filter")
+                .append("label")
+                .attr("for", entry)
+                .text(toTitleCase(entry));
+            var filters = d3.select("#filter")
+                .append("br");
+        });
+        
+    };
     
     
     /**
@@ -141,9 +141,9 @@ $(document).ready(function() {
         @param {string} str The string to be converted to title case.
         @return {string} The string converted into title case.
     */
-	function toTitleCase(str){
-		return str.replace(/\w\S*/g, function(txt){return txt.charAt(0) + txt.substr(1).toLowerCase();});
-	}
+    function toTitleCase(str){
+        return str.replace(/\w\S*/g, function(txt){return txt.charAt(0) + txt.substr(1).toLowerCase();});
+    }
     
     
     /**
@@ -167,22 +167,22 @@ $(document).ready(function() {
         // APPLY FILTERS
         resulting_data = filter_by_daterange(crimedata.features);
         resulting_data = filter_by_daynight(resulting_data);
-		final_data = filter_by_category(resulting_data)
+        final_data = filter_by_category(resulting_data)
         
         var corners = {};
         var idx = 0;
         $(final_data).each(function(i, d) {
-			if (typeof d.geometry != 'undefined'){
-				var cc = get_rounded_projection(d.geometry.coordinates, 0);
-				if (typeof corners[cc] == "undefined") {
-					corners[cc] = {
-						"id": idx++,
-						"crimes": [],
-						"drawn": false
-					};
-				};
-				corners[cc].crimes.push(d);
-				}
+            if (typeof d.geometry != 'undefined'){
+                var cc = get_rounded_projection(d.geometry.coordinates, 0);
+                if (typeof corners[cc] == "undefined") {
+                    corners[cc] = {
+                        "id": idx++,
+                        "crimes": [],
+                        "drawn": false
+                    };
+                };
+                corners[cc].crimes.push(d);
+            };
         });
         
         
@@ -343,12 +343,12 @@ $(document).ready(function() {
         // the following code is based on 
         // http://bl.ocks.org/sbrudz/ed6454e3d25640d19a41
         var parseDate = d3.time.format("%Y-%m-%d %H:%M:%S").parse;
-		var formatDate = d3.time.format("%m/%y");        
-		var x = d3.time.scale().range([0, hist_width]);
-		var y = d3.scale.linear().range([hist_height, 0]);
+        var formatDate = d3.time.format("%m/%y");        
+        var x = d3.time.scale().range([0, hist_width]);
+        var y = d3.scale.linear().range([hist_height, 0]);
         
         var xAxis = d3.svg.axis().scale(x).orient("bottom").tickFormat(formatDate);
-		var yAxis = d3.svg.axis().scale(y).orient("left").ticks(3);
+        var yAxis = d3.svg.axis().scale(y).orient("left").ticks(3);
         
         var histogram = d3.select("#histogram")
                           .append("svg")
@@ -378,13 +378,13 @@ $(document).ready(function() {
         y.domain([0, d3.max(histData, function(d) { return d.y; })]);
 
         histogram.selectAll(".bar")
-		         .data(histData)
-		         .enter().append("rect")
-		         .attr("class", "bar")
-		         .attr("x", function(d) { return x(d.x); })
-		         .attr("width", function(d) { return x(new Date(d.x.getTime() + d.dx))-x(d.x)-1; })
-		         .attr("y", function(d) { return y(d.y); })
-		         .attr("height", function(d) { return hist_height - y(d.y); })
+                 .data(histData)
+                 .enter().append("rect")
+                 .attr("class", "bar")
+                 .attr("x", function(d) { return x(d.x); })
+                 .attr("width", function(d) { return x(new Date(d.x.getTime() + d.dx))-x(d.x)-1; })
+                 .attr("y", function(d) { return y(d.y); })
+                 .attr("height", function(d) { return hist_height - y(d.y); })
                  .on('mouseover', function(d) {
                     tooltip = d3.select("#tt_histogram");
                     var date = parseCrimeDate(d[0].properties.Dates);
@@ -405,21 +405,21 @@ $(document).ready(function() {
                      d3.select("#tt_histogram").style("display", "none");
                  });
 
-		  // Add the X Axis
-		  histogram.append("g")
-		           .attr("class", "x axis")
-		           .attr("transform", "translate(0," + hist_height + ")")
-		           .call(xAxis);
+          // Add the X Axis
+          histogram.append("g")
+                   .attr("class", "x axis")
+                   .attr("transform", "translate(0," + hist_height + ")")
+                   .call(xAxis);
 
-		  // Add the Y Axis and label
-		  histogram.append("g")
-		           .attr("class", "histogram_yaxis")
-		           .call(yAxis)
-		           .append("text")
+          // Add the Y Axis and label
+          histogram.append("g")
+                   .attr("class", "histogram_yaxis")
+                   .call(yAxis)
+                   .append("text")
                    .attr("class", "histogram_label")
-		           .attr("y", -15)
-		           .attr("dy", "0.5em")
-		           .text("Crimes per month");
+                   .attr("y", -15)
+                   .attr("dy", "0.5em")
+                   .text("Crimes per month");
     }
     
     
@@ -543,32 +543,32 @@ $(document).ready(function() {
         $("input[name=daytime]:radio").on('change', update_map);
     }
 
-	
+    
     /**
         Filters crimes by category as set by the category checkboxes.
         @param {json} crime_data The JSON object containing all the crime data.
         @return {json} Returns the filtered crime data as JSON object.
     */
-	function filter_by_category(crime_data){
-		var selected = [];
-		$(document).ready(function() {
-		  $("input:checkbox[type=checkbox]:checked").each(function() {
-			   selected.push($(this).val());
-		  });
-		});
-		var result = [{}];
-		if (selected.length == 37){
-			return crime_data
-		} else {
-			selected.forEach(function(elem){
-				cat_data = [{}];
-				cat_data = crime_data.filter(function(d){
-					return d.properties.Category == elem
-				})
-				result = result.concat(cat_data);
-			});	
-			return result;
-		}
-	}
+    function filter_by_category(crime_data){
+        var selected = [];
+        $(document).ready(function() {
+          $("input:checkbox[type=checkbox]:checked").each(function() {
+               selected.push($(this).val());
+          });
+        });
+        var result = [{}];
+        if (selected.length == 37){
+            return crime_data
+        } else {
+            selected.forEach(function(elem){
+                cat_data = [{}];
+                cat_data = crime_data.filter(function(d){
+                    return d.properties.Category == elem
+                })
+                result = result.concat(cat_data);
+            });    
+            return result;
+        }
+    }
 
 });
