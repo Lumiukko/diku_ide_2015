@@ -12,7 +12,12 @@ $(document).ready(function() {
     var month_name = ['January', 'February', 'March', 'April', 'May', 'June',
                       'July', 'August', 'September', 'October', 'November', 'December']
 	
-             
+    
+    var cctooltip = d3.select("body")
+                      .append("div")
+                      .attr("class", "hidden")
+                      .attr("id", "cctooltip");
+    
     var projection = d3.geo.orthographic()
         .scale(260000)
         .rotate([122.43, -37.77, 0.0])
@@ -32,6 +37,8 @@ $(document).ready(function() {
                 .on("zoom", function () {
                     svg.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")")
                 }));
+                
+    
     
     load_crime_data();
 	
@@ -54,6 +61,29 @@ $(document).ready(function() {
                 console.log("Error" + error);
             }
         });
+    };
+    
+    
+    /**
+        Shows the tooltip at the position near the caller element.
+        @param {element} caller The "this" of the parent.
+        @param {json} data The data used in the tooltip.
+        @param {number} index The index of the data provided.
+    */
+    function show_tooltip(coords, data, index) {
+        console.log("WARNING; TOOLTIP IS BROKEN!");
+        cctooltip.classed({"hidden": false})
+                 .style("left", coords[0] + 12)
+                 .style("top", coords[1] + 20)
+                 .html("Number of Crimes: " + data.crimes.length);
+    };
+    
+    
+    /**
+        Hides the tooltip, regardless of data and position.
+    */
+    function hide_tooltip() {
+        cctooltip.classed({"hidden": true});
     };
     
     
@@ -176,7 +206,7 @@ $(document).ready(function() {
         crime_circle.attr("r", function(d, i) {                
                         var cornercrimes = d.crimes.length;
                         if (cornercrimes > 0) {
-                            return 0.7 + (cornercrimes < 5 ? cornercrimes : Math.log(cornercrimes-3)+5);
+                            return 0.7 + (cornercrimes < 5 ? cornercrimes : Math.log(cornercrimes-3)+3.6);
                         };
                         return 0;
                     })
@@ -186,8 +216,12 @@ $(document).ready(function() {
                     .attr("cy", function(d, i) {
                          return get_rounded_projection(d.crimes[0].geometry.coordinates, 2)[1];
                     })
-                    .on("mouseover", function(d, i) {
-                        console.log(d);
+                    .on("mousemove", function(d, i) {
+                        // For some reason this does not get the correct absolute mouse position.
+                        show_tooltip(d3.mouse(this), d, i);
+                    })
+                    .on("mouseout", function(d, i) {
+                        hide_tooltip();
                     });
                     
         // EXIT

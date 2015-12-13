@@ -22,7 +22,7 @@
         <section>
 
             <div class="section">
-                <h2>1. Visualization(s)</h2>
+                <h2>1. Visualizations</h2>
                 
                 <div class="subsection">
                     <h3>1.1 Self-made Visualization</h3>
@@ -76,14 +76,19 @@
 
                 <div class="subsection">
                     <h3>3.1 Data Gathering</h3>
+                    
+                    <p>In order to display an accurate outline of San Francisco, we have used the <a href="http://wiki.openstreetmap.org/wiki/Overpass_API">Overpass API</a> of <a href="http://www.openstreetmap.org/">OpenStreetMap (OSM)</a> to query and receive all coast lines, more precisely by using <a href="http://overpass-turbo.eu/">overpass turbo</a>. Furthermore we have collected information about all streets, police stations, as well as bars, pubs, night-clubs, and beer-gardens. The data provided by OSM is in a OSM specific JSON format. However, the tool <a href="http://tyrasd.github.io/osmtogeojson/">osmtogeojson</a> allows to convert OSMJSON to GeoJSON, which we then use in our script.</p>
                 </div>
     
                 <div class="subsection">
                     <h3>3.2 Preprocessing</h3>
+                    <p>The data collected from OpenStreetMap was quite large. For instance, the GeoJSON file containing all streets measured about 24 MB. In order to reduce the size of the input a Python script was used to strip away all unneeded information, such as street names, postal codes, etc., which resulted in a file size of about 3 MB. Subsequently the Python script was modified to omit all nodes of streets, which are less than 10 meters apart from a non-omitted adjacent node. This step reduced the file to a current size of 952 KB. The same pre-processing was used to reduce the amount of the coastal lines.</p>
                 </div>
                 
                 <div class="subsection">
                     <h3>3.3 Visualization Rationale</h3>
+                    <p>Crimes that happened at the same street corner have been grouped together and is displayed as a circle. Furthermore, we wanted to reflect the number of crimes in the size of the circle. Since the number of crimes at one street corner can be excessively large, depending on the active filters, we had to find a suitable scaling function. The chosen function returns the <span class="mathy">number of crimes + 0.7</span> as the radius, as long as the number of crimes is below 5. If the number of crimes is 5 or higher, the radius corresponds to <span class="mathy">ln(number of crimes - 3) + 4.3</span>. The function is also plotted in the figure below. Note that the number of crimes is discrete and the plot below shows results for continuous values.</p>
+                    <img src="img/radius_scaling_function.svg" />
                 </div>
             </div>   
 

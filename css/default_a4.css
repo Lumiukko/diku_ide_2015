@@ -3,7 +3,7 @@
 */
 
 html {
-    font-family:    sans-serif;
+    font-family: sans-serif;
     font-size: 12pt;
 }
 
@@ -17,17 +17,56 @@ section, header {
     margin: auto;
 }
 
+p {
+    text-align: justify;
+    line-height: 1.5em;
+}
+
+img {
+    border-radius: 18px;
+}
+
+h2, h3 {
+    margin-top: 18pt;
+}
+
+h2 {
+    border-top: 1px solid #ccc;
+    border-radius: 14pt;
+    width: 720px;
+    margin-left: -20px;
+    padding-left: 20px;
+    padding-top: 8pt;
+}
+
 .hidden {
     display: none;
 }
 
+span.mathy {
+    font-family: serif;
+    font-style: italic;
+    color: #ac9d71;
+}
+
+a {
+    color: #d3d2a1;
+    text-decoration: none;
+    border-bottom: 1px dotted #d3d2a1;
+}
+
+a:hover {
+    color: white;
+    text-decoration: none;
+    border-bottom: 1px solid #d3d2a1;
+}
 
 /**
     SVG Elements
 */
 
 svg {
-    border: 3px solid #efefef;
+    border: 3px solid #999;
     background-color: #151515;
     margin-bottom: 6pt;
 }
@@ -45,7 +84,7 @@ svg {
 }
 
 .district {
-    fill-opacity: 0.5;
+    fill-opacity: 0.4;
     stroke: lime;
     stroke-width: 0.5pt;
 }
@@ -59,6 +98,22 @@ circle.crime {
 .crime.label {
     font-size: 4pt;
     color: black;
+}
+
+
+/**
+    Crime Circle Tooltip
+*/
+#cctooltip {
+    color: #ababab;
+    position: absolute;
+    width: 150px;
+    height: 55px;
+    border: 1px solid white;
+    background-color: black;
+    border-radius: 6px;
+    padding: 2pt 4pt;
+    opacity: 0.8;
 }
 
 
@@ -173,10 +228,12 @@ circle.crime {
 
 #toc a {
     color: silver;
+    border-bottom: none;
 }
 
 #toc a:hover {
     color: white;
+    border-bottom: none;
 }
 
 #toc span {
