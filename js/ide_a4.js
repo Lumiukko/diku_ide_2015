@@ -383,11 +383,7 @@ $(document).ready(function() {
         // http://bl.ocks.org/sbrudz/ed6454e3d25640d19a41
         var parseDate = d3.time.format("%Y-%m-%d %H:%M:%S").parse;
         var formatDate = d3.time.format("%m/%y");        
-        var x = d3.time.scale().range([0, hist_width]);
-        var y = d3.scale.linear().range([hist_height, 0]);
         
-        var xAxis = d3.svg.axis().scale(x).orient("bottom").tickFormat(formatDate);
-        var yAxis = d3.svg.axis().scale(y).orient("left").ticks(3);
         
         var histogram = d3.select("#histogram")
                           .append("svg")
@@ -412,6 +408,15 @@ $(document).ready(function() {
         // Bin the data by month
         var histData = binByMonth(crime_data);
         
+        // change histogram width, so that every month has the same width
+        var fitted_width = hist_width - (hist_width % histData.length);
+        
+        var x = d3.time.scale().range([0, fitted_width]);
+        var y = d3.scale.linear().range([hist_height, 0]);
+        
+        var xAxis = d3.svg.axis().scale(x).orient("bottom").tickFormat(formatDate);
+        var yAxis = d3.svg.axis().scale(y).orient("left").ticks(3);
+        
         // Scale the range of the data by setting the domain
         x.domain(d3.extent(monthBins));
         y.domain([0, d3.max(histData, function(d) { return d.y; })]);
@@ -421,9 +426,10 @@ $(document).ready(function() {
                  .enter().append("rect")
                  .attr("class", "bar")
                  .attr("x", function(d) { return x(d.x); })
-                 .attr("width", function(d) { return x(new Date(d.x.getTime() + d.dx))-x(d.x)-1; })
+                 .attr("width", function(d) { return x(new Date(d.x.getTime() + d.dx))-x(d.x); })
                  .attr("y", function(d) { return y(d.y); })
                  .attr("height", function(d) { return hist_height - y(d.y); })
+                 .attr("stroke", "#000")
                  .on('mouseover', function(d) {
                     tooltip = d3.select("#tt_histogram");
                     var date = parseCrimeDate(d[0].properties.Dates);
@@ -442,6 +448,15 @@ $(document).ready(function() {
                  })
                  .on("mouseout", function() {
                      d3.select("#tt_histogram").style("display", "none");
+                 })
+                 .on("click", function(d) {
+                     var range = parseCrimeDate(d[0].properties.Dates);
+                     range.setDate(0);
+                     $("#timerange").dateRangeSlider(
+                         "values",
+                         range,
+                         range.setMonth(date.getMonth()+1)
+                     );
                  });
 
           // Add the X Axis
