@@ -89,6 +89,13 @@ svg {
     stroke-width: 0.5pt;
 }
 
+.police {
+    fill: blue;
+    stroke: white;
+    stroke-widtH. 0.7pt;
+    opacity: 0.6;
+}
+
 circle.crime {
     fill: orange;
     stroke: yellow;

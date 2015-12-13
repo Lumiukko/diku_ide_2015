@@ -1,0 +1,567 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "id": "way/35095789",
+            "properties": {
+                "type": "way",
+                "id": 35095789,
+                "tags": {
+                    "addr:city": "San Francisco",
+                    "addr:country": "US",
+                    "addr:housenumber": "301",
+                    "addr:postcode": "94102",
+                    "addr:state": "CA",
+                    "addr:street": "Eddy Street",
+                    "amenity": "police",
+                    "building": "yes",
+                    "ele": "16",
+                    "gnis:county_name": "San Francisco",
+                    "gnis:feature_id": "2107379",
+                    "name": "Tenderloin Police Station",
+                    "phone": "(415) 345-7300"
+                },
+                "relations": [],
+                "meta": {}
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -122.4131753,
+                    37.7837754
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "id": "way/86124611",
+            "properties": {
+                "type": "way",
+                "id": 86124611,
+                "tags": {
+                    "addr:city": "San Francisco",
+                    "addr:country": "US",
+                    "addr:housenumber": "2345",
+                    "addr:postcode": "94116",
+                    "addr:state": "CA",
+                    "addr:street": "24th Avenue",
+                    "amenity": "police",
+                    "ele": "99",
+                    "gnis:county_name": "San Francisco",
+                    "gnis:feature_id": "2107378",
+                    "name": "Taraval Police Station",
+                    "operator": "San Francisco Police Department"
+                },
+                "relations": [],
+                "meta": {}
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -122.4812407,
+                    37.7435389
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "id": "way/120481458",
+            "properties": {
+                "type": "way",
+                "id": 120481458,
+                "tags": {
+                    "amenity": "police",
+                    "building": "yes",
+                    "name": "Golden Gate Park Police Station"
+                },
+                "relations": [],
+                "meta": {}
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -122.4552293,
+                    37.767689
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "id": "way/158827841",
+            "properties": {
+                "type": "way",
+                "id": 158827841,
+                "tags": {
+                    "addr:city": "San Francisco",
+                    "addr:country": "US",
+                    "addr:housenumber": "455",
+                    "addr:postcode": "94103",
+                    "addr:state": "CA",
+                    "addr:street": "8th Street",
+                    "amenity": "police",
+                    "building": "yes",
+                    "operator": "California Highway Patrol",
+                    "phone": "+1 415 557-1094"
+                },
+                "relations": [],
+                "meta": {}
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -122.4073357,
+                    37.7730414
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "id": "way/161385043",
+            "properties": {
+                "type": "way",
+                "id": 161385043,
+                "tags": {
+                    "addr:city": "San Francisco",
+                    "addr:country": "US",
+                    "addr:housenumber": "1125",
+                    "addr:postcode": "94115",
+                    "addr:state": "CA",
+                    "addr:street": "Fillmore Street",
+                    "amenity": "police",
+                    "ele": "38",
+                    "gnis:county_name": "San Francisco",
+                    "gnis:feature_id": "2107374",
+                    "gnis:import_uuid": "57871b70-0100-4405-bb30-88b2e001a944",
+                    "name": "Northern Police Station",
+                    "operator": "San Francisco Police Department",
+                    "source": "USGS Geonames"
+                },
+                "relations": [],
+                "meta": {}
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -122.4327205,
+                    37.7803043
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "id": "way/162056245",
+            "properties": {
+                "type": "way",
+                "id": 162056245,
+                "tags": {
+                    "addr:city": "San Francisco",
+                    "addr:country": "US",
+                    "addr:housenumber": "766",
+                    "addr:postcode": "94133",
+                    "addr:state": "CA",
+                    "addr:street": "Vallejo Street",
+                    "amenity": "police",
+                    "building": "yes",
+                    "ele": "33",
+                    "gnis:county_name": "San Francisco",
+                    "name": "Central Police Station",
+                    "operator": "San Francisco Police Department",
+                    "phone": "415-315-2400"
+                },
+                "relations": [],
+                "meta": {}
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -122.4097234,
+                    37.798643
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "id": "way/162518019",
+            "properties": {
+                "type": "way",
+                "id": 162518019,
+                "tags": {
+                    "addr:city": "San Francisco",
+                    "addr:country": "US",
+                    "addr:housenumber": "461",
+                    "addr:postcode": "94118",
+                    "addr:state": "CA",
+                    "addr:street": "6th Avenue",
+                    "amenity": "police",
+                    "area": "yes",
+                    "ele": "56",
+                    "email": "SFPDRichmondStation@sfgov.org",
+                    "gnis:county_name": "San Francisco",
+                    "gnis:feature_id": "2107376",
+                    "name": "Richmond Police Station"
+                },
+                "relations": [],
+                "meta": {}
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -122.464354,
+                    37.7802321
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "id": "way/165336807",
+            "properties": {
+                "type": "way",
+                "id": 165336807,
+                "tags": {
+                    "addr:city": "San Francisco",
+                    "addr:housenumber": "630",
+                    "addr:state": "CA",
+                    "addr:street": "Valencia Street",
+                    "amenity": "police",
+                    "ele": "14",
+                    "gnis:county_name": "San Francisco",
+                    "gnis:feature_id": "2107373",
+                    "name": "Mission Police Station",
+                    "wheelchair": "yes"
+                },
+                "relations": [],
+                "meta": {}
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -122.4225767,
+                    37.7624616
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "id": "way/218159535",
+            "properties": {
+                "type": "way",
+                "id": 218159535,
+                "tags": {
+                    "amenity": "police",
+                    "building": "yes",
+                    "name": "Transit Police Bureau Substation",
+                    "operator": "San Mateo County Sheriff’s Office;San Mateo County Transit District"
+                },
+                "relations": [],
+                "meta": {}
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -122.4004682,
+                    37.7717193
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "id": "way/256877086",
+            "properties": {
+                "type": "way",
+                "id": 256877086,
+                "tags": {
+                    "addr:city": "San Francisco",
+                    "addr:housenumber": "950",
+                    "addr:postcode": "94103",
+                    "addr:street": "Bryant Street",
+                    "amenity": "police",
+                    "building": "yes",
+                    "name": "Hall of Justice Service Station"
+                },
+                "relations": [],
+                "meta": {}
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -122.4057731,
+                    37.7736551
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "id": "way/292488198",
+            "properties": {
+                "type": "way",
+                "id": 292488198,
+                "tags": {
+                    "addr:city": "Colma",
+                    "addr:country": "US",
+                    "addr:housenumber": "1199",
+                    "addr:postcode": "94014",
+                    "addr:street": "El Camino Real",
+                    "amenity": "police",
+                    "building": "yes",
+                    "name": "Colma Police Station",
+                    "survey:date": "2014-05-07"
+                },
+                "relations": [],
+                "meta": {}
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -122.4582223,
+                    37.6771442
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "id": "node/368171295",
+            "properties": {
+                "type": "node",
+                "id": 368171295,
+                "tags": {
+                    "addr:housenumber": "850",
+                    "addr:state": "CA",
+                    "addr:street": "Bryant Street",
+                    "amenity": "police",
+                    "ele": "5",
+                    "gnis:county_name": "San Francisco",
+                    "gnis:feature_id": "2107377",
+                    "gnis:import_uuid": "57871b70-0100-4405-bb30-88b2e001a944",
+                    "source": "USGS Geonames"
+                },
+                "relations": [],
+                "meta": {}
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -122.4040564,
+                    37.7751902
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "id": "node/368171321",
+            "properties": {
+                "type": "node",
+                "id": 368171321,
+                "tags": {
+                    "addr:housenumber": "201",
+                    "addr:state": "CA",
+                    "addr:street": "Williams St",
+                    "amenity": "police",
+                    "ele": "17",
+                    "gnis:county_name": "San Francisco",
+                    "gnis:feature_id": "2107370",
+                    "gnis:import_uuid": "57871b70-0100-4405-bb30-88b2e001a944",
+                    "gnis:reviewed": "no",
+                    "name": "Bayview Police Station",
+                    "source": "USGS Geonames"
+                },
+                "relations": [],
+                "meta": {}
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -122.3977827,
+                    37.7297287
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "id": "node/368171323",
+            "properties": {
+                "type": "node",
+                "id": 368171323,
+                "tags": {
+                    "addr:housenumber": "1",
+                    "addr:state": "CA",
+                    "amenity": "police",
+                    "ele": "65",
+                    "gnis:county_name": "San Francisco",
+                    "gnis:feature_id": "2107372",
+                    "gnis:import_uuid": "57871b70-0100-4405-bb30-88b2e001a944",
+                    "name": "Ingleside Police Station",
+                    "source": "USGS Geonames"
+                },
+                "relations": [],
+                "meta": {}
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -122.4463068,
+                    37.7246455
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "id": "node/368171326",
+            "properties": {
+                "type": "node",
+                "id": 368171326,
+                "tags": {
+                    "addr:housenumber": "1899",
+                    "addr:state": "CA",
+                    "addr:street": "Waller Street",
+                    "amenity": "police",
+                    "ele": "78",
+                    "gnis:county_name": "San Francisco",
+                    "gnis:feature_id": "2107375",
+                    "gnis:import_uuid": "57871b70-0100-4405-bb30-88b2e001a944",
+                    "name": "Park Police Station",
+                    "source": "USGS Geonames"
+                },
+                "relations": [],
+                "meta": {}
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -122.4551664,
+                    37.7677712
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "id": "node/1484054748",
+            "properties": {
+                "type": "node",
+                "id": 1484054748,
+                "tags": {
+                    "amenity": "police",
+                    "name": "Campus Police Office"
+                },
+                "relations": [],
+                "meta": {}
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -122.3916146,
+                    37.7671416
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "id": "node/2506608313",
+            "properties": {
+                "type": "node",
+                "id": 2506608313,
+                "tags": {
+                    "addr:city": "Emeryville",
+                    "addr:housenumber": "2449",
+                    "addr:street": "Powell Street",
+                    "amenity": "police",
+                    "name": "Police Station"
+                },
+                "relations": [],
+                "meta": {}
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -122.3038451,
+                    37.8369378
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "id": "node/3534945478",
+            "properties": {
+                "type": "node",
+                "id": 3534945478,
+                "tags": {
+                    "addr:city": "San Francisco",
+                    "addr:country": "US",
+                    "addr:housenumber": "1245",
+                    "addr:postcode": "94158",
+                    "addr:state": "CA",
+                    "addr:street": "3rd Street",
+                    "amenity": "police",
+                    "name": "SFPD Headquarters"
+                },
+                "relations": [],
+                "meta": {}
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -122.3890706,
+                    37.7724625
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "id": "node/3534945479",
+            "properties": {
+                "type": "node",
+                "id": 3534945479,
+                "tags": {
+                    "addr:city": "San Francisco",
+                    "addr:country": "US",
+                    "addr:housenumber": "1251",
+                    "addr:postcode": "94158",
+                    "addr:state": "CA",
+                    "addr:street": "3rd Street",
+                    "amenity": "police",
+                    "name": "SFPD Southern Police Station"
+                },
+                "relations": [],
+                "meta": {}
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -122.3890443,
+                    37.7722356
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "id": "node/3660306839",
+            "properties": {
+                "type": "node",
+                "id": 3660306839,
+                "tags": {
+                    "addr:city": "San Francisco",
+                    "addr:country": "US",
+                    "addr:housenumber": "450",
+                    "addr:postcode": "94102",
+                    "addr:state": "CA",
+                    "addr:street": "Golden Gate Avenue",
+                    "amenity": "police",
+                    "email": "san.francisco@ic.fbi.gov",
+                    "fax": "+1 415 553 7674",
+                    "name": "Federal Bureau of Investigation San Francisco Field Office",
+                    "phone": "+1 415 553 7400",
+                    "website": "https://www.fbi.gov/sanfrancisco/"
+                },
+                "relations": [],
+                "meta": {}
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -122.418101,
+                    37.781919
+                ]
+            }
+        }
+    ]
+}

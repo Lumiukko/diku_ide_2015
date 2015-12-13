@@ -211,11 +211,15 @@ $(document).ready(function() {
                         return 0;
                     })
                     .attr("cx", function(d, i) {
-                         return get_rounded_projection(d.crimes[0].geometry.coordinates, 2)[0];
+                        return get_rounded_projection(d.crimes[0].geometry.coordinates, 2)[0];
                     })
                     .attr("cy", function(d, i) {
-                         return get_rounded_projection(d.crimes[0].geometry.coordinates, 2)[1];
+                        return get_rounded_projection(d.crimes[0].geometry.coordinates, 2)[1];
                     })
+                    .on("click", function(d, i) {
+                        console.log(d.crimes);
+                    });
+                    /*
                     .on("mousemove", function(d, i) {
                         // For some reason this does not get the correct absolute mouse position.
                         show_tooltip(d3.mouse(this), d, i);
@@ -223,9 +227,41 @@ $(document).ready(function() {
                     .on("mouseout", function(d, i) {
                         hide_tooltip();
                     });
+                    */
                     
         // EXIT
         crime_circle.exit().remove();
+        
+        
+        
+        
+        d3.json("data/sf_police.geojson", function(error, topology) {
+            if (!error) {
+                var police = topology.features;
+                
+                svg.selectAll("circle.police")
+                   .data(police)
+                   .enter()
+                   .append("circle")
+                   .attr("class", "police")
+                   .attr("r", 8)
+                   .attr("cx", function(d, i) {
+                        return get_rounded_projection(d.geometry.coordinates, 2)[0];
+                   })
+                   .attr("cy", function(d, i) {
+                        return get_rounded_projection(d.geometry.coordinates, 2)[1];
+                   })
+                   .on("click", function(d, i) {
+                        console.log(d.properties.tags.name);
+                   });
+
+            }
+            else {
+                console.log("Error loading police stations: " + error);
+            }
+            console.log("FINISHED POLICE STATIONS");
+        });
+        
     };
     
     
