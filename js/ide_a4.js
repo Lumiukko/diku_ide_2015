@@ -133,7 +133,7 @@ $(document).ready(function() {
                 .append("br");
         });
 		
-		var selection = d3.selectAll("#filteroptions")
+		var selection = d3.selectAll("#filterselection")
 			.on("click", select_filters)
 		
     };
