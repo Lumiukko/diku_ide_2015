@@ -107,22 +107,7 @@ $(document).ready(function() {
     
     
     /**
-        Removes a category from a given array of categories.
-        @param {array} categories The array of categories.
-        @param {string} cat_name The name of the category to be removed.
-        @return {array} The array without the category to be removed.
-    */
-	function remove_category(categories, cat_name){
-        var i = categories.indexOf(cat_name);
-            if (i != -1) {
-                categories.splice(i, 1);
-            }
-        return categories;
-	}
-	
-    
-    /**
-        Converts a string into title case (every word capitalized).
+        Converts a string into title case (every first character of a word capitalized).
         @param {string} str The string to be converted to title case.
         @return {string} The string converted into title case.
     */
@@ -157,15 +142,17 @@ $(document).ready(function() {
         var corners = {};
         var idx = 0;
         $(final_data).each(function(i, d) {
-            var cc = get_rounded_projection(d.geometry.coordinates, 0);
-            if (typeof corners[cc] == "undefined") {
-                corners[cc] = {
-                    "id": idx++,
-                    "crimes": [],
-                    "drawn": false
-                };
-            };
-            corners[cc].crimes.push(d);
+			if (typeof d.geometry != 'undefined'){
+				var cc = get_rounded_projection(d.geometry.coordinates, 0);
+				if (typeof corners[cc] == "undefined") {
+					corners[cc] = {
+						"id": idx++,
+						"crimes": [],
+						"drawn": false
+					};
+				};
+				corners[cc].crimes.push(d);
+				}
         });
         
         
@@ -529,32 +516,24 @@ $(document).ready(function() {
         @return {json} Returns the filtered crime data as JSON object.
     */
 	function filter_by_category(crime_data){
-		Array.prototype.diff = function(a) {
-			return this.filter(function(i) {return a.indexOf(i) < 0;});
-		};
 		var selected = [];
 		$(document).ready(function() {
 		  $("input:checkbox[type=checkbox]:checked").each(function() {
 			   selected.push($(this).val());
 		  });
 		});
-		var temp = [{}]; 
 		var result = [{}];
-		sel = all_categories.diff(selected)
-		if (sel.length == 0){
+		if (selected.length == 37){
 			return crime_data
 		} else {
-		sel.forEach(function(elem){
-			cat_data = [{}]
-			cat_data = crime_data.filter(function(d){
-				return d.properties.Category !== elem
-			})
-			$(document).ready(function(){
-			  $.extend(result, temp, cat_data);
-			});
-			temp = result.slice();
-		})
-		return result;
+			selected.forEach(function(elem){
+				cat_data = [{}];
+				cat_data = crime_data.filter(function(d){
+					return d.properties.Category == elem
+				})
+				result = result.concat(cat_data);
+			});	
+			return result;
 		}
 	}
 
