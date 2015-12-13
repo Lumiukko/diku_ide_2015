@@ -132,7 +132,10 @@ $(document).ready(function() {
             var filters = d3.select("#filter")
                 .append("br");
         });
-        
+		
+		var selection = d3.selectAll("#filteroptions")
+			.on("click", select_filters)
+		
     };
     
     
@@ -556,6 +559,24 @@ $(document).ready(function() {
             return date.getHours() > start_hour && date.getHours() <= end_hour;
         });
     }
+	
+	/**
+		Filters crimes by selecting all or none crime selections as set by the radio buttons.
+	*/
+	function select_filters(){
+		var selection = $('input[type=radio][name=filter_selection]:checked').val();
+		if(selection == 'all'){
+			$('input:checkbox[type=checkbox]').each(function(elem) {
+				this.checked = true;  
+			});
+			update_map()
+		} else if (selection == "none") {
+			$('input:checkbox[type=checkbox]').each(function(elem) {
+				this.checked = false;			
+			});
+			update_map()
+		}
+	}
      
      
     
