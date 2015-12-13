@@ -450,13 +450,15 @@ $(document).ready(function() {
                      d3.select("#tt_histogram").style("display", "none");
                  })
                  .on("click", function(d) {
-                     var range = parseCrimeDate(d[0].properties.Dates);
-                     range.setDate(0);
-                     $("#timerange").dateRangeSlider(
-                         "values",
-                         range,
-                         range.setMonth(date.getMonth()+1)
-                     );
+                     var date_range = new Date(parseCrimeDate(d[0].properties.Dates));
+                     date_range_start = new Date(date_range.setDate(1));
+                     //date_range_start.setMonth(date_range.getMonth());
+                     date_range_end = new Date(date_range.setMonth(date_range.getMonth()+1))
+                     date_range_end.setDate(0);
+                    
+                     $("#timerange").dateRangeSlider("values",
+                                                     date_range_start,
+                                                     date_range_end);
                  });
 
           // Add the X Axis
