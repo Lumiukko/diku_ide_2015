@@ -55,6 +55,7 @@ $(document).ready(function() {
                 draw_filters(crimedata.features);
                 draw_timeline(crimedata.features);
                 init_daynight_filter();
+                init_playpause_btn();
                 draw_map(crimedata);
                 draw_histogram(crimedata.features);
             } else {
@@ -170,6 +171,7 @@ $(document).ready(function() {
         // APPLY FILTERS
         resulting_data = filter_by_daterange(crimedata.features);
         resulting_data = filter_by_daynight(resulting_data);
+        resulting_data = filter_by_frame(resulting_data);
         final_data = filter_by_category(resulting_data)
         
         var corners = {};
@@ -616,6 +618,43 @@ $(document).ready(function() {
     function init_daynight_filter() {
         $("input[name=daytime]:radio").on('change', update_map);
     }
+    
+    
+    /**
+        Initialization of play/pause button, click starts rendering of frames
+    */
+    function init_playpause_btn() {
+        $('#btn_play').on('click', function(e) {
+           if (this.value === 'play') {
+               this.value = 'pause';
+               this.innerHTML = '&#10074;&#10074;';
+               range = $("#timerange").dateRangeSlider("values");
+               render_frame(range.min);
+           } else {
+               this.value = 'play';
+               this.innerHTML = '&#9658;'
+           }
+        });
+    }
+    
+    
+    function render_frame(frame) {
+        range = $("#timerange").dateRangeSlider("values");
+        if ($('#btn_play').val() == 'pause') {
+            if (frame <= range.max) {
+                var next_date = new Date(frame);
+                next_date.setDate(frame.getDate()+1);
+                $('#btn_play').data('frame', next_date);
+                setTimeout(function() {
+                    render_frame(next_date);
+                }, 90);
+            } else {
+                $('#btn_play').val('play');
+                this.innerHTML = '&#9658;'
+            }
+        }
+        update_map();
+    }
 
     
     /**
@@ -643,6 +682,19 @@ $(document).ready(function() {
             });    
             return result;
         }
+    }
+    
+    function filter_by_frame(crime_data) {
+        if ($('#btn_play').val() === 'play') {
+            return crime_data;
+        }
+        frame = $('#btn_play').data('frame');
+        return crime_data.filter(function (d) {
+            date = parseCrimeDate(d.properties.Dates);
+            return date.getDate() === frame.getDate() &&
+                   date.getMonth() === frame.getMonth() &&
+                   date.getFullYear() == frame.getFullYear();
+        });
     }
 
 });
