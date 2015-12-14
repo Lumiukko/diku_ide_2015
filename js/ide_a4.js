@@ -95,15 +95,14 @@ $(document).ready(function() {
     
     /**
         Shows the tooltip at the position near the caller element.
-        @param {element} caller The "this" of the parent.
-        @param {json} data The data used in the tooltip.
-        @param {number} index The index of the data provided.
+        @param {element} caller The document body DOM element.
+        @param {html} html The HTML to be shown.
     */
-    function show_tooltip(coords, data, index) {
+    function show_tooltip(coords, html) {
         cctooltip.classed({"hidden": false})
                  .style("left", coords[0] + 12)
                  .style("top", coords[1] + 20)
-                 .html("Number of Crimes: " + data.crimes.length);
+                 .html(html);
     };
     
     
@@ -256,7 +255,7 @@ $(document).ready(function() {
                         console.log(d.crimes);
                     })
                     .on("mousemove", function(d, i) {
-                        show_tooltip(d3.mouse(document.body), d, i);
+                        show_tooltip(d3.mouse(document.body), "Number of Crimes: " + d.crimes.length);
                     })
                     .on("mouseout", function(d, i) {
                         hide_tooltip();
@@ -280,6 +279,17 @@ $(document).ready(function() {
                })
                .on("click", function(d, i) {
                     console.log(d.properties.tags.name);
+               })
+               .on("mousemove", function(d, i) {
+                    if (typeof d.properties.tags.name != "undefined") {
+                        show_tooltip(d3.mouse(document.body), d.properties.tags.name);
+                    }
+                    else {
+                        show_tooltip(d3.mouse(document.body), "Police Station");
+                    }
+               })
+               .on("mouseout", function(d, i) {
+                   hide_tooltip();
                })
                .attr("r", 0)
                .transition()
@@ -419,8 +429,11 @@ $(document).ready(function() {
                    .attr("fill", function(d, i) {
                         return pop_density_color(d.properties["Pop_psmi"]);
                    })
-                   .on("click", function(d, i) {
-                        console.log(d);
+                   .on("mousemove", function(d, i) {
+                       show_tooltip(d3.mouse(document.body), "People per Square Mile: " + d.properties["Pop_psmi"].toFixed(2));
+                   })
+                   .on("mouseout", function(d, i) {
+                       hide_tooltip();
                    });
 
             }
@@ -452,7 +465,15 @@ $(document).ready(function() {
                    })
                    .on("click", function(d, i) {
                         console.log(d.properties.tags.name);
-                   });
+                   })
+                   .on("mousemove", function(d, i) {
+                       if (typeof d.properties.tags.name != "undefined") {
+                           show_tooltip(d3.mouse(document.body), d.properties.tags.name);
+                       }
+                       else {
+                           show_tooltip(d3.mouse(document.body), "Police Station");
+                       }
+                    });
 
             }
             else {
@@ -753,7 +774,7 @@ $(document).ready(function() {
 			$('.category_box').each(function(elem) {
 				this.checked = true;  
 			});
-			update_map;
+			update_map();
             update_histogram();
 		} else if (selection == "none") {
 			$('.category_box').each(function(elem) {

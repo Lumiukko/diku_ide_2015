@@ -127,10 +127,10 @@ circle.crime {
     Crime Circle Tooltip
 */
 #cctooltip {
-    font-size: 10pt;
+    font-size: 9pt;
     color: #ababab;
     position: absolute;
-    width: 150px;
+    width: 200px;
     height: 14pt;
     border: 1px solid white;
     background-color: black;
