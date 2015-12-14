@@ -50,6 +50,16 @@ $(document).ready(function() {
                          .x(function(d) { return Math.round(d[0]).toFixed(2); })
                          .y(function(d) { return Math.round(d[1]).toFixed(2); })
                          .interpolate("linear");
+
+    var margin_top = 40;
+    var margin_left = 30;
+    var hist_height = 50;
+    var hist_width = w-margin_left;
+    // the following code is based on 
+    // http://bl.ocks.org/sbrudz/ed6454e3d25640d19a41
+    var parseDate = d3.time.format("%Y-%m-%d %H:%M:%S").parse;
+    var formatDate = d3.time.format("%m/%y");             
+    
     
     load_crime_data();
     
@@ -126,6 +136,7 @@ $(document).ready(function() {
                 .append("input")
                 .attr("id", entry)
                 .attr("class", "checkbox")
+                .attr("class", "category_box")
                 .attr("type", "checkbox")
                 .attr("value", entry)
                 .attr("checked", "checked")
@@ -133,9 +144,11 @@ $(document).ready(function() {
                     if (d3.select(this).attr("checked") == "checked") {
                         d3.select(this).attr("checked", 'unchecked')
                         update_map();
+                        update_histogram();
                     } else {
                         d3.select(this).attr("checked", 'checked')
                         update_map();
+                        update_histogram();
                     }
                 });
             var filters = d3.select("#filter")
@@ -458,16 +471,7 @@ $(document).ready(function() {
         @param {json} crime_data The JSON object containing all the crime data.
     */
     function draw_histogram(crime_data) {
-        var margin_top = 40;
-        var margin_left = 30;
-        var hist_height = 50;
-        var hist_width = w-margin_left;
-        // the following code is based on 
-        // http://bl.ocks.org/sbrudz/ed6454e3d25640d19a41
-        var parseDate = d3.time.format("%Y-%m-%d %H:%M:%S").parse;
-        var formatDate = d3.time.format("%m/%y");        
-        
-        
+
         var histogram = d3.select("#histogram")
                           .append("svg")
                           .attr("width", hist_width+margin_left)
@@ -562,6 +566,51 @@ $(document).ready(function() {
     }
     
     
+    function update_histogram() {
+        crime_data = crimedata.features;
+        // Determine the first and list dates in the data set
+        var monthExtent = d3.extent(crime_data, function(d) { return d.created_date; });
+        
+        // Create one bin per month, use an offset to include the first and last months
+        var monthBins = d3.time.months(d3.time.month.offset(monthExtent[0],-1),
+                                       d3.time.month.offset(monthExtent[1],1));
+        
+        
+        // Use the histogram layout to create a function that will bin the data
+        var binByMonth = d3.layout.histogram()
+                           .value(function(d) { return d.created_date; })
+                           .bins(monthBins);
+        // Bin the data by month
+        var histData = binByMonth(crime_data);
+        
+        // change histogram width, so that every month has the same width
+        var fitted_width = hist_width - (hist_width % histData.length);
+        
+        var x = d3.time.scale().range([0, fitted_width]);
+        var y = d3.scale.linear().range([hist_height, 0]);
+        
+        var xAxis = d3.svg.axis().scale(x).orient("bottom").tickFormat(formatDate);
+        var yAxis = d3.svg.axis().scale(y).orient("left").ticks(3);
+        
+        // Scale the range of the data by setting the domain
+        x.domain(d3.extent(monthBins));
+        y.domain([0, d3.max(histData, function(d) { return d.y; })]);
+
+        // Bin the data by month
+        var final_data = filter_by_daynight(crime_data);
+        final_data = filter_by_category(final_data);
+        var shownhistData = binByMonth(final_data);
+        var histogram = d3.select("#histogram svg")
+                          .selectAll(".bar")
+                          .data(shownhistData);
+        histogram.transition()
+                 .attr("x", function(d) { return x(d.x); })
+                 .attr("width", function(d) { return x(new Date(d.x.getTime() + d.dx))-x(d.x); })
+                 .attr("y", function(d) { return y(d.y); })
+                 .attr("height", function(d) { return hist_height - y(d.y); })
+    }
+    
+    
     /**
         Draws the timeline to select the time period of crimes to be displayed.
         @param {json} crime_data The JSON object containing all the crime data.
@@ -638,9 +687,9 @@ $(document).ready(function() {
             return crime_data;
         }
         else if (timerange == "day") {
-            return filter_by_daytime(crime_data, 6, 22);
+            return filter_by_daytime(crime_data, 8, 20);
         }
-        return filter_by_daytime(crime_data, 22, 6);
+        return filter_by_daytime(crime_data, 20, 8);
     }
     
     
@@ -667,15 +716,17 @@ $(document).ready(function() {
 	function select_filters(){
 		var selection = $('input[type=radio][name=filter_selection]:checked').val();
 		if(selection == 'all'){
-			$('input:checkbox[type=checkbox]').each(function(elem) {
+			$('.category_box').each(function(elem) {
 				this.checked = true;  
 			});
-			update_map()
+			update_map;
+            update_histogram();
 		} else if (selection == "none") {
-			$('input:checkbox[type=checkbox]').each(function(elem) {
+			$('.category_box').each(function(elem) {
 				this.checked = false;			
 			});
-			update_map()
+			update_map();
+            update_histogram();
 		}
 	}
      
@@ -698,7 +749,10 @@ $(document).ready(function() {
         Initialization of the day/night filter, also calls map update.
     */
     function init_daynight_filter() {
-        $("input[name=daytime]:radio").on('change', update_map);
+        $("input[name=daytime]:radio").on('change', function() {
+            update_map();
+            update_histogram();
+        });
     }
     
     
