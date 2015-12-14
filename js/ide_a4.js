@@ -473,7 +473,8 @@ $(document).ready(function() {
                        else {
                            show_tooltip(d3.mouse(document.body), "Police Station");
                        }
-                    });
+                    })
+                    .on("mouseout", hide_tooltip);
 
             }
             else {
@@ -508,7 +509,11 @@ $(document).ready(function() {
                    })
                    .attr("fill", function(d, i) {
                         return district_color[i];
-                   });
+                   })
+                   .on("mousemove", function(d, i) {
+                        show_tooltip(d3.mouse(document.body), "District: " + toTitleCase(d.properties.district));
+                    })
+                    .on("mouseout", hide_tooltip);
 
             }
             else {
@@ -830,6 +835,7 @@ $(document).ready(function() {
     */
     function init_popden_filter() {
         $("#show_popdens").on('change', update_map);
+        $("#show_popdens").on('load', update_map);
     }
     
     /**
