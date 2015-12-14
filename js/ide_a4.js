@@ -7,6 +7,7 @@ $(document).ready(function() {
     var r = 3;
     
     var crimedata;
+    var police;
     var all_categories = [];
     
     var month_name = ['January', 'February', 'March', 'April', 'May', 'June',
@@ -56,6 +57,7 @@ $(document).ready(function() {
                 draw_timeline(crimedata.features);
                 init_daynight_filter();
                 init_playpause_btn();
+                init_police_filter();
                 draw_map(crimedata);
                 draw_histogram(crimedata.features);
             } else {
@@ -238,34 +240,32 @@ $(document).ready(function() {
         crime_circle.exit().remove();
         
         
-        
-        
-        d3.json("data/sf_police.geojson", function(error, topology) {
-            if (!error) {
-                var police = topology.features;
-                
-                svg.selectAll("circle.police")
-                   .data(police)
-                   .enter()
-                   .append("circle")
-                   .attr("class", "police")
-                   .attr("r", 8)
-                   .attr("cx", function(d, i) {
-                        return get_rounded_projection(d.geometry.coordinates, 2)[0];
-                   })
-                   .attr("cy", function(d, i) {
-                        return get_rounded_projection(d.geometry.coordinates, 2)[1];
-                   })
-                   .on("click", function(d, i) {
-                        console.log(d.properties.tags.name);
-                   });
-
-            }
-            else {
-                console.log("Error loading police stations: " + error);
-            }
-            console.log("FINISHED POLICE STATIONS");
-        });
+        if ($("#show_stations").is(':checked')) {
+            svg.selectAll("circle.police")
+               .data(police)
+               .enter()
+               .append("circle")
+               .attr("class", "police")
+               .attr("cx", function(d, i) {
+                    return get_rounded_projection(d.geometry.coordinates, 2)[0];
+               })
+               .attr("cy", function(d, i) {
+                    return get_rounded_projection(d.geometry.coordinates, 2)[1];
+               })
+               .on("click", function(d, i) {
+                    console.log(d.properties.tags.name);
+               })
+               .attr("r", 0)
+               .transition()
+               .attr("r", 8);
+        } else {
+            svg.selectAll("circle.police")
+               .data([])
+               .exit()
+               .transition()
+               .attr("r", 0)
+               .remove();
+        }
         
     };
     
@@ -316,7 +316,32 @@ $(document).ready(function() {
         });
         
         
-        
+        d3.json("data/sf_police.geojson", function(error, topology) {
+            if (!error) {
+                police = topology.features;
+
+                svg.selectAll("circle.police")
+                   .data(police)
+                   .enter()
+                   .append("circle")
+                   .attr("class", "police")
+                   .attr("r", 8)
+                   .attr("cx", function(d, i) {
+                        return get_rounded_projection(d.geometry.coordinates, 2)[0];
+                   })
+                   .attr("cy", function(d, i) {
+                        return get_rounded_projection(d.geometry.coordinates, 2)[1];
+                   })
+                   .on("click", function(d, i) {
+                        console.log(d.properties.tags.name);
+                   });
+
+            }
+            else {
+                console.log("Error loading police stations: " + error);
+            }
+            console.log("FINISHED POLICE STATIONS");
+        });
         
         // Draw Coastal Lines
         d3.json("data/sf_coast.geojson", function(error, topology) {
@@ -524,8 +549,8 @@ $(document).ready(function() {
             valueLabels: "change"
         });
         $("#timerange").bind("valuesChanged", function(e, data){
-            update_map();
             stop_movie();
+            update_map();
         });
     }
     
@@ -618,6 +643,14 @@ $(document).ready(function() {
     */
     function init_daynight_filter() {
         $("input[name=daytime]:radio").on('change', update_map);
+    }
+    
+    
+    /**
+        Initialization of the police filter, also calls map update.
+    */
+    function init_police_filter() {
+        $("#show_stations").on('change', update_map);
     }
     
     
