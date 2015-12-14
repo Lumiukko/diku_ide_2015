@@ -525,6 +525,13 @@ $(document).ready(function() {
         });
         $("#timerange").bind("valuesChanged", function(e, data){
             update_map();
+            $('#btn_play').val('play');
+            $('#btn_play').html('&#9658;');
+            var bar = $("#timerange .ui-rangeSlider-bar");
+            if ($('#btn_play').data('init_width'))
+                bar.width($('#btn_play').data('init_width'));
+            bar.css('background-color', bar.data('init_bg'));
+            bar.css('opacity', '1');
         });
     }
     
@@ -629,6 +636,12 @@ $(document).ready(function() {
                this.value = 'pause';
                this.innerHTML = '&#10074;&#10074;';
                range = $("#timerange").dateRangeSlider("values");
+               var bar = $("#timerange .ui-rangeSlider-bar");
+               $(this).data('init_width', bar.width());
+               bar.data('init_bg', bar.css('background-color'));
+               bar.width(0);
+               bar.css('background-color', 'steelblue');
+               bar.css('opacity', '0.7');
                render_frame(range.min);
            } else {
                this.value = 'play';
@@ -641,7 +654,13 @@ $(document).ready(function() {
     function render_frame(frame) {
         range = $("#timerange").dateRangeSlider("values");
         if ($('#btn_play').val() == 'pause') {
+            var bar = $("#timerange .ui-rangeSlider-bar");
+            bar.css('background-color', 'steelblue');
+            bar.css('opacity', '0.7');
             if (frame <= range.max) {
+                var progress = (frame.getTime() - range.min.getTime()) /
+                               (range.max.getTime() - range.min.getTime());
+                bar.width($('#btn_play').data('init_width') * progress);
                 var next_date = new Date(frame);
                 next_date.setDate(frame.getDate()+1);
                 $('#btn_play').data('frame', next_date);
@@ -650,7 +669,10 @@ $(document).ready(function() {
                 }, 90);
             } else {
                 $('#btn_play').val('play');
-                this.innerHTML = '&#9658;'
+                $('#btn_play').html('&#9658;');
+                bar.width($('#btn_play').data('init_width'));
+                bar.css('background-color', bar.data('init_bg'));
+                bar.css('opacity', '1');
             }
         }
         update_map();
