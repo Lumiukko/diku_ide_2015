@@ -525,13 +525,7 @@ $(document).ready(function() {
         });
         $("#timerange").bind("valuesChanged", function(e, data){
             update_map();
-            $('#btn_play').val('play');
-            $('#btn_play').html('&#9658;');
-            var bar = $("#timerange .ui-rangeSlider-bar");
-            if ($('#btn_play').data('init_width'))
-                bar.width($('#btn_play').data('init_width'));
-            bar.css('background-color', bar.data('init_bg'));
-            bar.css('opacity', '1');
+            stop_movie();
         });
     }
     
@@ -638,23 +632,25 @@ $(document).ready(function() {
                range = $("#timerange").dateRangeSlider("values");
                var bar = $("#timerange .ui-rangeSlider-bar");
                $(this).data('init_width', bar.width());
-               bar.data('init_bg', bar.css('background-color'));
                bar.width(0);
                bar.css('background-color', 'steelblue');
                bar.css('opacity', '0.7');
                render_frame(range.min);
            } else {
-               this.value = 'play';
-               this.innerHTML = '&#9658;'
+               stop_movie();
            }
         });
     }
     
     
+    /**
+        Updates the button, the progress bar, the current frame and 
+        calls update_map()
+    */
     function render_frame(frame) {
         range = $("#timerange").dateRangeSlider("values");
+        var bar = $("#timerange .ui-rangeSlider-bar");
         if ($('#btn_play').val() == 'pause') {
-            var bar = $("#timerange .ui-rangeSlider-bar");
             bar.css('background-color', 'steelblue');
             bar.css('opacity', '0.7');
             if (frame <= range.max) {
@@ -662,20 +658,31 @@ $(document).ready(function() {
                                (range.max.getTime() - range.min.getTime());
                 bar.width($('#btn_play').data('init_width') * progress);
                 var next_date = new Date(frame);
-                next_date.setDate(frame.getDate()+1);
+                next_date.setDate(frame.getDate()+7);
                 $('#btn_play').data('frame', next_date);
                 setTimeout(function() {
                     render_frame(next_date);
                 }, 90);
             } else {
-                $('#btn_play').val('play');
-                $('#btn_play').html('&#9658;');
-                bar.width($('#btn_play').data('init_width'));
-                bar.css('background-color', bar.data('init_bg'));
-                bar.css('opacity', '1');
+                stop_movie();
             }
+        } else {
+            stop_movie();
         }
         update_map();
+    }
+    
+    
+    /**
+        Resets the timeline progress bar and the button
+    */
+    function stop_movie() {
+        $('#btn_play').val('play');
+        $('#btn_play').html('&#9658;');
+        var bar = $("#timerange .ui-rangeSlider-bar");
+        if ($('#btn_play').data('init_width'))
+            bar.width($('#btn_play').data('init_width'));
+        bar.css('opacity', '0');
     }
 
     
@@ -713,7 +720,8 @@ $(document).ready(function() {
         frame = $('#btn_play').data('frame');
         return crime_data.filter(function (d) {
             date = parseCrimeDate(d.properties.Dates);
-            return date.getDate() === frame.getDate() &&
+            return Math.abs(date.getDate() - frame.getDate()) < 7 &&
+                   Math.abs(date.getDate() - frame.getDate()) >= 0 &&
                    date.getMonth() === frame.getMonth() &&
                    date.getFullYear() == frame.getFullYear();
         });
