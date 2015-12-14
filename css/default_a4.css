@@ -102,8 +102,13 @@ svg {
 .police {
     fill: blue;
     stroke: white;
-    stroke-widtH. 0.7pt;
+    stroke-width: 0.7pt;
     opacity: 0.6;
+}
+
+.popden {
+    stroke: none;
+    opacity: 0.5;
 }
 
 circle.crime {
@@ -150,6 +155,10 @@ circle.crime {
 
 #filterselection{
 	margin-top: 15px;
+}
+
+#togglepolice label {
+    color: #008aff;
 }
 
 /**

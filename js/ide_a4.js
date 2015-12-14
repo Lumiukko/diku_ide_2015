@@ -38,8 +38,18 @@ $(document).ready(function() {
                 .on("zoom", function () {
                     svg.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")")
                 }));
+        
+    svg.append("g").attr("id", "layer_streets");
+    svg.append("g").attr("id", "layer_districts");
+    svg.append("g").attr("id", "layer_popdens");
+    svg.append("g").attr("id", "layer_police");
+    svg.append("g").attr("id", "layer_coast");
+    svg.append("g").attr("id", "layer_crimes");
                 
-    
+    var lineFunction = d3.svg.line()
+                         .x(function(d) { return Math.round(d[0]).toFixed(2); })
+                         .y(function(d) { return Math.round(d[1]).toFixed(2); })
+                         .interpolate("linear");
     
     load_crime_data();
     
@@ -201,7 +211,7 @@ $(document).ready(function() {
 
         
         // DATA JOIN
-        crime_circle =  svg.selectAll("circle.crime")
+        crime_circle =  svg.select("#layer_crimes").selectAll("circle.crime")
                            .data(corner_data);
         
         // ENTER CRIME CORNER MARKERS
@@ -241,7 +251,7 @@ $(document).ready(function() {
         
         
         if ($("#show_stations").is(':checked')) {
-            svg.selectAll("circle.police")
+            svg.select("#layer_police").selectAll("circle.police")
                .data(police)
                .enter()
                .append("circle")
@@ -259,7 +269,7 @@ $(document).ready(function() {
                .transition()
                .attr("r", 8);
         } else {
-            svg.selectAll("circle.police")
+            svg.select("#layer_police").selectAll("circle.police")
                .data([])
                .exit()
                .transition()
@@ -270,57 +280,118 @@ $(document).ready(function() {
     };
     
     
+    
+    
+    
+    
+    
+    
     /**
         Draws all static elements on the map (the SVG).
         @param {json} crime_data The JSON object containing all the crime data.
     */
     function draw_map(crime_data) {
-    
-        var lineFunction = d3.svg.line()
-                             .x(function(d) { return Math.round(d[0]).toFixed(2); })
-                             .y(function(d) { return Math.round(d[1]).toFixed(2); })
-                             .interpolate("linear");
-                             
-
+        draw_map_streets();
+        draw_map_districts();
+        draw_map_popdens();
+        draw_map_police();
+        draw_map_coast();
+    }; 
         
-        // Draw PD Districts
-        var district_color = {
-            0: "#6a6c44", 1: "#484c00", 2: "#12006f", 3: "#6e3f75", 4: "#006237",
-            5: "#6d0074", 6: "#006369", 7: "#111111", 8: "#444444", 9: "#74001e"
-        }
-        d3.json("data/sfpd_districts.geojson", function(error, topology) {
+        
+    function draw_map_streets() {
+        // Draw Streets 
+        d3.json("data/sf_streets.geojson", function(error, topology) {
             if (!error) {
-                var districts = topology.features;
+                var streets = topology.features;
                 
-                svg.selectAll("polygon.district")
-                   .data(districts)
+                svg.select("#layer_streets").selectAll("path.street")
+                   .data(streets)
                    .enter()
-                   .append("polygon")
-                   .attr("class", "district")
-                   .attr("points", function(d, i) {
-                        var projected = [];
-                        $.each(d.geometry.coordinates[0], (function(k, v) {
-                            projected.push(v.map(projection));
-                        }));
-                        return projected;
-                   })
-                   .attr("fill", function(d, i) {
-                        return district_color[i];
+                   .append("path")
+                   .attr("class", "street")
+                   .attr("d", function(d, i) {
+                        var projected = d.coordinates.map(projection);
+                        return lineFunction(projected);
                    });
 
             }
             else {
-                console.log("Error loading districts: " + error);
+                console.log("Error loading streets: " + error);
             }
-            console.log("FINISHED DISTRICTS");
+            console.log("FINISHED STREETS");
+        });
+    }
+        
+    
+    function draw_map_coast() {
+        // Draw Coastal Lines
+        d3.json("data/sf_coast.geojson", function(error, topology) {
+            if (!error) {
+                var coast = topology.features;
+                
+                svg.select("#layer_coast").selectAll("path.coast")
+                   .data(coast)
+                   .enter()
+                   .append("path")
+                   .attr("class", "coast")
+                   .attr("d", function(d, i) {
+                        var projected = d.coordinates.map(projection);
+                        return lineFunction(projected);
+                   });
+
+            }
+            else {
+                console.log("Error loading coast: " + error);
+            }
+            console.log("FINISHED COAST");
+        });
+    };
+    
+    
+    function draw_map_popdens() {
+        // Draw Population Density Blocks
+        var pop_density_color = d3.scale.linear()
+                                        .domain([0, 30000, 90000])
+                                        .range(["#000000", "#700000", "#ff6600"]);
+        
+        d3.json("data/sf_popdensity.geojson", function(error, topology) {
+            if (!error) {
+                var popdens = topology.features;
+                
+                svg.select("#layer_popdens").selectAll("polygon.popden")
+                   .data(popdens)
+                   .enter()
+                   .append("polygon")
+                   .attr("class", "popden")
+                   .attr("points", function(d, i) {
+                        var projected = [];
+                        $.each(d.geometry.coordinates, (function(k, v) {
+                            projected.push(v.map(projection));
+                        }));
+                        
+                        return projected;
+                   })
+                   .attr("fill", function(d, i) {
+                        return pop_density_color(d.properties["Pop_psmi"]);
+                   });
+
+            }
+            else {
+                console.log("Error loading population blocks: " + error);
+            }
+            console.log("FINISHED POPULATION BLOCKS");
         });
         
-        
+    };
+    
+    
+    function draw_map_police() {
         d3.json("data/sf_police.geojson", function(error, topology) {
             if (!error) {
                 police = topology.features;
 
-                svg.selectAll("circle.police")
+                svg.select("#layer_police").selectAll("circle.police")
                    .data(police)
                    .enter()
                    .append("circle")
@@ -342,59 +413,44 @@ $(document).ready(function() {
             }
             console.log("FINISHED POLICE STATIONS");
         });
-        
-        // Draw Coastal Lines
-        d3.json("data/sf_coast.geojson", function(error, topology) {
-            if (!error) {
-                var coast = topology.features;
-                
-                svg.selectAll("path.coast")
-                   .data(coast)
-                   .enter()
-                   .append("path")
-                   .attr("class", "coast")
-                   .attr("d", function(d, i) {
-                        var projected = d.coordinates.map(projection);
-                        return lineFunction(projected);
-                   });
-
-            }
-            else {
-                console.log("Error loading coast: " + error);
-            }
-            console.log("FINISHED COAST");
-        });
-        
-        
-        
-        
-        
-        // Draw Streets 
-        d3.json("data/sf_streets.geojson", function(error, topology) {
-            if (!error) {
-                var streets = topology.features;
-                
-                svg.selectAll("path.street")
-                   .data(streets)
-                   .enter()
-                   .append("path")
-                   .attr("class", "street")
-                   .attr("d", function(d, i) {
-                        var projected = d.coordinates.map(projection);
-                        return lineFunction(projected);
-                   });
-
-            }
-            else {
-                console.log("Error loading streets: " + error);
-            }
-            console.log("FINISHED STREETS");
-        });
-        
-        
-        
-        
     };
+    
+    
+    function draw_map_districts() {
+        // Draw PD Districts
+        var district_color = {
+            0: "#6a6c44", 1: "#484c00", 2: "#12006f", 3: "#6e3f75", 4: "#006237",
+            5: "#6d0074", 6: "#006369", 7: "#111111", 8: "#444444", 9: "#74001e"
+        }
+        d3.json("data/sfpd_districts.geojson", function(error, topology) {
+            if (!error) {
+                var districts = topology.features;
+                
+                svg.select("#layer_districts").selectAll("polygon.district")
+                   .data(districts)
+                   .enter()
+                   .append("polygon")
+                   .attr("class", "district")
+                   .attr("points", function(d, i) {
+                        var projected = [];
+                        $.each(d.geometry.coordinates[0], (function(k, v) {
+                            projected.push(v.map(projection));
+                        }));
+                        return projected;
+                   })
+                   .attr("fill", function(d, i) {
+                        return district_color[i];
+                   });
+
+            }
+            else {
+                console.log("Error loading districts: " + error);
+            }
+            console.log("FINISHED DISTRICTS");
+        });
+    };
+    
+    
     
     
     /**
@@ -760,4 +816,21 @@ $(document).ready(function() {
         });
     }
 
+    
+    /**
+        Checks if a point is within a polygon.
+        @param {polygon} poly The array consisting of x and y coods of a polygon.
+        @param {polygon} pt The point to be checked whether or not it is in the polygon.
+        @return {bool} Returns true if point is in polygon or false otherwise.
+    */
+    function isPointInPoly(poly, pt){
+        //+ Jonas Raoni Soares Silva
+        //@ http://jsfromhell.com/math/is-point-in-poly [rev. #0]
+        for(var c = false, i = -1, l = poly.length, j = l - 1; ++i < l; j = i)
+            ((poly[i].y <= pt.y && pt.y < poly[j].y) || (poly[j].y <= pt.y && pt.y < poly[i].y))
+            && (pt.x < (poly[j].x - poly[i].x) * (pt.y - poly[i].y) / (poly[j].y - poly[i].y) + poly[i].x)
+            && (c = !c);
+    return c;
+}
+    
 });
