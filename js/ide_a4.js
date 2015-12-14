@@ -418,6 +418,9 @@ $(document).ready(function() {
                    })
                    .attr("fill", function(d, i) {
                         return pop_density_color(d.properties["Pop_psmi"]);
+                   })
+                   .on("click", function(d, i) {
+                        console.log(d);
                    });
 
             }
