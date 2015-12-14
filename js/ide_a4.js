@@ -277,9 +277,6 @@ $(document).ready(function() {
                .attr("cy", function(d, i) {
                     return get_rounded_projection(d.geometry.coordinates, 2)[1];
                })
-               .on("click", function(d, i) {
-                    console.log(d.properties.tags.name);
-               })
                .on("mousemove", function(d, i) {
                     if (typeof d.properties.tags.name != "undefined") {
                         show_tooltip(d3.mouse(document.body), d.properties.tags.name);
@@ -462,9 +459,6 @@ $(document).ready(function() {
                    })
                    .attr("cy", function(d, i) {
                         return get_rounded_projection(d.geometry.coordinates, 2)[1];
-                   })
-                   .on("click", function(d, i) {
-                        console.log(d.properties.tags.name);
                    })
                    .on("mousemove", function(d, i) {
                        if (typeof d.properties.tags.name != "undefined") {
@@ -835,7 +829,6 @@ $(document).ready(function() {
     */
     function init_popden_filter() {
         $("#show_popdens").on('change', update_map);
-        $("#show_popdens").on('load', update_map);
     }
     
     /**
