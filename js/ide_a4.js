@@ -8,6 +8,9 @@ $(document).ready(function() {
     
     var crimedata;
     var police;
+    var districts;
+    var popdens;
+    var streets;
     var all_categories = [];
     
     var month_name = ['January', 'February', 'March', 'April', 'May', 'June',
@@ -78,6 +81,9 @@ $(document).ready(function() {
                 init_daynight_filter();
                 init_playpause_btn();
                 init_police_filter();
+                init_district_filter();
+                init_popden_filter();
+                init_street_filter();
                 draw_map(crimedata);
                 draw_histogram(crimedata.features);
             } else {
@@ -94,7 +100,6 @@ $(document).ready(function() {
         @param {number} index The index of the data provided.
     */
     function show_tooltip(coords, data, index) {
-        console.log("WARNING; TOOLTIP IS BROKEN!");
         cctooltip.classed({"hidden": false})
                  .style("left", coords[0] + 12)
                  .style("top", coords[1] + 20)
@@ -247,17 +252,15 @@ $(document).ready(function() {
                         return get_rounded_projection(d.crimes[0].geometry.coordinates, 2)[1];
                     })
                     .on("click", function(d, i) {
+                        // TODO: add detailed information about crimes in this corner
                         console.log(d.crimes);
-                    });
-                    /*
+                    })
                     .on("mousemove", function(d, i) {
-                        // For some reason this does not get the correct absolute mouse position.
-                        show_tooltip(d3.mouse(this), d, i);
+                        show_tooltip(d3.mouse(document.body), d, i);
                     })
                     .on("mouseout", function(d, i) {
                         hide_tooltip();
                     });
-                    */
                     
         // EXIT
         crime_circle.exit().remove();
@@ -287,6 +290,34 @@ $(document).ready(function() {
                .exit()
                .transition()
                .attr("r", 0)
+               .remove();
+        }
+        
+        
+        if ($("#show_districts").is(':checked')) {
+            draw_map_districts();
+        } else {
+            svg.select("#layer_districts").selectAll("polygon.district")
+               .data([])
+               .exit()
+               .remove();
+        }
+        
+        if ($("#show_popdens").is(':checked')) {
+            draw_map_popdens();
+        } else {
+            svg.select("#layer_popdens").selectAll("polygon.popden")
+               .data([])
+               .exit()
+               .remove();
+        }
+
+        if ($("#show_streets").is(':checked')) {
+            draw_map_streets();
+        } else {
+            svg.select("#layer_streets").selectAll("path.street")
+               .data([])
+               .exit()
                .remove();
         }
         
@@ -763,6 +794,28 @@ $(document).ready(function() {
         $("#show_stations").on('change', update_map);
     }
     
+    /**
+        Initialization of the pd district filter, also calls map update.
+    */
+    function init_district_filter() {
+        $("#show_districts").on('change', update_map);
+    }
+    
+    /**
+        Initialization of the population density filter, also calls map update.
+    */
+    function init_popden_filter() {
+        $("#show_popdens").on('change', update_map);
+    }
+    
+    /**
+        Initialization of the street filter, also calls map update.
+    */
+    function init_street_filter() {
+        $("#show_streets").on('change', update_map);
+    }
+
+    
     
     /**
         Initialization of play/pause button, click starts rendering of frames
@@ -869,7 +922,9 @@ $(document).ready(function() {
                    date.getFullYear() == frame.getFullYear();
         });
     }
-
+    
+    
+    
     
     /**
         Checks if a point is within a polygon.

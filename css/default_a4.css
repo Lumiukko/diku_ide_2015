@@ -46,7 +46,7 @@ iframe{
 
 .subsection{
 	padding-bottom: 30px;
-	border-top: 1px solid #CCC;
+	border-top: 1px solid #555;
 }
 
 .hidden {
@@ -127,10 +127,11 @@ circle.crime {
     Crime Circle Tooltip
 */
 #cctooltip {
+    font-size: 10pt;
     color: #ababab;
     position: absolute;
     width: 150px;
-    height: 55px;
+    height: 14pt;
     border: 1px solid white;
     background-color: black;
     border-radius: 6px;
@@ -144,22 +145,49 @@ circle.crime {
 */
 
 #filter {
-    font-size: 11pt;
-    width: 670px;
+    border: 1px solid #333;
+    padding: 4pt 8pt;
+    font-size: 10pt;
+    width: 650px;
     -webkit-columns: 200px 3;
     -moz-columns: 200px 3;
     columns: 200px 3;
 	margin: auto;
-	margin-top: 15px;
+	margin-top: 0px;
 }
 
 #filterselection{
+    padding: 4pt 8pt;
+    width: 650px;
+    border: 1px solid #333;
+    border-bottom: none;
 	margin-top: 15px;
+}
+
+#non-crime-layers {
+    padding: 4pt 8pt;
+    width: 650px;
+    border: 1px solid #333;
+    margin-top: 12pt;
+}
+
+#non-crime-layers div {
+    display: inline-block;
+    margin-right: 16pt;
 }
 
 #togglepolice label {
     color: #008aff;
 }
+
+#toggledistricts label {
+    color: #0db800;
+}
+
+#togglepopdens label {
+    color: #f15f38;
+}
+
 
 /**
     Time Range

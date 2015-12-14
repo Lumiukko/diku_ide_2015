@@ -48,12 +48,32 @@
                         </div>
                         <div id="timerange"></div>
                     </div>
-                    <div id="togglepolice">
-						<label title="Show police stations">
-							<input type="checkbox" id="show_stations" value="show" checked/>
-							Show police stations
-						</label>
-					</div>
+                    <div id="non-crime-layers">
+                        <div id="togglepolice">
+                            <label title="Show police stations">
+                                <input type="checkbox" id="show_stations" value="show" checked/>
+                                Show police stations
+                            </label>
+                        </div>
+                        <div id="toggledistricts">
+                            <label title="Show police districts">
+                                <input type="checkbox" id="show_districts" value="show" checked/>
+                                Show police districts
+                            </label>
+                        </div>
+                        <div id="togglepopdens">
+                            <label title="Show population densities">
+                                <input type="checkbox" id="show_popdens" value="show" checked/>
+                                Show population densities
+                            </label>
+                        </div>
+                        <div id="togglestreets">
+                            <label title="Show streets (Warning, slow if being checked!)">
+                                <input type="checkbox" id="show_streets" value="show" checked/>
+                                Show streets (Warning, slow if being checked!)
+                            </label>
+                        </div>
+                    </div>
 					<div id="filterselection">
 						<label title="Select all">
 							<input type="radio" name="filter_selection" value="all" checked/>
@@ -96,6 +116,7 @@
                     <h3>3.1 Data Gathering</h3>
                     
                     <p>In order to display an accurate outline of San Francisco, we have used the <a href="http://wiki.openstreetmap.org/wiki/Overpass_API">Overpass API</a> of <a href="http://www.openstreetmap.org/">OpenStreetMap (OSM)</a> to query and receive all coast lines, more precisely by using <a href="http://overpass-turbo.eu/">overpass turbo</a>. Furthermore we have collected information about all streets, police stations, as well as bars, pubs, night-clubs, and beer-gardens. The data provided by OSM is in a OSM specific JSON format. However, the tool <a href="http://tyrasd.github.io/osmtogeojson/">osmtogeojson</a> allows to convert OSMJSON to GeoJSON, which we then use in our script.</p>
+                    <p>Additionally we have found information about the population density in San Francisco from the <a href="http://factfinder.census.gov/bkmk/table/1.0/en/DEC/10_SF1/GCTPH1.CY07/0500000US06075">United States Census Bureau</a>, which contains information as recent as 2010.</p>
                 </div>
     
                 <div class="subsection">
