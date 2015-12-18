@@ -7,6 +7,7 @@ $(document).ready(function() {
     
     var pdb_loader = new THREE.PDBLoader();
     var atoms = [];
+    var bonds = [];
     
     
     init();
@@ -67,20 +68,40 @@ $(document).ready(function() {
     }
 
     function load_pdb( url ) {
+        stretch_factor = 8;
         pdb_loader.load( url, function ( geometry, geometryBonds ) {
-            var positions = geometry.vertices;
-            
+              
             //console.log(geometry);
             //console.log(geometryBonds);
             
-            $.each(positions, function(p, position) {
-                sphereGeometry = new THREE.SphereGeometry(2, 16, 16);
-                sphereMaterial = new THREE.MeshLambertMaterial({color: 0x00ff00, wireframe: false});
-                sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
-                sphere.position.set( 5*position.x, 5*position.y, 5*position.z );
+            $.each(geometry.vertices, function(i, position) {
+                var atom_color = new THREE.Color().setRGB(geometry.colors[i].r, geometry.colors[i].g, geometry.colors[i].b);
+                var sphereGeometry = new THREE.SphereGeometry(2, 16, 16);
+                var sphereMaterial = new THREE.MeshLambertMaterial({color: atom_color, wireframe: false});
+                var sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+                sphere.position.set( position.x * stretch_factor,
+                                     position.y * stretch_factor,
+                                     position.z * stretch_factor);
                 atoms.push(sphere);
                 scene.add(sphere);
             });
+            
+            
+
+            for ( var i = 0; i < geometryBonds.vertices.length; i += 2 ) {            
+                var bond_geometry = new THREE.Geometry();
+                bond_geometry.vertices.push(new THREE.Vector3(stretch_factor * geometryBonds.vertices[i].x,
+                                                     stretch_factor * geometryBonds.vertices[i].y,
+                                                     stretch_factor * geometryBonds.vertices[i].z));
+                bond_geometry.vertices.push(new THREE.Vector3(stretch_factor * geometryBonds.vertices[i+1].x,
+                                                     stretch_factor * geometryBonds.vertices[i+1].y,
+                                                     stretch_factor * geometryBonds.vertices[i+1].z));
+                
+                var bond = new THREE.Line(bond_geometry, new THREE.LineBasicMaterial({ color: "#ffffff" }));
+                bonds.push(bond);
+                scene.add(bond);
+            };
+       
 
             render();
             
