@@ -3,7 +3,7 @@
 */
 
 .visbox  {
-    width: 660px;
+    width: 664px;
     height: 500px;
     border: 3px solid #444;
     
@@ -91,6 +91,92 @@ a:hover {
     border-bottom: 1px solid #d3d2a1;
 }
 
+
+
+/**
+    Visualization controls
+*/
+
+
+.ctrl {
+    background-color: none;
+    text-align: center;
+    background-position: center;
+    background-repeat: no-repeat;
+    cursor: pointer;
+}
+
+.ctrl:hover {
+    background-color: #444;
+}
+
+.ctrl.reset {
+    display: inline-block;
+    width: 48px;
+    height: 48px;
+    margin-bottom: 4px;
+    margin-left: auto;
+    background-image: url("../img/ctrl_reset.png");
+    background-size: 24px 24px;
+    border-radius: 8px;
+}
+
+.ctrl.zoomout {
+    display: inline-block;
+    width: 48px;
+    height: 48px;
+    margin-bottom: 4px;
+    margin-left: auto;
+    background-image: url("../img/zoom_out.png");
+    background-size: 24px 24px;
+    border-radius: 8px;
+}
+
+.ctrl.zoomin {
+    display: inline-block;
+    width: 48px;
+    height: 48px;
+    margin-bottom: 4px;
+    margin-right: auto;
+    background-image: url("../img/zoom_in.png");
+    background-size: 24px 24px;
+    border-radius: 8px;
+}
+
+.ctrl.up {
+    height: 16px;
+    background-image: url("../img/ctrl_up.png");
+    border-top-left-radius: 24px;
+    border-top-right-radius: 24px;
+}
+
+.ctrl.down {
+    height: 16px;
+    background-image: url("../img/ctrl_down.png");
+    border-bottom-left-radius: 24px;
+    border-bottom-right-radius: 24px;
+}
+
+.ctrl.left {
+    height: 506px;   /* set to same as #visbox1 height + 2*border */
+    width: 16px;
+    margin-left: -16px;
+    float: left;
+    background-image: url("../img/ctrl_left.png");
+    border-top-left-radius: 24px;
+    border-bottom-left-radius: 24px;
+}
+
+.ctrl.right {
+    height: 506px;   /* set to same as #visbox1 height + 2*border */
+    margin-top: -506px;   /* set to same as before, just negative */
+    width: 16px;
+    margin-right: -16px;
+    float: right;
+    background-image: url("../img/ctrl_right.png");
+    border-top-right-radius: 24px;
+    border-bottom-right-radius: 24px;
+}
 
 
 /**

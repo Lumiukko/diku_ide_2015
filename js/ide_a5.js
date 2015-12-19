@@ -9,12 +9,16 @@ $(document).ready(function() {
     var atoms = [];
     var bonds = [];
     
-    // Enables helpers, i.e. Axis helpers and light helper.
+    // Enables the axis helper
     var helpers = true;
    
     // Enables mouse rotation and zoom.
     // Warning: This is very very problematic with large molecules!
     var movement = false;
+    
+    var default_camera_fov = 75;
+    var default_camera_pos = {x: 50, y: 50, z: 50};
+    
     
     
     init();
@@ -22,6 +26,7 @@ $(document).ready(function() {
 
     function init() {
         container = $("#visbox1");
+        
         var w = container.width();
         var h = container.height();
         
@@ -31,8 +36,9 @@ $(document).ready(function() {
         scene = new THREE.Scene();
         
         // create a camera, which defines where we're looking at.
-        camera = new THREE.PerspectiveCamera(90, w / h, 1.1, 1000);
-        camera.position.set(130, -80, 10);
+        camera = new THREE.PerspectiveCamera(default_camera_fov, w / h, 0.1, 1000);     
+        
+        
         
         // create trackball controls
         if (movement) {
@@ -57,18 +63,104 @@ $(document).ready(function() {
         
 
         /* more of our code here */
+        add_stuff();
+        
         load_pdb("data/2RH1.pdb");
         //load_pdb("data/caffeine.pdb");
-        add_stuff();
-      
         
-        camera.lookAt(scene.position);
-             
-
+        
+        add_controls();
+        reset_camera();
+      
         container.append( renderer.domElement );
+        
+        
         
     };
     
+    function reset_camera() {
+        camera.fov = default_camera_fov;
+        camera.position.set(default_camera_pos.x, default_camera_pos.y, default_camera_pos.z);
+        camera.lookAt(scene.position);
+        camera.updateProjectionMatrix();
+        render();
+    };
+    
+    
+    function add_controls() {
+        var step_size_zoom = 5;
+        var step_size_rotation = 0.2;
+        
+        $("#ctrl_reset").click(function() {
+            reset_camera();
+        });
+    
+        $("#ctrl_zoom_in").click(function() {
+            if (camera.fov >= 10) {
+                camera.fov -= step_size_zoom;
+                camera.updateProjectionMatrix();
+            }
+            render();
+        });
+        
+        $("#ctrl_zoom_out").click(function() {
+            if (camera.fov <= 165) {
+                camera.fov += step_size_zoom;
+                camera.updateProjectionMatrix();
+            }
+            render();
+        });
+        
+        $("#ctrl_up").click(function() {
+            // This is literally wonky!
+            var rot = new THREE.Matrix3().set(
+                                                1,  0,                              0,
+                                                0,  Math.cos(step_size_rotation), - Math.sin(step_size_rotation),
+                                                0,  Math.sin(step_size_rotation),   Math.cos(step_size_rotation)
+                                            );
+                                                                
+            camera.position = camera.position.applyMatrix3(rot);
+            camera.lookAt(scene.position);
+            render();
+        });
+        
+        
+        $("#ctrl_down").click(function() {
+            // This is literally wonky!
+            var rot = new THREE.Matrix3().set(
+                                                1,  0,                               0,
+                                                0,  Math.cos(-step_size_rotation), - Math.sin(-step_size_rotation),
+                                                0,  Math.sin(-step_size_rotation),   Math.cos(-step_size_rotation)
+                                            );
+                                                                
+            camera.position = camera.position.applyMatrix3(rot);
+            camera.lookAt(scene.position);
+            render();
+        });
+        
+        $("#ctrl_left").click(function() {
+            var rot = new THREE.Matrix3().set(
+                                                Math.cos(-step_size_rotation),  0,  Math.sin(-step_size_rotation),
+                                                0,                              1,  0,
+                                              - Math.sin(-step_size_rotation),  0,  Math.cos(-step_size_rotation)
+                                            );
+            camera.position = camera.position.applyMatrix3(rot);
+            camera.lookAt(scene.position);
+            render();
+        });
+        
+        $("#ctrl_right").click(function() {
+            var rot = new THREE.Matrix3().set(
+                                                Math.cos(step_size_rotation),  0,  Math.sin(step_size_rotation),
+                                                0,                             1,  0,
+                                              - Math.sin(step_size_rotation),  0,  Math.cos(step_size_rotation)
+                                            );
+            camera.position = camera.position.applyMatrix3(rot);
+            camera.lookAt(scene.position);
+            render();
+        });
+        
+    };
     
     function render() {
         renderer.render( scene, camera );
@@ -81,7 +173,8 @@ $(document).ready(function() {
 
     function load_pdb( url ) {
         stretch_factor = 8;
-        sphere_detail = 4;
+        sphere_size = 4;
+        sphere_detail = 6;
         bond_distance_limit = 1.9;
         pdb_loader.load( url, function ( geometry, geometryBonds ) {
               
@@ -91,11 +184,20 @@ $(document).ready(function() {
             var comparisons = 0;
             var couples = 0;
             
+            // Attempt to get the dataset somewhat to the origin...
+            var bounding_box = new THREE.Box3().setFromPoints(geometry.vertices);
+            var bb_center = bounding_box.max.sub(bounding_box.min).multiplyScalar(-1);
+            console.log("Center of Molecule Bounding Box:");
+            console.log(bb_center);
+
+            
             $.each(geometry.vertices, function(i, position) {
                 var atom_color = new THREE.Color().setRGB(geometry.colors[i].r, geometry.colors[i].g, geometry.colors[i].b);
-                var sphereGeometry = new THREE.SphereGeometry(2, sphere_detail, sphere_detail);
+                var sphereGeometry = new THREE.SphereGeometry(sphere_size, sphere_detail, sphere_detail);
+                sphereGeometry.translate(bb_center.x, bb_center.y, bb_center.z);
                 var sphereMaterial = new THREE.MeshLambertMaterial({color: atom_color, wireframe: false});
                 var sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+                
                 sphere.position.set( position.x * stretch_factor,
                                      position.y * stretch_factor,
                                      position.z * stretch_factor);
@@ -107,7 +209,7 @@ $(document).ready(function() {
                         comparisons++;
                         if (distance_euclidean(position, mate_position) < bond_distance_limit) {
                             couples++;
-                            draw_line(position, mate_position, stretch_factor);
+                            draw_line(position, mate_position, stretch_factor, bb_center);
                         }
                     }
                 });
@@ -115,7 +217,10 @@ $(document).ready(function() {
             console.log("Number of Comparisons: " + comparisons);
             console.log("Couples: " + couples);
             
+            
+            
             /*
+            // This is the default bonding description based on the data in the PDB file.
             for ( var i = 0; i < geometryBonds.vertices.length; i += 2 ) {            
                 var bond_geometry = new THREE.Geometry();
                 bond_geometry.vertices.push(new THREE.Vector3(stretch_factor * geometryBonds.vertices[i].x,
@@ -132,12 +237,12 @@ $(document).ready(function() {
             */
             
             render();
-            
+
         } );
     };
     
     
-    function draw_line(p1, p2, stretch_factor) {
+    function draw_line(p1, p2, stretch_factor, bbcenter) {
         var bond_geometry = new THREE.Geometry();
         bond_geometry.vertices.push(new THREE.Vector3(stretch_factor * p1.x,
                                                       stretch_factor * p1.y,
@@ -145,38 +250,28 @@ $(document).ready(function() {
         bond_geometry.vertices.push(new THREE.Vector3(stretch_factor * p2.x,
                                                       stretch_factor * p2.y,
                                                       stretch_factor * p2.z));
-        
+        bond_geometry.translate(bbcenter.x, bbcenter.y, bbcenter.z);
         var bond = new THREE.Line(bond_geometry, new THREE.LineBasicMaterial({ color: "#ffffff" }));
         bonds.push(bond);
         scene.add(bond);
     };
     
     function add_stuff() {
-    /*
+        /*
         var cubeGeometry = new THREE.BoxGeometry(8, 8, 8);
-        var cubeMaterial = new THREE.MeshLambertMaterial({color: 0xff0000, wireframe: false});
+        var cubeMaterial = new THREE.MeshLambertMaterial({color: 0xff0000, wireframe: true});
         var cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
-        cube.position.set( -4, 4, -4 );
+        cube.position.set( 0, 0, 16 );
         // add the cube to the scene
         scene.add(cube);
-    */
+        */
         
         // setup a light source       
         
-        /*
-        var spotLight = new THREE.SpotLight( 0xffffff );
-        spotLight.position.set( -20, 20, 130 );
-        spotLight.lookAt( 0, 0, 0 );
-        scene.add( spotLight ); 
-        */
+
         
         var light = new THREE.HemisphereLight( 0xffffbb, 0x080820, 1 );
         scene.add(light);
-        
-        if (helpers) {
-            var lightHelper = new THREE.HemisphereLightHelper(light, 50);
-            scene.add( lightHelper );
-        };
         
         render();
     };
