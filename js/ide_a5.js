@@ -46,7 +46,7 @@ $(document).ready(function() {
         };
         
         // create and setup a renderer
-        renderer = new THREE.WebGLRenderer( { antialias: true } );
+        renderer = new THREE.WebGLRenderer( { antialias: true, alpha: true } );
         renderer.setSize(w, h);
         
         // show axes in the screen
