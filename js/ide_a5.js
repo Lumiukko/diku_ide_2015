@@ -19,11 +19,15 @@ $(document).ready(function() {
     var default_camera_fov = 75;
     var default_camera_pos = {x: 50, y: 50, z: 50};
     
-    
+    var step_size_zoom = 0.05;
+    var step_size_rotation = 0.2;
     
     init();
+    
     if (movement) animate();
 
+    
+    
     function init() {
         container = $("#visbox1");
         
@@ -37,9 +41,6 @@ $(document).ready(function() {
         
         // create a camera, which defines where we're looking at.
         camera = new THREE.PerspectiveCamera(default_camera_fov, w / h, 0.1, 1000);     
-        
-        
-        
         // create trackball controls
         if (movement) {
             controls = new THREE.TrackballControls( camera, document.getElementById("visbox1") );
@@ -65,7 +66,11 @@ $(document).ready(function() {
         /* more of our code here */
         add_stuff();
         
+        // Load 2RH1 and use good camera position.
         load_pdb("data/2RH1.pdb");
+        default_camera_pos = new THREE.Vector3(201, -93, -153);
+        
+        // Load Caffeine molecule
         //load_pdb("data/caffeine.pdb");
         
         
@@ -73,10 +78,8 @@ $(document).ready(function() {
         reset_camera();
       
         container.append( renderer.domElement );
-        
-        
-        
     };
+    
     
     function reset_camera() {
         camera.fov = default_camera_fov;
@@ -87,89 +90,113 @@ $(document).ready(function() {
     };
     
     
+    function zoom_in() {
+        camera.position.multiplyScalar(1-step_size_zoom);
+        //console.log(camera.position);
+        render();
+    };
+    
+    
+    function zoom_out() {
+        camera.position.multiplyScalar(1+step_size_zoom);
+        //console.log(camera.position);
+        render();
+    }
+    
+    
+    function rotate_left() {
+        var rot = new THREE.Matrix3().set(
+                                            Math.cos(-step_size_rotation),  0,  Math.sin(-step_size_rotation),
+                                            0,                              1,  0,
+                                          - Math.sin(-step_size_rotation),  0,  Math.cos(-step_size_rotation)
+                                        );
+        camera.position = camera.position.applyMatrix3(rot);
+        camera.lookAt(scene.position);
+        render();
+    };
+    
+    
+    function rotate_right() {
+        var rot = new THREE.Matrix3().set(
+                                            Math.cos(step_size_rotation),  0,  Math.sin(step_size_rotation),
+                                            0,                             1,  0,
+                                          - Math.sin(step_size_rotation),  0,  Math.cos(step_size_rotation)
+                                        );
+        camera.position = camera.position.applyMatrix3(rot);
+        camera.lookAt(scene.position);
+        render();
+    };
+    
+    
+    function rotate_up() {
+        // This is literally wonky!
+        var rot = new THREE.Matrix3().set(
+                                            1,  0,                              0,
+                                            0,  Math.cos(step_size_rotation), - Math.sin(step_size_rotation),
+                                            0,  Math.sin(step_size_rotation),   Math.cos(step_size_rotation)
+                                        );
+                                                            
+        camera.position = camera.position.applyMatrix3(rot);
+        camera.lookAt(scene.position);
+        render();
+    };
+    
+    
+    function rotate_down() {
+        // This is literally wonky!
+        var rot = new THREE.Matrix3().set(
+                                            1,  0,                               0,
+                                            0,  Math.cos(-step_size_rotation), - Math.sin(-step_size_rotation),
+                                            0,  Math.sin(-step_size_rotation),   Math.cos(-step_size_rotation)
+                                        );
+                                                            
+        camera.position = camera.position.applyMatrix3(rot);
+        camera.lookAt(scene.position);
+        render();
+    };
+    
+    
     function add_controls() {
-        var step_size_zoom = 5;
-        var step_size_rotation = 0.2;
-        
         $("#ctrl_reset").click(function() {
             reset_camera();
         });
     
         $("#ctrl_zoom_in").click(function() {
-            if (camera.fov >= 10) {
-                camera.fov -= step_size_zoom;
-                camera.updateProjectionMatrix();
-            }
-            render();
+            zoom_in();
         });
         
         $("#ctrl_zoom_out").click(function() {
-            if (camera.fov <= 165) {
-                camera.fov += step_size_zoom;
-                camera.updateProjectionMatrix();
-            }
-            render();
+            zoom_out();
         });
         
         $("#ctrl_up").click(function() {
-            // This is literally wonky!
-            var rot = new THREE.Matrix3().set(
-                                                1,  0,                              0,
-                                                0,  Math.cos(step_size_rotation), - Math.sin(step_size_rotation),
-                                                0,  Math.sin(step_size_rotation),   Math.cos(step_size_rotation)
-                                            );
-                                                                
-            camera.position = camera.position.applyMatrix3(rot);
-            camera.lookAt(scene.position);
-            render();
+            rotate_up();
         });
         
-        
         $("#ctrl_down").click(function() {
-            // This is literally wonky!
-            var rot = new THREE.Matrix3().set(
-                                                1,  0,                               0,
-                                                0,  Math.cos(-step_size_rotation), - Math.sin(-step_size_rotation),
-                                                0,  Math.sin(-step_size_rotation),   Math.cos(-step_size_rotation)
-                                            );
-                                                                
-            camera.position = camera.position.applyMatrix3(rot);
-            camera.lookAt(scene.position);
-            render();
+            rotate_down();
         });
         
         $("#ctrl_left").click(function() {
-            var rot = new THREE.Matrix3().set(
-                                                Math.cos(-step_size_rotation),  0,  Math.sin(-step_size_rotation),
-                                                0,                              1,  0,
-                                              - Math.sin(-step_size_rotation),  0,  Math.cos(-step_size_rotation)
-                                            );
-            camera.position = camera.position.applyMatrix3(rot);
-            camera.lookAt(scene.position);
-            render();
+            rotate_left();
         });
         
         $("#ctrl_right").click(function() {
-            var rot = new THREE.Matrix3().set(
-                                                Math.cos(step_size_rotation),  0,  Math.sin(step_size_rotation),
-                                                0,                             1,  0,
-                                              - Math.sin(step_size_rotation),  0,  Math.cos(step_size_rotation)
-                                            );
-            camera.position = camera.position.applyMatrix3(rot);
-            camera.lookAt(scene.position);
-            render();
+            rotate_right();
         });
-        
     };
+    
     
     function render() {
         renderer.render( scene, camera );
     }
     
+    
     function animate() {
         requestAnimationFrame( animate );
         controls.update();
     }
+    
 
     function load_pdb( url ) {
         stretch_factor = 8;
@@ -255,6 +282,7 @@ $(document).ready(function() {
         bonds.push(bond);
         scene.add(bond);
     };
+    
     
     function add_stuff() {
         /*
