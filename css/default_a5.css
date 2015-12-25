@@ -16,6 +16,81 @@
     background: radial-gradient(ellipse at center,  rgba(45,45,45,1) 0%,rgba(15,15,15,1) 100%); /* W3C */
 }
 
+#visbox2 {
+    margin-bottom: 24pt;
+}
+
+p.info {
+    line-height: 20px;
+}
+
+p.info span {
+    font-family: monospace;
+}
+
+p.info span:first-child {
+    margin-left: 12pt;
+}
+
+#v2_coordinates_a {
+    color: red;
+}
+
+#v2_coordinates_c {
+    color: green;
+}
+
+#v2_coordinates_s {
+    color: blue;
+}
+
+/*
+    Axis sliders for Visualization 2
+*/
+
+.axis_slider {
+    position: relative;
+    float: left;
+}
+
+#axial_slider { /* red */
+    left: 418px;
+    top: -394px; /* 177px; */
+    width: 290px;
+    background-color: #aa4444;
+    -webkit-transform: rotate(-90deg);  /* Saf3.1+, Chrome */
+       -moz-transform: rotate(-90deg);  /* FF3.5+ */
+        -ms-transform: rotate(-90deg);  /* IE9 */
+         -o-transform: rotate(-90deg);  /* Opera 10.5 */
+            transform: rotate(-82.5deg);  
+               zoom: 1;
+}
+
+#sagittal_slider { /* blue */
+    left: 300px;
+    top: -136px;
+    width: 274px;
+    background-color: #4444aa;
+    -webkit-transform: rotate(-45deg);  /* Saf3.1+, Chrome */
+       -moz-transform: rotate(-45deg);  /* FF3.5+ */
+        -ms-transform: rotate(-45deg);  /* IE9 */
+         -o-transform: rotate(-45deg);  /* Opera 10.5 */
+            transform: rotate(139deg);  
+               zoom: 1;
+}
+
+#coronal_slider { /* green */
+    left: -228px;
+    top: -115px;
+    width: 278px;
+    background-color: #44aa44;
+    -webkit-transform: rotate(45deg);  /* Saf3.1+, Chrome */
+       -moz-transform: rotate(45deg);  /* FF3.5+ */
+        -ms-transform: rotate(45deg);  /* IE9 */
+         -o-transform: rotate(45deg);  /* Opera 10.5 */
+            transform: rotate(31deg);  
+               zoom: 1;
+}
 
 
 /**

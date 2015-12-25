@@ -12,7 +12,11 @@ $(document).ready(function() {
     var movement2 = false;
     
     var default_camera_fov2 = 45;
-    var default_camera_pos2 = {x: 278, y: 205, z: 351};
+    var default_camera_pos2 = {x: 308, y: 180, z: 370};
+    
+    var axial = $("#axial_slider").val();
+    var coronal = $("#coronal_slider").val();
+    var sagittal = $("#sagittal_slider").val();
     
     var img_stacks = {
         "axial":    181,
@@ -20,6 +24,10 @@ $(document).ready(function() {
         "sagittal": 217
     };
     var textures = [];
+    
+    $("#v2_coordinates_a").text(zero_pad(axial, 3));
+    $("#v2_coordinates_c").text(zero_pad(coronal, 3));
+    $("#v2_coordinates_s").text(zero_pad(sagittal, 3));
     
     init2();
     
@@ -65,7 +73,7 @@ $(document).ready(function() {
         
         $.each(img_stacks, function(k, v) {
             for (var i = 1; i <= v; i++) {
-                var url = get_img_name(k, i);
+                var url = "data/" + k + "_stack/slice_" + zero_pad(i, 3) + ".png";
                 textureLoader.load(url, function(img) {
                     textures.push(img);
                 });
@@ -80,14 +88,25 @@ $(document).ready(function() {
         imageManager.onLoad = function() {
             // ... finished loading all items
             // can be used to render scene and enable control elements
-            add_light();
+            add_light();            
             add_planes();
             render2();
         };
         
-        container2.append( renderer2.domElement );
+        container2.html( renderer2.domElement );
+        
+        $("#axial_slider").on("input", function() {
+            $("#v2_coordinates_a").text(zero_pad(this.value, 3));
+        });
+        
+        $("#coronal_slider").on("input", function() {
+            $("#v2_coordinates_c").text(zero_pad(this.value, 3));
+        });
+        
+        $("#sagittal_slider").on("input", function() {
+            $("#v2_coordinates_s").text(zero_pad(this.value, 3));
+        });
     }
-    
     
     function render2() {
         renderer2.render( scene2, camera2 );
@@ -101,14 +120,14 @@ $(document).ready(function() {
     function add_planes() {
         // Sagittal Plane (Blue / Back to Front)
         var geometry = new THREE.PlaneGeometry( 181, 181, 0 );
-        var material = new THREE.MeshLambertMaterial( {map: textures[181*2+100], color: 0x3333aa, side: THREE.DoubleSide} );
+        var material = new THREE.MeshLambertMaterial( {map: get_texture("sagittal", sagittal), color: 0x3333aa, side: THREE.DoubleSide} );
         var plane = new THREE.Mesh( geometry, material );
         plane.position.set(90.5, 90.5, 0);
         scene2.add( plane );
         
         // Axial Plane (Red / Bottom to Top)
         geometry = new THREE.PlaneGeometry( 181, 217, 0 );
-        material = new THREE.MeshLambertMaterial( {map: textures[70], color: 0xaa3333, side: THREE.DoubleSide} );
+        material = new THREE.MeshLambertMaterial( {map: get_texture("axial", axial), color: 0xaa3333, side: THREE.DoubleSide} );
         plane = new THREE.Mesh( geometry, material );
         plane.rotateX(deg2rad(90));
         plane.position.set(90.5, 0, 217/2);
@@ -116,17 +135,20 @@ $(document).ready(function() {
         
         // Coronal Plane (Green / Right to Left)
         geometry = new THREE.PlaneGeometry( 217, 181, 0 );
-        material = new THREE.MeshLambertMaterial( {map: textures[181+80], color: 0x33aa33, side: THREE.DoubleSide} );
+        material = new THREE.MeshLambertMaterial( {map: get_texture("coronal", coronal), color: 0x33aa33, side: THREE.DoubleSide} );
         plane = new THREE.Mesh( geometry, material );
         plane.rotateY(deg2rad(90));
         plane.position.set(0, 90.5, 217/2);
         scene2.add( plane );
     };
     
-    
-    function get_img_name(axis, number) {
-        return "data/" + axis + "_stack/slice_" + zero_pad(number, 3) + ".png";
+    function get_texture(axis, number) {
+        if (axis == "axial") return textures[number-1];
+        if (axis == "coronal") return textures[number-1 + img_stacks["axial"]];
+        if (axis == "sagittal") return textures[number-1 + img_stacks["axial"] + img_stacks["coronal"]];
+        return undefined;
     }
+    
     
     function deg2rad(degree) {
         return degree * (Math.PI / 180);
