@@ -9,6 +9,7 @@ $(document).ready(function() {
     var atoms = [];
     var bonds = [];
     
+    
     // Enables the axis helper
     var helpers = true;
    
@@ -21,16 +22,17 @@ $(document).ready(function() {
     
     var step_size_zoom = 0.05;
     var step_size_rotation = 0.2;
-    
+        
     init();
     
     if (movement) animate();
 
     
-    
     function init() {
         container = $("#visbox1");
-        
+        $(document).ready(function() {
+          $("#visbox1").click(onDocumentMouseDown);
+        });
         var w = container.width();
         var h = container.height();
         
@@ -214,8 +216,8 @@ $(document).ready(function() {
             // Attempt to get the dataset somewhat to the origin...
             var bounding_box = new THREE.Box3().setFromPoints(geometry.vertices);
             var bb_center = bounding_box.max.sub(bounding_box.min).multiplyScalar(-1);
-            console.log("Center of Molecule Bounding Box:");
-            console.log(bb_center);
+            // console.log("Center of Molecule Bounding Box:");
+            // console.log(bb_center);
 
             
             $.each(geometry.vertices, function(i, position) {
@@ -228,8 +230,10 @@ $(document).ready(function() {
                 sphere.position.set( position.x * stretch_factor,
                                      position.y * stretch_factor,
                                      position.z * stretch_factor);
+                                    
+                
                 atoms.push(sphere);
-                scene.add(sphere);
+                scene.add(sphere);      
                 
                 $.each(geometry.vertices, function(j, mate_position) {
                     if (i != j && j > i) {
@@ -307,6 +311,23 @@ $(document).ready(function() {
     
     function distance_euclidean(p1, p2) {
         return Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2) + Math.pow(p1.z - p2.z, 2));
+    }
+    
+    function onDocumentMouseDown(event) {
+        // get clicked point:
+        var vector = new THREE.Vector3(( event.clientX / window.innerWidth ) * 2 - 1, -( event.clientY / window.innerHeight ) * 2 + 1, 0.5);
+        // "unproject" clicked point from 2D to 3D:
+        vector = vector.unproject(camera);
+        // get ray direction from origin and direction:
+        var raycaster = new THREE.Raycaster(camera.position, vector.sub(camera.position).normalize());
+        // check the objects in arguments for interesection with the ray:
+        var intersects = raycaster.intersectObjects(atoms);
+        // take the nearest intersected object and make it transparent
+        if (intersects.length > 0) {
+            camera.position.set(intersects[0].point.x, intersects[0].point.y, intersects[0].point.z);
+            camera.updateProjectionMatrix();
+            render();
+        }
     }
     
     
