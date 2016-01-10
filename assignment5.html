@@ -38,8 +38,14 @@
                 
                 <div class="subsection">
                     <h3>1.2 Discussion</h3>
-                    
-                    <p>Trackball controls works terrible with a huge number of atoms. That's why there are self-made control buttons.</p>
+                    <p>The large number of atoms makes it difficult to get a nice meaningful perspective. We have tried to fit the whole molecule into the default view. However, the molecule has some kind of curved shape around the origin, which can be seen from the default perspective or by rotating the view.</p>
+                    <p>For the navigation we have first added mouse controls via the Three.js trackball controls. Unfortunately the large amount of atoms makes this method very slow and difficult to control. Therefore the trackball controls have been removed and some custom control buttons were added. These control buttons allow to zoom in and out, reset the view to the default, rotate around the green (z) axis, or roating around a combination of the red and blue (x and y) axes. </p>
+                    <p>For easier depth perception, we have added fog. The color of the fog was chosen to be black, since the background is dark. A light fog color would cause an unaesthetic contrast between the atoms and the background.</p>
+                    <p>By clicking on an atom the camera jumps to the position of the atom. This allows to quickly jump to a different position. However, the raycaster has difficulties to find the proper object probably due to the large amount of objects. Additionally, the sudden jump to a different position may be confusing. Furhermore the jump will place the camera position inside the atom clicked. We were thinking to add a slow animation where the camera is travelling to its new location - again - due to the large number of atoms, we have scrapped that idea.</p>
+                    <p>In order to gain a little more performance the number of faces per sphere (i.e. atom) has been reduced to 6, which makes them appear bulgy.</p>
+                    <p>We have chosen the Lambert material for the spheres, since it creates a self-shadow, which makes the depth perception easier. Additionally we have added a hemispherical light source, so the light position stays fixed and it becomes a little easier to stay oriented. We have not used cast-shadows, as it might cause confusing dark artifacts on other atoms, as well as performance reasons.</p>
+                    <p>We have added axis helpers (red, green, and blue vectors along the three axes) in order to help with the navigation.</p>
+                    <p>The distance between atoms can be set internally by a constant stretch-factor, which allows us to control the distance quite nicely.</p>
                 </div>
                 
             </div>
@@ -75,6 +81,10 @@
                 
                 <div class="subsection">
                     <h3>2.2 Discussion</h3>
+                    <p>Thre three axes are color coded for easy navigation. The 3D view of the brain scan displays the three slices blended in the respective color.</p>
+                    <p>For easy navigation we have chosen a fixed perspective. This allowed us to align three sliders along the axes. These sliders control which slice is being displayed.</p>
+                    <p>Slices are displayed in the 3D view, which is primarily used for orientation in the brain scan, as well as in black and white (for higher contrast) below the 3D view. Additionally the number values of the current slides is displayed in the respective colors, which provides accuracy.</p>
+                    <p>Unfortunately the slices do not align 100% accurately. This appears to be a problem with the image set used or some inherent misalignment.</p>
                 </div>
                 
             </div>
