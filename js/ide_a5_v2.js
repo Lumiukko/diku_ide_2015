@@ -97,14 +97,23 @@ $(document).ready(function() {
         
         $("#axial_slider").on("input", function() {
             $("#v2_coordinates_a").text(zero_pad(this.value, 3));
+            scene2.remove(scene2.getObjectByName('axial_plane'));
+            add_axial_plane();
+            render2();
         });
         
         $("#coronal_slider").on("input", function() {
             $("#v2_coordinates_c").text(zero_pad(this.value, 3));
+            scene2.remove(scene2.getObjectByName('coronal_plane'));
+            add_coronal_plane();
+            render2();
         });
         
         $("#sagittal_slider").on("input", function() {
             $("#v2_coordinates_s").text(zero_pad(this.value, 3));
+            scene2.remove(scene2.getObjectByName('sagittal_plane'));
+            add_sagittal_plane();
+            render2();
         });
     }
     
@@ -117,29 +126,48 @@ $(document).ready(function() {
         controls2.update();
     }
     
-    function add_planes() {
+
+    function add_sagittal_plane() {
         // Sagittal Plane (Blue / Back to Front)
+        sagittal = $("#sagittal_slider").val();
         var geometry = new THREE.PlaneGeometry( 181, 181, 0 );
         var material = new THREE.MeshLambertMaterial( {map: get_texture("sagittal", sagittal), color: 0x3333aa, side: THREE.DoubleSide} );
         var plane = new THREE.Mesh( geometry, material );
         plane.position.set(90.5, 90.5, 0);
+        plane.name = 'sagittal_plane';
         scene2.add( plane );
-        
+
+    }
+    
+    function add_axial_plane() {
         // Axial Plane (Red / Bottom to Top)
+        axial = $("#axial_slider").val();
         geometry = new THREE.PlaneGeometry( 181, 217, 0 );
         material = new THREE.MeshLambertMaterial( {map: get_texture("axial", axial), color: 0xaa3333, side: THREE.DoubleSide} );
         plane = new THREE.Mesh( geometry, material );
         plane.rotateX(deg2rad(90));
-        plane.position.set(90.5, 0, 217/2);
+        plane.position.set(90.5, axial, 217/2);
+        plane.name = 'axial_plane';
         scene2.add( plane );
-        
+
+    }
+    
+    function add_coronal_plane() {
         // Coronal Plane (Green / Right to Left)
+        coronal = $("#coronal_slider").val();
         geometry = new THREE.PlaneGeometry( 217, 181, 0 );
         material = new THREE.MeshLambertMaterial( {map: get_texture("coronal", coronal), color: 0x33aa33, side: THREE.DoubleSide} );
         plane = new THREE.Mesh( geometry, material );
         plane.rotateY(deg2rad(90));
-        plane.position.set(0, 90.5, 217/2);
+        plane.position.set(coronal, 90.5, 217/2);
+        plane.name = 'coronal_plane';
         scene2.add( plane );
+    }
+    
+    function add_planes() {
+        add_sagittal_plane();
+        add_axial_plane();
+        add_coronal_plane();
     };
     
     function get_texture(axis, number) {
