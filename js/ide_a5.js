@@ -305,6 +305,8 @@ $(document).ready(function() {
         var light = new THREE.HemisphereLight( 0xffffbb, 0x080820, 1 );
         scene.add(light);
         
+        scene.fog = new THREE.FogExp2( 0x000000, 0.0018 );
+        
         render();
     };
     
