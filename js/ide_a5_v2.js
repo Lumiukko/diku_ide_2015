@@ -1,15 +1,13 @@
 $(document).ready(function() {
-    var container2;
-    var camera2;
-    var scene2;
-    var renderer2;
-    var controls2;
+    var container2, container2_view;
+    var camera2, camera2_view;
+    var scene2, scene2_view;
+    var renderer2, renderer2_view;
     
     var imageManager = new THREE.LoadingManager();
     var textureLoader = new THREE.TextureLoader(imageManager);
     
-    var helpers2 = true;
-    var movement2 = false;
+    var helpers2 = false;
     
     var default_camera_fov2 = 45;
     var default_camera_pos2 = {x: 308, y: 180, z: 370};
@@ -25,52 +23,15 @@ $(document).ready(function() {
     };
     var textures = [];
     
-    $("#v2_coordinates_a").text(zero_pad(axial, 3));
-    $("#v2_coordinates_c").text(zero_pad(coronal, 3));
-    $("#v2_coordinates_s").text(zero_pad(sagittal, 3));
-    
-    init2();
-    
-    if (movement2) animate2();
+    $(".v2_coordinates_a").text(zero_pad(axial, 3));
+    $(".v2_coordinates_c").text(zero_pad(coronal, 3));
+    $(".v2_coordinates_s").text(zero_pad(sagittal, 3));
     
     
+    load_textures();
+
     
-    
-    function init2() {
-        container2 = $("#visbox2");
-        
-        var w = container2.width();
-        var h = container2.height();
-       
-        // create a scene, that will hold all our elements such as objects, cameras and lights.
-        scene2 = new THREE.Scene();
-        
-        // create a camera, which defines where we're looking at.
-        camera2 = new THREE.PerspectiveCamera(default_camera_fov2, w / h, 0.1, 1000);
-        camera2.position.set(default_camera_pos2.x, default_camera_pos2.y, default_camera_pos2.z);
-        camera2.lookAt(scene2.position);
-        
-        // mouse controls
-        if (movement2) {
-            controls2 = new THREE.TrackballControls( camera2, document.getElementById("visbox2") );
-            controls2.rotateSpeed = 5.0;
-            controls2.zoomSpeed = 0.2;
-            controls2.panSpeed = 0.2;
-            controls2.noZoom = false;
-            controls2.noPan = false;
-            controls2.addEventListener( 'change', render2);
-        }
-        
-        // create and setup a renderer
-        renderer2 = new THREE.WebGLRenderer( { antialias: true, alpha: true } );
-        renderer2.setSize(w, h);
-        
-        // show axes in the screen
-        if (helpers2) {
-            var axes = new THREE.AxisHelper(181);
-            scene2.add(axes)
-        };
-        
+    function load_textures() {
         $.each(img_stacks, function(k, v) {
             for (var i = 1; i <= v; i++) {
                 var url = "data/" + k + "_stack/slice_" + zero_pad(i, 3) + ".png";
@@ -88,31 +49,142 @@ $(document).ready(function() {
         imageManager.onLoad = function() {
             // ... finished loading all items
             // can be used to render scene and enable control elements
-            add_light();            
-            add_planes();
+            init2();
+            init2_view();
+            
             render2();
+            render2_view();
         };
+    }
+    
+    function init2_view() {
+        container2_view = $("#visbox2_views");
         
+        var w = container2_view.width();
+        var h = container2_view.height();
+       
+        // create a scene, that will hold all our elements such as objects, cameras and lights.
+        scene2_view = new THREE.Scene();
+        
+        // create an orthographic camera without perspective distortion
+        camera2_view = new THREE.OrthographicCamera(w/-2, w/2, h/2, h/-2, 0.1, 1000);
+        camera2_view.position.set(0, 1000, 0);
+        camera2_view.lookAt(scene2_view.position);
+        
+        //camera2_view = new THREE.PerspectiveCamera(default_camera_fov2, w / h, 0.1, 1000);
+        //camera2_view.position.set(default_camera_pos2.x, default_camera_pos2.y, default_camera_pos2.z);
+        //camera2_view.lookAt(scene2_view.position);
+        
+        scene2_view.add(camera2_view);
+        
+        // create a webgl renderer
+        renderer2_view = new THREE.WebGLRenderer( { antialias: true } );
+        renderer2_view.setSize(w, h);
+        
+        // add axis helper
+        var axes = new THREE.AxisHelper(100);
+        scene2_view.add(axes);
+        
+        // add light
+        var light = new THREE.AmbientLight(0xffffff);
+        scene2_view.add(light);
+        
+        // add renderer to container
+        container2_view.html( renderer2_view.domElement );
+        
+        // add view planes
+        redraw_view_planes();
+    }
+    
+    function render2_view() {
+        renderer2_view.render( scene2_view, camera2_view );
+    }
+    
+    function redraw_view_planes() {
+        var padding = 10;
+    
+        sagittal = $("#sagittal_slider").val();
+        scene2_view.remove(scene2_view.getObjectByName('sagittal_plane_view'));
+        var s_cube_geo = new THREE.BoxGeometry(181, 10, 181);
+        var s_cube_mat = new THREE.MeshLambertMaterial({map: get_texture("sagittal", sagittal), color: 0xffffff });
+        var s_cube = new THREE.Mesh(s_cube_geo, s_cube_mat);
+        s_cube.rotateY(deg2rad(90));
+        s_cube.position.set(0, 0, 217/2 + 181/2 + padding*2);
+        s_cube.name = 'sagittal_plane_view';
+        scene2_view.add( s_cube );
+        
+        axial = $("#axial_slider").val();
+        scene2_view.remove(scene2_view.getObjectByName('axial_plane_view'));
+        var a_cube_geo = new THREE.BoxGeometry(181, 10, 217);
+        var a_cube_mat = new THREE.MeshLambertMaterial({map: get_texture("axial", axial), color: 0xffffff });
+        var a_cube = new THREE.Mesh(a_cube_geo, a_cube_mat);
+        a_cube.position.set(0, 0, padding);
+        a_cube.name = 'axial_plane_view';
+        scene2_view.add( a_cube );
+        
+        coronal = $("#coronal_slider").val();
+        scene2_view.remove(scene2_view.getObjectByName('coronal_plane_view'));
+        var c_cube_geo = new THREE.BoxGeometry(217, 10, 181);
+        var c_cube_mat = new THREE.MeshLambertMaterial({map: get_texture("coronal", coronal), color: 0xffffff });
+        var c_cube = new THREE.Mesh(c_cube_geo, c_cube_mat);
+        c_cube.rotateY(deg2rad(90));
+        c_cube.position.set(0, 0, - 217/2 - 217/2);
+        c_cube.name = 'coronal_plane_view';
+        scene2_view.add( c_cube );
+        
+        render2_view();
+    }
+    
+    function init2() {
+        container2 = $("#visbox2");
+        
+        var w = container2.width();
+        var h = container2.height();
+       
+        // create a scene, that will hold all our elements such as objects, cameras and lights.
+        scene2 = new THREE.Scene();
+        
+        // create a camera, which defines where we're looking at.
+        camera2 = new THREE.PerspectiveCamera(default_camera_fov2, w / h, 0.1, 1000);
+        camera2.position.set(default_camera_pos2.x, default_camera_pos2.y, default_camera_pos2.z);
+        camera2.lookAt(scene2.position);
+        
+        // create and setup a renderer
+        renderer2 = new THREE.WebGLRenderer( { antialias: true, alpha: true } );
+        renderer2.setSize(w, h);
+        
+        // show axes in the screen
+        if (helpers2) {
+            var axes = new THREE.AxisHelper(181);
+            scene2.add(axes)
+        };
+
         container2.html( renderer2.domElement );
         
+        add_light();            
+        add_planes();
+        
         $("#axial_slider").on("input", function() {
-            $("#v2_coordinates_a").text(zero_pad(this.value, 3));
+            $(".v2_coordinates_a").text(zero_pad(this.value, 3));
             scene2.remove(scene2.getObjectByName('axial_plane'));
             add_axial_plane();
+            redraw_view_planes()
             render2();
         });
         
         $("#coronal_slider").on("input", function() {
-            $("#v2_coordinates_c").text(zero_pad(this.value, 3));
+            $(".v2_coordinates_c").text(zero_pad(this.value, 3));
             scene2.remove(scene2.getObjectByName('coronal_plane'));
             add_coronal_plane();
+            redraw_view_planes()
             render2();
         });
         
         $("#sagittal_slider").on("input", function() {
-            $("#v2_coordinates_s").text(zero_pad(this.value, 3));
+            $(".v2_coordinates_s").text(zero_pad(this.value, 3));
             scene2.remove(scene2.getObjectByName('sagittal_plane'));
             add_sagittal_plane();
+            redraw_view_planes()
             render2();
         });
     }
@@ -131,7 +203,7 @@ $(document).ready(function() {
         // Sagittal Plane (Blue / Back to Front)
         sagittal = $("#sagittal_slider").val();
         var geometry = new THREE.PlaneGeometry( 181, 181, 0 );
-        var material = new THREE.MeshLambertMaterial( {map: get_texture("sagittal", sagittal), color: 0x3333aa, side: THREE.DoubleSide} );
+        var material = new THREE.MeshLambertMaterial( {map: get_texture("sagittal", sagittal), color: 0x6666ff, side: THREE.DoubleSide} );
         var plane = new THREE.Mesh( geometry, material );
         plane.position.set(90.5, 90.5, sagittal);
         plane.name = 'sagittal_plane';
@@ -143,7 +215,7 @@ $(document).ready(function() {
         // Axial Plane (Red / Bottom to Top)
         axial = $("#axial_slider").val();
         geometry = new THREE.PlaneGeometry( 181, 217, 0 );
-        material = new THREE.MeshLambertMaterial( {map: get_texture("axial", axial), color: 0xaa3333, side: THREE.DoubleSide} );
+        material = new THREE.MeshLambertMaterial( {map: get_texture("axial", axial), color: 0xff6666, side: THREE.DoubleSide} );
         plane = new THREE.Mesh( geometry, material );
         plane.rotateX(deg2rad(90));
         plane.position.set(90.5, axial, 217/2);
@@ -156,7 +228,7 @@ $(document).ready(function() {
         // Coronal Plane (Green / Right to Left)
         coronal = $("#coronal_slider").val();
         geometry = new THREE.PlaneGeometry( 217, 181, 0 );
-        material = new THREE.MeshLambertMaterial( {map: get_texture("coronal", coronal), color: 0x33aa33, side: THREE.DoubleSide} );
+        material = new THREE.MeshLambertMaterial( {map: get_texture("coronal", coronal), color: 0x66ff66, side: THREE.DoubleSide} );
         plane = new THREE.Mesh( geometry, material );
         plane.rotateY(deg2rad(90));
         plane.position.set(coronal, 90.5, 217/2);

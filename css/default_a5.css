@@ -20,28 +20,53 @@
     margin-bottom: 24pt;
 }
 
+#visbox2_views {
+    margin-left: auto;
+    margin-right: auto;
+    clear: both;
+    height: 181px;
+}
+
+#visbox2_views_caption {
+    position: relative;
+    top: -214px;
+}
+
+#visbox2_views_caption  span {
+    padding-left: 12px;
+}
+
+#v2v_a {
+    margin-left: 110px;
+}
+
+#v2v_s {
+    margin-left: 120px;
+}
+
+
 p.info {
     line-height: 20px;
 }
 
-p.info span {
-    font-family: monospace;
-}
 
 p.info span:first-child {
     margin-left: 12pt;
 }
 
-#v2_coordinates_a {
-    color: red;
+.v2_coordinates_a {
+    color: #ff6666;
+    font-family: monospace;
 }
 
-#v2_coordinates_c {
-    color: green;
+.v2_coordinates_c {
+    color: #66ff66;
+    font-family: monospace;
 }
 
-#v2_coordinates_s {
-    color: blue;
+.v2_coordinates_s {
+    color: #6666ff;
+    font-family: monospace;
 }
 
 /*

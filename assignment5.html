@@ -52,10 +52,10 @@
                     <h3>2.1 Visualization</h3>
                     
                     <p class="info">
-                        Coordinates [Axial / Coronal / Sagittal]:
-                        <span id="v2_coordinates_a">001</span> / 
-                        <span id="v2_coordinates_c">001</span> / 
-                        <span id="v2_coordinates_s">001</span>
+                        Coordinates [Axial / Sagittal / Coronal]:
+                        <span class="v2_coordinates_a">001</span> / 
+                        <span class="v2_coordinates_c">001</span> / 
+                        <span class="v2_coordinates_s">001</span>
                     </p>
    
                     <div id="visbox2" class="visbox"></div>
@@ -64,6 +64,13 @@
                     <input name="slider" class="axis_slider" id="coronal_slider" type="range" min=1 max=181 step=1 value=1 />
                     <input name="slider" class="axis_slider" id="axial_slider" type="range" min=1 max=181 step=1 value=1 />
                     
+                    <div id="visbox2_views" class="visbox"></div>
+                    
+                    <div id="visbox2_views_caption">
+                        <span id="v2v_c">Coronal:</span><span class="v2_coordinates_s">001</span>
+                        <span id="v2v_a">Axial:</span><span class="v2_coordinates_a">001</span>
+                        <span id="v2v_s">Sagittal:</span><span class="v2_coordinates_c">001</span>
+                    </div>
                 </div>
                 
                 <div class="subsection">
