@@ -133,7 +133,7 @@ $(document).ready(function() {
         var geometry = new THREE.PlaneGeometry( 181, 181, 0 );
         var material = new THREE.MeshLambertMaterial( {map: get_texture("sagittal", sagittal), color: 0x3333aa, side: THREE.DoubleSide} );
         var plane = new THREE.Mesh( geometry, material );
-        plane.position.set(90.5, 90.5, 0);
+        plane.position.set(90.5, 90.5, sagittal);
         plane.name = 'sagittal_plane';
         scene2.add( plane );
 
