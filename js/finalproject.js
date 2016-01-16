@@ -431,7 +431,7 @@ $(document).ready(function() {
         draw_weapon_bar_chart(t_weapon, "Terrorists are firing using:", 0.3, "pink");
                 
     }
-	
+    
     
     /**
         Bar chart of the total number of weapon usage by side
@@ -443,27 +443,28 @@ $(document).ready(function() {
         
         d3.select("#weapon_visbox")
             .append("h4")
-			.style("display", "inline-block")
-			.style("width", "300px")
+            .style("display", "inline-block")
+            .style("width", "300px")
+            .style("margin", "auto")
             .text(title);
                         
         var show_chart_btn = d3.select("#weapon_visbox")
                                 .append("button")
                                 .attr("class", "show_chart_btn")
                                 .text("Show chart")
-								.on("click", function(){
-									if (d3.select(this).text() === "Hide chart") {
-										d3.select(this).text("Show chart");
-										weapon_chart.style("display", "none")
-									} else {
-										d3.select(this).text("Hide chart");
-										weapon_chart.style("display", "block")
-									}
-								});
+                                .on("click", function(){
+                                    if (d3.select(this).text() === "Hide chart") {
+                                        d3.select(this).text("Show chart");
+                                        weapon_chart.style("display", "none")
+                                    } else {
+                                        d3.select(this).text("Hide chart");
+                                        weapon_chart.style("display", "block")
+                                    }
+                                });
         
         var weapon_chart = d3.select("#weapon_visbox")
                             .append("svg")
-							.style("display", "none")
+                            .style("display", "none")
                             .attr("class", "visbox")
                             .attr("height", chart_height+"px")
                             .attr("width", chart_width+"px");
