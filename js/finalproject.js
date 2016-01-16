@@ -1,43 +1,398 @@
 $(document).ready(function() {
+    var remove_warmup = true;
+
 
     var svg = d3.select("#visbox");
     
+    var lineFunction = d3.svg.line()
+                         .x(function(d) { return Math.round(d.x).toFixed(2); })
+                         .y(function(d) { return Math.round(d.y).toFixed(2); })
+                         .interpolate("linear");
+    
     // Layers: Change order to bring layers to front or back.
+    svg.append("g").attr("id", "lyr_footsteps");
+    svg.append("g").attr("id", "lyr_player_paths");
     svg.append("g").attr("id", "lyr_shots_fired");
     svg.append("g").attr("id", "lyr_player_death");
-    svg.append("g").attr("id", "lyr_footsteps");
+    
+    var rounds;
+    load_meta_data();
+    
+    
+    function load_meta_data() {
+        d3.json("data/csgo/ESLOneCologne2015-fnatic-vs-envyus-dust2_meta.json", function(error, data) {
+            if (!error) {
+                rounds = {};
+                data.forEach(function(entry) {
+                    
+                    if (!(entry.round in rounds)) {
+                        rounds[entry.round] = {};
+                    }
 
-    d3.json("data/csgo/ESLOneCologne2015-fnatic-vs-envyus-dust2_player_death.json", function(error, data) {
-        if (!error) {
-            //add_player_deaths(data);
-			add_weapon_statistics(data)
-        }
-        else {
-            console.log("Error: " + error);
-        }
-    });
+                    
+                    if (entry.event == "game.round_start") {
+                        rounds[entry.round]["start"] = entry.tick;
+                    }
+                    else if (entry.event == "game.round_end") {
+                        rounds[entry.round]["end"] = entry.tick;
+                    }
+                    else if (entry.event == "game.round_announce_match_start") {
+                        rounds[entry.round].warmup = true;
+                    }
+                });
+
+                
+                load_player_deaths();
+                load_weapon_fire();
+                load_player_footstep();
+            }
+            else {
+                console.log("Error: " + error);
+            }
+        });
+    }
+
     
-    d3.json("data/csgo/ESLOneCologne2015-fnatic-vs-envyus-dust2_weapon_fired.json", function(error, data) {
-        if (!error) {
-            //add_shots_fired(data);
-			add_weapon_fired_statistics(data)
-        }
-        else {
-            console.log("Error: " + error);
-        }
-    });
+    function load_player_deaths() {
+        d3.json("data/csgo/ESLOneCologne2015-fnatic-vs-envyus-dust2_player_death.json", function(error, data) {
+            if (!error) {
+                add_player_deaths(data);
+                add_weapon_statistics(data);
+            }
+            else {
+                console.log("Error: " + error);
+            }
+        });
+    }
     
-    d3.json("data/csgo/ESLOneCologne2015-fnatic-vs-envyus-dust2_player_footstep.json", function(error, data) {
-        if (!error) {
-            add_footsteps(data);
+    function load_weapon_fire() {        
+        d3.json("data/csgo/ESLOneCologne2015-fnatic-vs-envyus-dust2_weapon_fire.json", function(error, data) {
+            if (!error) {
+                //add_shots_fired(data);
+                add_weapon_fired_statistics(data);
+            }
+            else {
+                console.log("Error: " + error);
+            }
+        });
+    }
+    
+    function load_player_footstep() {    
+        d3.json("data/csgo/ESLOneCologne2015-fnatic-vs-envyus-dust2_player_footstep.json", function(error, data) {
+            if (!error) {
+                var player_paths = get_player_paths(data);
+                
+                // Remove warmup round if set in the remove_warmup variable.
+                if (remove_warmup) {
+                    for (var r in rounds) {
+                        if (rounds.hasOwnProperty(r)) {
+                            if (rounds[r].warmup) {
+                                for (var p in player_paths) {
+                                    if (player_paths.hasOwnProperty(p)) {
+                                        delete player_paths[p][r];
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                add_player_paths(player_paths);
+                //add_footsteps(data);
+            }
+            else {
+                console.log("Error: " + error);
+            }
+        });
+    }
+    
+    
+    function add_player_paths(player_paths) {
+        paths = [];
+        for (var p in player_paths) {
+            if (player_paths.hasOwnProperty(p)) {
+                for (var r in player_paths[p]) {
+                    if (player_paths[p].hasOwnProperty(r)) {
+                        if (player_paths[p][r].length > 0) {
+                            paths.push(player_paths[p][r]);
+                        }
+                    }
+                }
+            }
         }
-        else {
-            console.log("Error: " + error);
+    
+        var player_footpaths = svg.select("#lyr_player_paths").selectAll("path.player_path").data(paths);
+        
+        player_footpaths.enter()
+                        .append("path")
+                        .attr("class", "player_path")
+                        .style("stroke", function(d, i) {
+                            if (d[0].side == "TERRORIST") {
+                                return "red";
+                            }
+                            else if (d[0].side == "CT") {
+                                return "blue";
+                            }
+                        })
+                        .attr("d", function(d, i) {
+                            if (d[0].round != 12) return [];
+                             var translated = d.map(translate_path_point);
+                             return lineFunction(translated);
+                        })
+                        .on("mouseover", function(d, i) {
+                            important_info = {
+                                "side": d[0].side,
+                                "player": d[0].player,
+                                "round" : d[0].round
+                            }
+                            tooltip(stringify_pretty_print(important_info));
+                        })
+                        .on("mouseout", function(d, i) {
+                            tooltip_hide();
+                        });
+    }
+    
+    
+    
+    function add_player_deaths(data) {
+        var player_deaths = svg.select("#lyr_player_death")
+                               .selectAll("circle.player_death").data(data);
+        
+        player_deaths.enter()
+                     .append("circle")
+                     .attr("class", "player_death")
+                     .attr("r", function(d, i) {
+                        if (d.round == 12) {
+                            return 8;
+                        }
+                        else {
+                            return 0;
+                        }
+                     })
+                     .attr("cx", function(d, i) {
+                        posx = translate_x(d.position.x);
+                        //console.log("posx: " + posx);
+                        return posx;
+                     })
+                     .attr("cy", function(d, i) {
+                        posy = translate_y(d.position.y);
+                        //console.log("posy: " + posy);
+                        return posy;
+                     })
+                     .attr("fill", function(d, i) {
+                        if (d.side == "TERRORIST") {
+                            return "#990000";
+                        }
+                        else if (d.side == "CT") {
+                            return "#000066";
+                        }
+                        else {
+                            return "black";
+                        }
+                     })
+                     .on("mouseover", function(d, i) {
+                        tooltip(stringify_pretty_print(d));
+                     })
+                     .on("mouseout", function(d, i) {
+                        tooltip_hide();
+                     });
+    };
+    
+    
+    function add_footsteps(data) {
+        var player_deaths = svg.select("#lyr_footsteps")
+                               .selectAll("circle.footsteps").data(data);
+        
+        player_deaths.enter()
+                     .append("circle")
+                     .attr("class", "footsteps")
+                     .attr("r", function (d, i) {
+                        if (d.round == 1) {
+                            return 2;
+                        }
+                        else {
+                            return 2;
+                        }
+                     })
+                     .attr("cx", function(d, i) {
+                        posx = translate_x(d.position.x);
+                        //console.log("posx: " + posx);
+                        return posx;
+                     })
+                     .attr("cy", function(d, i) {
+                        posy = translate_y(d.position.y);
+                        //console.log("posy: " + posy);
+                        return posy;
+                     })
+                     .attr("fill", function(d, i) {
+                        if (d.side == "TERRORIST") {
+                            return "red";
+                        }
+                        else if (d.side == "CT") {
+                            return "blue";
+                        }
+                        else {
+                            return "yellow";
+                        }
+                     })
+                     .on("mouseover", function(d, i) {
+                       tooltip(stringify_pretty_print(d));
+                     })
+                     .on("mouseout", function(d, i) {
+                       tooltip_hide();
+                     });
+    };  
+    
+    
+    function add_shots_fired(data) {
+        var shots_fired = svg.select("#lyr_shots_fired")
+                             .selectAll("circle.shot_fired").data(data);
+        
+        shots_fired.enter()
+                   .append("circle")
+                   .attr("class", "shot_fired")
+                   .attr("r", function(d, i) {
+                      if (d.weapon != "knife") {
+                          return 2;
+                      }
+                      else {
+                          return 0;
+                      }
+                   })
+                   .attr("cx", function(d, i) {
+                      posx = translate_x(d.position.x);
+                      //console.log("posx: " + posx);
+                      return posx;
+                   })
+                   .attr("cy", function(d, i) {
+                      posy = translate_y(d.position.y);
+                      //console.log("posy: " + posy);
+                      return posy;
+                   })
+                   .attr("fill", function(d, i) {
+                      if (d.side == "TERRORIST") {
+                          return "yellow";
+                      }
+                      else if (d.side == "CT") {
+                          return "lime";
+                      }
+                      else {
+                          return "black";
+                      }
+                   })
+                   .on("mouseover", function(d, i) {
+                      tooltip(stringify_pretty_print(d));
+                   })
+                   .on("mouseout", function(d, i) {
+                      tooltip_hide();
+                   });
+    };
+
+    
+    function get_player_paths(data) {
+        /**
+            player_paths is an object with player names as keys
+            each player key contains a list, where each entry
+            corresponds to one round. each round is a list of steps
+            that particular player made.
+        */
+        var player_paths = {};
+        
+        data.forEach(function (entry) {
+            // check for round end and create new path
+            var round_current = get_round_from_tick(entry.tick);
+            if (round_current == undefined) {
+                round_current = 1;
+            }
+            
+            if (!(entry.uid in player_paths)) {
+                player_paths[entry.uid] = {};
+                for (var r in rounds) {
+                    if (rounds.hasOwnProperty(r)) {
+                        player_paths[entry.uid][r] = []
+                    }
+                }
+            }
+           
+            player_paths[entry.uid][round_current].push({
+                "tick": entry.tick,
+                "pos": entry.position,
+                "player": entry.player,
+                "side": entry.side,
+                "round": round_current
+            });
+        });
+        
+        return player_paths;
+    }
+    
+    
+    function get_round_from_tick(tick) {
+        for (var r in rounds) {
+            if (rounds.hasOwnProperty(r)) {
+                if (tick >= rounds[r].start && tick <= rounds[r].end) {
+                    return r;
+                }
+            }
         }
-    });
-	
-		
-	/**
+        return undefined;
+    }
+    
+    
+    function translate_x(x) {
+        return        (1024 * (x + 2480) / 4580);
+    }
+    
+    
+    function translate_y(y) {
+        return 1024 - (1024 * (y + 1130) / 4500);
+    }
+    
+    function translate_z(z) {
+        return z;
+    }
+    
+    function translate_path_point(point) {
+        var new_coord = {
+            "x": translate_x(point.pos.x),
+            "y": translate_y(point.pos.y),
+            "z": translate_z(point.pos.z),
+            "t": translate_z(point.tick)
+        };
+        return new_coord;
+    }
+    
+    
+    function tooltip(html) {
+        offset_x = 12;
+        offset_y = -22;
+        pos = d3.mouse(document.body);
+        d3.select("#tooltip")
+          .html(html)
+          .style("left", pos[0] + offset_x)
+          .style("top", pos[1] + offset_y)
+          .classed({"hidden": false});
+        
+    }
+    
+    
+    function tooltip_hide() {
+        d3.select("#tooltip").classed({"hidden": true});
+    }
+   
+   
+    function stringify_pretty_print(obj) {
+        // This function creates a JSON string out of an object, parsses it, and
+        // stringifies it again to introduce a nice indentions, aka pretty print.
+        return "<pre>" + JSON.stringify(JSON.parse(JSON.stringify(obj)),null,2) + "</pre>";
+    }
+    
+    
+    /**
+            ================  Weapon Visualization ================================
+    */
+    
+    /**
 		
 	*/
 	function add_weapon_statistics(data){
@@ -192,129 +547,5 @@ $(document).ready(function() {
 
 		return sorted_weapons;
 	}
-    
-    
-    function add_player_deaths(data) {
-        var player_deaths = svg.select("#lyr_player_death")
-                               .selectAll("circle.player_death").data(data);
-        
-        player_deaths.enter()
-                     .append("circle")
-                     .attr("class", "player_death")
-                     .attr("r", 16)
-                     .attr("cx", function(d, i) {
-                        posx = translate_x(d.position.x);
-                        //console.log("posx: " + posx);
-                        return posx;
-                     })
-                     .attr("cy", function(d, i) {
-                        posy = translate_y(d.position.y);
-                        //console.log("posy: " + posy);
-                        return posy;
-                     })
-                     .attr("fill", function(d, i) {
-                        if (d.side == "TERRORIST") {
-                            return "fuchsia";
-                        }
-                        else if (d.side == "CT") {
-                            return "lightblue";
-                        }
-                        else {
-                            return "yellow";
-                        }
-                     })
-                     .on("mouseover",function(d, i) {
-                        console.log(d);
-                     });
-    };
-    
-    
-    function add_footsteps(data) {
-        var player_deaths = svg.select("#lyr_footsteps")
-                               .selectAll("circle.footsteps").data(data);
-        
-        player_deaths.enter()
-                     .append("circle")
-                     .attr("class", "footsteps")
-                     .attr("r", 2)
-                     .attr("cx", function(d, i) {
-                        posx = translate_x(d.position.x);
-                        //console.log("posx: " + posx);
-                        return posx;
-                     })
-                     .attr("cy", function(d, i) {
-                        posy = translate_y(d.position.y);
-                        //console.log("posy: " + posy);
-                        return posy;
-                     })
-                     .attr("fill", function(d, i) {
-                        if (d.side == "TERRORIST") {
-                            return "red";
-                        }
-                        else if (d.side == "CT") {
-                            return "blue";
-                        }
-                        else {
-                            return "yellow";
-                        }
-                     })
-                     .on("mouseover",function(d, i) {
-                        console.log(d);
-                     });
-    };  
-    
-    
-    function add_shots_fired(data) {
-        var player_deaths = svg.select("#lyr_shots_fired")
-                               .selectAll("circle.shot_fired").data(data);
-        
-        player_deaths.enter()
-                     .append("circle")
-                     .attr("class", "shot_fired")
-                     .attr("r", function(d, i) {
-                        if (d.weapon != "knife") {
-                            return 3;
-                        }
-                        else {
-                            return 3;
-                        }
-                     })
-                     .attr("cx", function(d, i) {
-                        posx = translate_x(d.position.x);
-                        //console.log("posx: " + posx);
-                        return posx;
-                     })
-                     .attr("cy", function(d, i) {
-                        posy = translate_y(d.position.y);
-                        //console.log("posy: " + posy);
-                        return posy;
-                     })
-                     .attr("fill", function(d, i) {
-                        if (d.side == "TERRORIST") {
-                            return "red";
-                        }
-                        else if (d.side == "CT") {
-                            return "blue";
-                        }
-                        else {
-                            return "yellow";
-                        }
-                     })
-                     .on("mouseover",function(d, i) {
-                        console.log(d);
-                     });
-    };
-
-    
-    function translate_x(x) {
-        return        (1024 * (x + 2480) / 4580);
-    }
-    
-    
-    function translate_y(y) {
-        return 1024 - (1024 * (y + 1130) / 4500);
-        //  + 1170
-    }
-   
     
 });
