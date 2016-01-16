@@ -81,7 +81,7 @@ fs.readFile('demos/' + demo_name + '.dem', function(err, data) {
                 'position': player.getPosition(),
                 'last_place_name': player.getLastPlaceName(),
                 'eye_angle': player.getEyeAngle(),
-                'weapon': weapon_name.replace('CWeapon', '').toLowerCase();
+                'weapon': weapon_name.replace('CWeapon', '').toLowerCase()
             });
         });
     }
@@ -95,17 +95,18 @@ fs.readFile('demos/' + demo_name + '.dem', function(err, data) {
             });
         });
         demo.on('game.round_end', function(event) {
+            var teams = demo.getTeams();
+            var score = {};
+            for (var i in teams) {
+                if (typeof teams[i].getClanName === 'function' && teams[i].getClanName()) {
+                    score[teams[i].getClanName()] = teams[i].getScore();
+                } 
+            }
             event_subscriptions['game.meta'].push({
                 'event': 'game.round_end',
                 'tick': demo.getTick(),
                 'round': demo.getRound(),
-            });
-        });
-        demo.on('game.round_announce_warmup', function(event) {
-            event_subscriptions['game.meta'].push({
-                'event': 'game.round_announce_warmup',
-                'tick': demo.getTick(),
-                'round': demo.getRound(),
+                'score': score,
             });
         });
         demo.on('game.round_announce_match_start', function(event) {
@@ -114,6 +115,17 @@ fs.readFile('demos/' + demo_name + '.dem', function(err, data) {
                 'tick': demo.getTick(),
                 'round': demo.getRound(),
             });
+        });
+        demo.on('game.round_mvp', function(event) {
+            if (event.player) {
+                event_subscriptions['game.meta'].push({
+                    'event': 'game.mvp',
+                    'tick': demo.getTick(),
+                    'round': demo.getRound(),
+                    'player': event.player.getName(),
+                    'uid': event.player.getUserId(),
+                });
+            }
         });
     }
     
