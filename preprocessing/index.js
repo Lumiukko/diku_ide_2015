@@ -31,7 +31,6 @@ console.log('Parsing events ' + Object.keys(event_subscriptions).join(', ') + '.
 fs.readFile('demos/' + demo_name + '.dem', function(err, data) {
     
     demo = new jsgo.Demo();
-
     if ('game.weapon_fire' in event_subscriptions) {
         demo.on('game.weapon_fire', function(event) {
             var player = event.player;
@@ -61,8 +60,9 @@ fs.readFile('demos/' + demo_name + '.dem', function(err, data) {
                 'team': team.getClanName(),
                 'side': team.getSide(),
                 'position': player.getPosition(),
+                'last_place_name': player.getLastPlaceName(),
                 'eye_angle': player.getEyeAngle(),
-                'weapon': event.weapon
+                'killed_by': event.weapon
             });
         });
     } 
@@ -77,7 +77,10 @@ fs.readFile('demos/' + demo_name + '.dem', function(err, data) {
                 'player': player.getName(),
                 'team': team.getClanName(),
                 'side': team.getSide(),
-                'position': player.getPosition()
+                'position': player.getPosition(),
+                'last_place_name': player.getLastPlaceName(),
+                'eye_angle': player.getEyeAngle(),
+                'weapon': player.getActiveWeapon().classInfo.name.replace('CWeapon').toLowerCase()
             });
         });
     }
