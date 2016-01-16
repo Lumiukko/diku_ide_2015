@@ -105,8 +105,21 @@ a:hover {
     border-bottom: 1px solid #d3d2a1;
 }
 
+/**
+	Weapon bar chart
+*/
+.bar {
+  shape-rendering: crispEdges;
+}
 
-
+.tooltip {
+    position: absolute;
+    display: none;
+    background-color: #333;
+    padding: 3px;
+    border-radius: 5px;
+    margin: 25px 0 0 20px;
+}
 
 
 /**
