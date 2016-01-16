@@ -70,6 +70,7 @@ fs.readFile('demos/' + demo_name + '.dem', function(err, data) {
         demo.on('game.player_footstep', function(event) {
             var player = event.player;
             var team = player.getTeam(this);
+            var weapon_name = player.getActiveWeapon().classInfo.name;
             event_subscriptions['game.player_footstep'].push({
                 'uid': player.getUserId(),
                 'tick': demo.getTick(),
@@ -80,7 +81,7 @@ fs.readFile('demos/' + demo_name + '.dem', function(err, data) {
                 'position': player.getPosition(),
                 'last_place_name': player.getLastPlaceName(),
                 'eye_angle': player.getEyeAngle(),
-                'weapon': player.getActiveWeapon().classInfo.name.replace('CWeapon').toLowerCase()
+                'weapon': weapon_name.replace('CWeapon', '').toLowerCase();
             });
         });
     }
