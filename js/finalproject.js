@@ -57,7 +57,7 @@ $(document).ready(function() {
         d3.json("data/csgo/ESLOneCologne2015-fnatic-vs-envyus-dust2_player_death.json", function(error, data) {
             if (!error) {
                 add_player_deaths(data);
-                add_weapon_statistics(data);
+                add_weapon_death_statistics(data);
             }
             else {
                 console.log("Error: " + error);
@@ -395,14 +395,14 @@ $(document).ready(function() {
     /**
 		
 	*/
-	function add_weapon_statistics(data){
+	function add_weapon_death_statistics(data){
 		var sides = sort_by_side(data)
 		
 		var ct_data = sides[0];
 		var t_data = sides[1];
 		
-		var ct_weapon = add_weapon_category(ct_data)
-		var t_weapon = add_weapon_category(t_data)
+		var ct_weapon = add_weapon_category(ct_data, "killed_by")
+		var t_weapon = add_weapon_category(t_data, "killed_by")
 
 		draw_weapon_bar_chart(ct_weapon, "Counter Terrorists were killed by:", 4, "lightblue");
 		draw_weapon_bar_chart(t_weapon, "Terrorists were killed by:", 4, "pink");
@@ -417,8 +417,8 @@ $(document).ready(function() {
 		var ct_data = sides[0];
 		var t_data = sides[1];
 		
-		var ct_weapon = add_weapon_category(ct_data)
-		var t_weapon = add_weapon_category(t_data)
+		var ct_weapon = add_weapon_category(ct_data, "weapon")
+		var t_weapon = add_weapon_category(t_data, "weapon")
 
 		draw_weapon_bar_chart(ct_weapon, "Counter Terrorists are firing using:", 0.3, "lightblue");
 		draw_weapon_bar_chart(t_weapon, "Terrorists are firing using:", 0.3, "pink");
@@ -525,10 +525,10 @@ $(document).ready(function() {
 	/**
 		Sorts the weapons by usage
 	*/
-	function add_weapon_category(data){
+	function add_weapon_category(data, object_name){
 		var categories = [];
         data.forEach(function(entry) {
-                categories.push(entry.weapon);
+                categories.push(entry[object_name]);
         });
 		
 		var unique_weapons = {}; 
