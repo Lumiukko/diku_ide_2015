@@ -3,7 +3,7 @@ var jsgo = require('jsgo');
 
 // Config
 var demo_name = 'ESLOneCologne2015-fnatic-vs-envyus-dust2';
-var footstep_tick_sample = 50;
+var footstep_tick_sample = 64;
 var events = {
     'game.weapon_fire': [],
     'game.player_death': [],
@@ -68,28 +68,30 @@ fs.readFile('demos/' + demo_name + '.dem', function(err, data) {
         });
     } 
     if ('game.player_footstep' in event_subscriptions) {
+        var all_players = [];
         var alive_players = [];
         demo.on('game.round_start', function(event) {
-            alive_players = [];
+            alive_players = all_players.slice();
+            if (this.getRound() !== 1) return;
+            all_players = [];
             teams = this.getTeams();
             // only add players from the real opposing teams
             for (var i in teams) {
                 if (typeof teams[i].getClanName === 'function' && teams[i].getClanName()) {
                     var team_players = teams[i].getPlayers(this);
                     for (var x in team_players) {
-                        if (team_players[x]) {
-                            alive_players.push(team_players[x].getUserId());
-                        }
+                        all_players.push(team_players[x].getUserId());
                     }
                 } 
             }
+            alive_players = all_players.slice();
         });
         demo.on('game.player_death', function(event) {
             var index = alive_players.indexOf(event.player.getUserId());
             alive_players.splice(index, 1);
         });
-        demo.on('game.player_footstep', function(event) {
-            if (last_pos_tick + footstep_tick_sample > demo.getTick()) {
+        demo.on('entity_updated', function(event) {
+            if (last_pos_tick + footstep_tick_sample > this.getTick()) {
                 return;
             }
             last_pos_tick = this.getTick();
@@ -97,17 +99,14 @@ fs.readFile('demos/' + demo_name + '.dem', function(err, data) {
             for (var i in players) {
                 var player = players[i];
                 // don't add dead players
-                if (alive_players.indexOf(player.getUserId()) == -1) {
+                if (!player || !player.getHealth || !player.getActiveWeapon()) {
                     continue;
                 }
-                if (!player || !player.getHealth) {
-                    continue;
-                }
-                if (!player.getActiveWeapon()) {
+                if (alive_players.indexOf(player.getUserId()) === -1) {
                     continue;
                 }
                 var team = player.getTeam(this);
-                var weapon_name = player.getActiveWeapon().classInfo.name;
+                var weapon = player.getActiveWeapon().classInfo.name;
                 event_subscriptions['game.player_footstep'].push({
                     'uid': player.getUserId(),
                     'tick': this.getTick(),
@@ -119,7 +118,7 @@ fs.readFile('demos/' + demo_name + '.dem', function(err, data) {
                     'position': player.getPosition(),
                     'last_place_name': player.getLastPlaceName(),
                     'eye_angle': player.getEyeAngle(),
-                    'weapon': weapon_name.replace('CWeapon', '').toLowerCase()
+                    'weapon': weapon.replace(/^(CWeapon|C)/, '').toLowerCase(),
                 });   
             }
         });
