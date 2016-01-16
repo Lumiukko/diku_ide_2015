@@ -1,13 +1,17 @@
 $(document).ready(function() {
     var remove_warmup = true;
 
+    var f_round = 12;
+    var f_player = "apEX";
+    
+    // 36404
 
     var svg = d3.select("#visbox");
     
     var lineFunction = d3.svg.line()
                          .x(function(d) { return Math.round(d.x).toFixed(2); })
                          .y(function(d) { return Math.round(d.y).toFixed(2); })
-                         .interpolate("linear");
+                         .interpolate("cardinal");
     
     // Layers: Change order to bring layers to front or back.
     svg.append("g").attr("id", "lyr_footsteps");
@@ -98,7 +102,7 @@ $(document).ready(function() {
                 }
                 
                 add_player_paths(player_paths);
-                //add_footsteps(data);
+                add_footsteps(data);
             }
             else {
                 console.log("Error: " + error);
@@ -135,7 +139,7 @@ $(document).ready(function() {
                             }
                         })
                         .attr("d", function(d, i) {
-                            if (d[0].round != 12) return [];
+                            if (d[0].round != f_round || d[0].player != f_player) return [];
                              var translated = d.map(translate_path_point);
                              return lineFunction(translated);
                         })
@@ -145,7 +149,7 @@ $(document).ready(function() {
                                 "player": d[0].player,
                                 "round" : d[0].round
                             }
-                            tooltip(stringify_pretty_print(important_info));
+                            tooltip_show(stringify_pretty_print(important_info));
                         })
                         .on("mouseout", function(d, i) {
                             tooltip_hide();
@@ -162,7 +166,7 @@ $(document).ready(function() {
                      .append("circle")
                      .attr("class", "player_death")
                      .attr("r", function(d, i) {
-                        if (d.round == 12) {
+                        if (d.round == f_round && d.player == f_player) {
                             return 8;
                         }
                         else {
@@ -191,7 +195,7 @@ $(document).ready(function() {
                         }
                      })
                      .on("mouseover", function(d, i) {
-                        tooltip(stringify_pretty_print(d));
+                        tooltip_show(stringify_pretty_print(d));
                      })
                      .on("mouseout", function(d, i) {
                         tooltip_hide();
@@ -200,18 +204,21 @@ $(document).ready(function() {
     
     
     function add_footsteps(data) {
-        var player_deaths = svg.select("#lyr_footsteps")
-                               .selectAll("circle.footsteps").data(data);
+        var player_foot_steps = svg.select("#lyr_footsteps")
+                                   .selectAll("circle.footsteps").data(data);
         
-        player_deaths.enter()
+        player_foot_steps.enter()
                      .append("circle")
                      .attr("class", "footsteps")
                      .attr("r", function (d, i) {
-                        if (d.round == 1) {
-                            return 2;
+                        if (d.round == f_round && d.player == f_player) {
+                            return 4;
+                        }
+                        else if (d.round == f_round && d.player != f_player) {
+                            return 0;
                         }
                         else {
-                            return 2;
+                            return 0;
                         }
                      })
                      .attr("cx", function(d, i) {
@@ -236,7 +243,7 @@ $(document).ready(function() {
                         }
                      })
                      .on("mouseover", function(d, i) {
-                       tooltip(stringify_pretty_print(d));
+                       tooltip_show(stringify_pretty_print(d));
                      })
                      .on("mouseout", function(d, i) {
                        tooltip_hide();
@@ -281,7 +288,7 @@ $(document).ready(function() {
                       }
                    })
                    .on("mouseover", function(d, i) {
-                      tooltip(stringify_pretty_print(d));
+                      tooltip_show(stringify_pretty_print(d));
                    })
                    .on("mouseout", function(d, i) {
                       tooltip_hide();
@@ -363,7 +370,7 @@ $(document).ready(function() {
     }
     
     
-    function tooltip(html) {
+    function tooltip_show(html) {
         offset_x = 12;
         offset_y = -22;
         pos = d3.mouse(document.body);
