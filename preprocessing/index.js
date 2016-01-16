@@ -3,24 +3,43 @@ var jsgo = require('jsgo');
 
 var demo_name = 'ESLOneCologne2015-fnatic-vs-envyus-dust2';
 
-event_subscriptions = []
+var events = {
+    'game.weapon_fire': [],
+    'game.player_death': [],
+    'game.player_footstep': [],
+    'game.meta': []
+}
+
+var event_subscriptions = {};
+
 process.argv.forEach(function (val, index, array) {
     if (index > 1) {
-        event_subscriptions.push(val);
+        if (val == 'all') {
+            event_subscriptions = events;
+            return;
+        }
+        if (val in events) {
+            event_subscriptions[val] = [];
+        } else {
+            console.log('Unknown event argument: ' + val);
+        }
     }
 });
 
+console.log('Parsing events ' + Object.keys(event_subscriptions).join(', ') + '.');
+
 fs.readFile('demos/' + demo_name + '.dem', function(err, data) {
-    output = {};
     
     demo = new jsgo.Demo();
-    if ('weapon_fire' in event_subscriptions) {
-        output['weapon_fire'] = [];
+
+    if ('game.weapon_fire' in event_subscriptions) {
         demo.on('game.weapon_fire', function(event) {
             var player = event.player;
             var team = player.getTeam(this);
-            output['weapon_fire'].push({
+            event_subscriptions['game.weapon_fire'].push({
+                'uid': player.getUserId(),
                 'tick': demo.getTick(),
+                'round': demo.getRound(),
                 'player': player.getName(),
                 'team': team.getClanName(),
                 'side': team.getSide(),
@@ -29,13 +48,15 @@ fs.readFile('demos/' + demo_name + '.dem', function(err, data) {
                 'weapon': event.weapon
             });
         });
-    } else if ('player_death' in event_subscriptions) {
-        output['player_death'] = [];
+    }
+    if ('game.player_death' in event_subscriptions) {
         demo.on('game.player_death', function(event) {
             var player = event.player;
             var team = player.getTeam(this);
-            output['player_death'].push({
+            event_subscriptions['game.player_death'].push({
+                'uid': player.getUserId(),
                 'tick': demo.getTick(),
+                'round': demo.getRound(),
                 'player': player.getName(),
                 'team': team.getClanName(),
                 'side': team.getSide(),
@@ -44,13 +65,15 @@ fs.readFile('demos/' + demo_name + '.dem', function(err, data) {
                 'weapon': event.weapon
             });
         });
-    } else if ('player_footstep') {
-        output['player_footstep'] = [];
+    } 
+    if ('game.player_footstep' in event_subscriptions) {
         demo.on('game.player_footstep', function(event) {
             var player = event.player;
             var team = player.getTeam(this);
-            output['player_footstep'].push({
+            event_subscriptions['game.player_footstep'].push({
+                'uid': player.getUserId(),
                 'tick': demo.getTick(),
+                'round': demo.getRound(),
                 'player': player.getName(),
                 'team': team.getClanName(),
                 'side': team.getSide(),
@@ -59,12 +82,44 @@ fs.readFile('demos/' + demo_name + '.dem', function(err, data) {
         });
     }
     
+    if ('game.meta' in event_subscriptions) {
+        demo.on('game.round_start', function(event) {
+            event_subscriptions['game.meta'].push({
+                'event': 'game.round_start',
+                'tick': demo.getTick(),
+                'round': demo.getRound(),
+            });
+        });
+        demo.on('game.round_end', function(event) {
+            event_subscriptions['game.meta'].push({
+                'event': 'game.round_end',
+                'tick': demo.getTick(),
+                'round': demo.getRound(),
+            });
+        });
+        demo.on('game.round_announce_warmup', function(event) {
+            event_subscriptions['game.meta'].push({
+                'event': 'game.round_announce_warmup',
+                'tick': demo.getTick(),
+                'round': demo.getRound(),
+            });
+        });
+        demo.on('game.round_announce_match_start', function(event) {
+            event_subscriptions['game.meta'].push({
+                'event': 'game.round_announce_match_start',
+                'tick': demo.getTick(),
+                'round': demo.getRound(),
+            });
+        });
+    }
+    
     demo.parse(data);
     
-    event_subscriptions.forEach(function (val, index, array) {
+    Object.keys(event_subscriptions).forEach(function (val, index, array) {
+        var filename = 'data/' + demo_name + '_' + val.split(".")[1] + '.json';
         fs.writeFile(
-            'data/' + demo_name + '_' + val + '.json',
-            JSON.stringify(output[val]),
+            filename,
+            JSON.stringify(event_subscriptions[val]),
             'ascii',
             function(err) {
                 if(err) {
