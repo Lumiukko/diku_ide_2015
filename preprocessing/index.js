@@ -68,40 +68,53 @@ fs.readFile('demos/' + demo_name + '.dem', function(err, data) {
         });
     } 
     if ('game.player_footstep' in event_subscriptions) {
-        demo.on('game.player_footstep', function(event) {
-            if (last_pos_tick + footstep_tick_sample > demo.getTick()) {
-                return;
-            }
-            last_pos_tick = demo.getTick();
-            teams = demo.getTeams();
-            player_teams = [];
-            players = [];
+        var alive_players = [];
+        demo.on('game.round_start', function(event) {
+            alive_players = [];
+            teams = this.getTeams();
             // only add players from the real opposing teams
             for (var i in teams) {
                 if (typeof teams[i].getClanName === 'function' && teams[i].getClanName()) {
                     var team_players = teams[i].getPlayers(this);
                     for (var x in team_players) {
-                        players.push(team_players[x]);   
+                        if (team_players[x]) {
+                            alive_players.push(team_players[x].getUserId());
+                        }
                     }
                 } 
             }
+        });
+        demo.on('game.player_death', function(event) {
+            var index = alive_players.indexOf(event.player.getUserId());
+            alive_players.splice(index, 1);
+        });
+        demo.on('game.player_footstep', function(event) {
+            if (last_pos_tick + footstep_tick_sample > demo.getTick()) {
+                return;
+            }
+            last_pos_tick = this.getTick();
+            var players = this.getPlayers();
             for (var i in players) {
                 var player = players[i];
                 // don't add dead players
-                if (!player || player.getHealth() == 0) {
+                if (alive_players.indexOf(player.getUserId()) == -1) {
                     continue;
                 }
-                var team = player.getTeam(this);
+                if (!player || !player.getHealth) {
+                    continue;
+                }
                 if (!player.getActiveWeapon()) {
                     continue;
                 }
+                var team = player.getTeam(this);
                 var weapon_name = player.getActiveWeapon().classInfo.name;
                 event_subscriptions['game.player_footstep'].push({
                     'uid': player.getUserId(),
-                    'tick': demo.getTick(),
-                    'round': demo.getRound(),
+                    'tick': this.getTick(),
+                    'round': this.getRound(),
                     'player': player.getName(),
                     'team': team.getClanName(),
+                    'player_health': player.getHealth(),
                     'side': team.getSide(),
                     'position': player.getPosition(),
                     'last_place_name': player.getLastPlaceName(),

@@ -1,8 +1,8 @@
 $(document).ready(function() {
     var remove_warmup = true;
 
-    var f_round = 12;
-    var f_player = "apEX";
+    var f_round = 3;
+    var f_player = "NBK-";
     
     // 36404
 
