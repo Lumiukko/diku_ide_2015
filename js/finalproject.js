@@ -443,8 +443,8 @@ $(document).ready(function() {
         
         d3.select("#weapon_visbox")
             .append("h4")
-			.attr("width", "300px")
 			.style("display", "inline-block")
+			.style("width", "300px")
             .text(title);
                         
         var show_chart_btn = d3.select("#weapon_visbox")
