@@ -1,10 +1,8 @@
 $(document).ready(function() {
     var remove_warmup = true;
 
-    var f_round = 3;
-    var f_player = "NBK-";
-    
-    // 36404
+    var f_round = 31;
+    var f_player = "JW";
 
     var svg = d3.select("#visbox");
     
@@ -14,37 +12,45 @@ $(document).ready(function() {
                          .interpolate("cardinal");
     
     // Layers: Change order to bring layers to front or back.
-    svg.append("g").attr("id", "lyr_footsteps");
     svg.append("g").attr("id", "lyr_player_paths");
+    svg.append("g").attr("id", "lyr_footsteps");
     svg.append("g").attr("id", "lyr_shots_fired");
     svg.append("g").attr("id", "lyr_player_death");
     
     var rounds;
     load_meta_data();
     
-    
+
     function load_meta_data() {
         d3.json("data/csgo/ESLOneCologne2015-fnatic-vs-envyus-dust2_meta.json", function(error, data) {
             if (!error) {
                 rounds = {};
-                data.forEach(function(entry) {
-                    
+                prev_round = -1;
+                
+                data.forEach(function(entry, i) {
                     if (!(entry.round in rounds)) {
                         rounds[entry.round] = {};
                     }
 
-                    
                     if (entry.event == "game.round_start") {
                         rounds[entry.round]["start"] = entry.tick;
+                        if (prev_round != -1) {
+                            rounds[prev_round]["end"] = entry.tick;
+                        }
                     }
                     else if (entry.event == "game.round_end") {
-                        rounds[entry.round]["end"] = entry.tick;
+                        if (i == data.length-1) {
+                            rounds[entry.round]["end"] = entry.tick;
+                        }
                     }
                     else if (entry.event == "game.round_announce_match_start") {
                         rounds[entry.round].warmup = true;
                     }
+                    
+                    prev_round = entry.round;
                 });
-
+                
+                console.log(rounds);
                 
                 load_player_deaths();
                 load_weapon_fire();
@@ -69,6 +75,7 @@ $(document).ready(function() {
         });
     }
     
+    
     function load_weapon_fire() {        
         d3.json("data/csgo/ESLOneCologne2015-fnatic-vs-envyus-dust2_weapon_fire.json", function(error, data) {
             if (!error) {
@@ -80,6 +87,7 @@ $(document).ready(function() {
             }
         });
     }
+    
     
     function load_player_footstep() {    
         d3.json("data/csgo/ESLOneCologne2015-fnatic-vs-envyus-dust2_player_footstep.json", function(error, data) {
@@ -157,7 +165,6 @@ $(document).ready(function() {
     }
     
     
-    
     function add_player_deaths(data) {
         var player_deaths = svg.select("#lyr_player_death")
                                .selectAll("circle.player_death").data(data);
@@ -166,6 +173,7 @@ $(document).ready(function() {
                      .append("circle")
                      .attr("class", "player_death")
                      .attr("r", function(d, i) {
+                        d.round = get_round_from_tick(d.tick);
                         if (d.round == f_round && d.player == f_player) {
                             return 8;
                         }
@@ -211,6 +219,7 @@ $(document).ready(function() {
                      .append("circle")
                      .attr("class", "footsteps")
                      .attr("r", function (d, i) {
+                        d.round = get_round_from_tick(d.tick);
                         if (d.round == f_round && d.player == f_player) {
                             return 4;
                         }

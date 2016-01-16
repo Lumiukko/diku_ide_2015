@@ -42,7 +42,7 @@
 }
 
 .shot_fired {
-    stroke: 2px solid black;
+    stroke-width: 0.5pt;
     opacity: 1.0;
 }
 
