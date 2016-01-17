@@ -14,8 +14,9 @@ $(document).ready(function() {
     // Filter (currently player and rounds).
     //     An empty array means that no filer is applied for the category, everything is shown.
     var filter = {
-        "players": ["JW"],
-        "rounds": []
+        "players": [],
+        "rounds": [],
+        "sides": ["TERRORIST"]
     };
 
     // Resolution per direction of the weapon area, should be power of 2!
@@ -34,10 +35,11 @@ $(document).ready(function() {
         "pistol": "blue",
         "melee": "white",
         "rifle": "red",
-        "smg": "yellow",
+        "sniper": "yellow",
+        "smg": "fuchsia",
         "bomb": "#ff99cc",
         "throwable": "green",
-        "mg": "fuchsia",
+        "mg": "orange",
         undefined: "black"
     }
     
@@ -537,17 +539,18 @@ $(document).ready(function() {
             "knife_flip": "melee",
             "knife_tactical": "melee",
             "taser": "melee",
-            "awp": "rifle",
+            "awp": "sniper",
+            "ssg08": "sniper",
+            "g3sg1": "sniper",
+            "scout": "sniper",
+            "scar20": "sniper",
+            "sg550": "sniper",
             "m4a1_silencer": "rifle",
             "ak47": "rifle",
             "m4a1": "rifle",
             "aug": "rifle",
             "sg556": "rifle",
-            "ssg08": "rifle",
             "famas": "rifle",
-            "scar20": "rifle",
-            "g3sg1": "rifle",
-            "scout": "rifle",
             "galil": "rifle",
             "sg552": "rifle",
             "galilar": "rifle",
@@ -589,7 +592,9 @@ $(document).ready(function() {
                    || $.inArray(parseInt(datapoint.round), filter.rounds)   > -1)
                && (   filter.players.length == 0
                    || $.inArray(datapoint.player, filter.players) > -1
-                   || $.inArray(datapoint.guid, filter.players) > -1);
+                   || $.inArray(datapoint.guid, filter.players) > -1)
+               && (   filter.sides.length   == 0
+                   || $.inArray(datapoint.side, filter.sides) > -1);
     }
     
     
