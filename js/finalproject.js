@@ -189,7 +189,11 @@ $(document).ready(function() {
             }
         }
     
-        var player_footpaths = svg.select("#lyr_player_paths").selectAll("path.player_path").data(paths);
+        var player_footpaths = svg.select("#lyr_player_paths")
+                                  .selectAll("path.player_path")
+                                  .data(paths.filter(function (d, i) {
+                                     return apply_filter(d[0]);
+                                  }));
         
         player_footpaths.enter()
                         .append("path")
@@ -203,13 +207,6 @@ $(document).ready(function() {
                             }
                         })
                         .attr("d", function(d, i) {
-                            // Apply filters by returning empty path if not included.
-                            if ($.inArray(d[0].round, filter.rounds) < 0 && filter.rounds.length > 0) {
-                                return [];
-                            }
-                            if ($.inArray(d[0].player, filter.players) < 0 && filter.players.length > 0) {
-                                return [];
-                            }
                             var translated = d.map(translate_path_point);
                             return lineFunction(translated);
                         })
@@ -233,22 +230,16 @@ $(document).ready(function() {
     */
     function add_player_deaths(data) {
         var player_deaths = svg.select("#lyr_player_death")
-                               .selectAll("circle.player_death").data(data);
+                               .selectAll("circle.player_death")
+                               .data(data.filter(function (d, i) {
+                                  d.round = get_round_from_tick(d.tick);
+                                  return apply_filter(d);
+                               }));
         
         player_deaths.enter()
                      .append("circle")
                      .attr("class", "player_death")
-                     .attr("r", function(d, i) {
-                        d.round = get_round_from_tick(d.tick);
-                        // Apply filter by returning radius of 0 if not included.
-                        if ($.inArray(d.round, filter.rounds) < 0 && filter.rounds.length > 0) {
-                            return 0;
-                        }
-                        if ($.inArray(d.player, filter.players) < 0 && filter.players.length > 0) {
-                            return 0;
-                        }
-                        return 8;
-                     })
+                     .attr("r",  8)
                      .attr("cx", function(d, i) {
                         posx = translate_x(d.position.x);
                         return posx;
@@ -283,22 +274,16 @@ $(document).ready(function() {
     */
     function add_footsteps(data) {
         var player_foot_steps = svg.select("#lyr_footsteps")
-                                   .selectAll("circle.footsteps").data(data);
+                                   .selectAll("circle.footsteps")
+                                   .data(data.filter(function (d, i) {
+                                      d.round = get_round_from_tick(d.tick);
+                                      return apply_filter(d);
+                                   }));
         
         player_foot_steps.enter()
                      .append("circle")
                      .attr("class", "footsteps")
-                     .attr("r", function (d, i) {
-                        d.round = get_round_from_tick(d.tick);
-                        // Apply filter by returning radius of 0 if not included.
-                        if ($.inArray(d.round, filter.rounds) < 0 && filter.rounds.length > 0) {
-                            return 0;
-                        }
-                        if ($.inArray(d.player, filter.players) < 0 && filter.players.length > 0) {
-                            return 0;
-                        }
-                        return 4;
-                     })
+                     .attr("r", 4)
                      .attr("cx", function(d, i) {
                         posx = translate_x(d.position.x);
                         return posx;
@@ -333,22 +318,16 @@ $(document).ready(function() {
     */
     function add_shots_fired(data) {
         var shots_fired = svg.select("#lyr_shots_fired")
-                             .selectAll("circle.shot_fired").data(data);
+                             .selectAll("circle.shot_fired")
+                             .data(data.filter(function (d, i) {
+                                d.round = get_round_from_tick(d.tick);
+                                return apply_filter(d);
+                             }));
         
         shots_fired.enter()
                    .append("circle")
                    .attr("class", "shot_fired")
-                   .attr("r", function(d, i) {
-                        d.round = get_round_from_tick(d.tick);
-                        // Apply filter by returning radius of 0 if not included.
-                        if ($.inArray(d.round, filter.rounds) < 0 && filter.rounds.length > 0) {
-                            return 0;
-                        }
-                        if ($.inArray(d.player, filter.players) < 0 && filter.players.length > 0) {
-                            return 0;
-                        }
-                        return 2;
-                   })
+                   .attr("r", 2)
                    .attr("cx", function(d, i) {
                       posx = translate_x(d.position.x);
                       return posx;
@@ -381,6 +360,17 @@ $(document).ready(function() {
     These functions are utility functions.
     ========================================================================================
 */
+    
+    /**
+        Applies the filter as defined in the global variable to a datapoint, i.e.
+        returns true if the datapoint is included and false if it is not.
+        @param {object} datapoint The datapoint as provided by the dataset, containing at least the attributes to be filtered.
+        @return {boolean} Returns true if the data is contained or false if it is filtered out.
+    */
+    function apply_filter(datapoint) {
+        return    ($.inArray(datapoint.round, filter.rounds)   > -1 || filter.rounds.length  == 0)
+               && ($.inArray(datapoint.player, filter.players) > -1 || filter.players.length == 0);
+    }
     
     
     /**
