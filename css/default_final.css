@@ -40,7 +40,7 @@
 */
 
 .player_death {
-    stroke: black;
+    stroke: white;
     stroke-width: 0.8pt;
     opacity: 0.8;
 }
