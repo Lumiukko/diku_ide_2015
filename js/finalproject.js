@@ -13,23 +13,26 @@ $(document).ready(function() {
     
     // Filter (currently player and rounds).
     //     An empty array means that no filer is applied for the category, everything is shown.
+    //TODO: This overwrites the defined pages at the bottom of this file, don't forget that!!!
     var filter = {
         "players": [],
-        "rounds": [],
-        "sides": ["TERRORIST"]
+        "rounds": [1],
+        "sides": ["TERRORIST", "CT"]
     };
 
     // Resolution per direction of the weapon area, should be power of 2!
     var weapon_area_resolution = 48;
     var weapon_area_show_empty_bins = true;
     
-    var render_foot_steps = false;
-    var render_foot_paths = false;
-    var render_weapon_fire = false;
-    var render_player_deaths = false;
+    var render_foot_steps = true;
+    var render_foot_paths = true;
+    var render_weapon_fire = true;
+    var render_player_deaths = true;
     var render_weapon_areas = true;
-    
-
+	
+	var weapon_death_visualization_flag = false;
+	var weapon_fire_visualization_flag = false;
+   
     // Color mapping for weapon categories:
     var weapon_category_color = {
         "pistol": "blue",
@@ -52,19 +55,36 @@ $(document).ready(function() {
                          .x(function(d) { return to_fixed_2(d.x) })
                          .y(function(d) { return to_fixed_2(d.y) })
                          .interpolate("cardinal");
-    
-    // SVG Layers: Change order to bring layers to front or back.
-    svg.append("g").attr("id", "lyr_player_paths");
-    svg.append("g").attr("id", "lyr_footsteps");
-    svg.append("g").attr("id", "lyr_shots_fired");
-    svg.append("g").attr("id", "lyr_player_death");
-    svg.append("g").attr("id", "lyr_weapon_areas");
+      
     
     // Global Variables
     var rounds;
+    var player_deaths_data = [];
+    var weapon_fired_data = [];
+    
     
     // Start the loading process...
+    add_layers();
     load_meta_data();
+    
+    /**
+        Appends layers to the svg
+    */
+    function add_layers(){
+        // SVG Layers: Change order to bring layers to front or back.
+		svg.append("g").attr("id", "lyr_weapon_areas");
+        svg.append("g").attr("id", "lyr_player_paths");
+        svg.append("g").attr("id", "lyr_footsteps");
+        svg.append("g").attr("id", "lyr_shots_fired");
+        svg.append("g").attr("id", "lyr_player_death");
+    }
+    
+    /**
+        Removes all layers from the svg
+    */
+    function remove_all_layers(){
+        svg.selectAll("g").remove()
+    }
     
 
 /**
@@ -91,7 +111,7 @@ $(document).ready(function() {
                     if (entry.event == "game.round_start") {
                         rounds[entry.round]["start"] = entry.tick;
                         if (prev_round != -1) {
-                            rounds[prev_round]["end"] = entry.tick;
+                            rounds[prev_round]["end"] = entry.tick - 1;
                         }
                     }
                     else if (entry.event == "game.round_end") {
@@ -99,13 +119,10 @@ $(document).ready(function() {
                             rounds[entry.round]["end"] = entry.tick;
                         }
                     }
-                    else if (entry.event == "game.round_announce_match_start") {
-                        rounds[entry.round].warmup = true;
-                    }
-                    
+
                     prev_round = entry.round;
                 });
-                
+				
                 load_player_deaths();
                 load_weapon_fire();
                 load_player_footstep();
@@ -115,7 +132,14 @@ $(document).ready(function() {
             }
         });
     }
-
+    function clone(obj) {
+        if (null == obj || "object" != typeof obj) return obj;
+        var copy = obj.constructor();
+        for (var attr in obj) {
+            if (obj.hasOwnProperty(attr)) copy[attr] = obj[attr];
+        }
+        return copy;
+    }
     
     /**
         Loads the player deaths of a CS:GO match from the file and calls dependant
@@ -127,7 +151,10 @@ $(document).ready(function() {
                 if (render_player_deaths) {
                     add_player_deaths(data);
                 }
-                add_weapon_death_statistics(data);
+				if(weapon_death_visualization_flag === false){
+					weapon_death_visualization_flag = true;
+					add_weapon_death_statistics(data);
+				}
             }
             else {
                 console.log("Error: " + error);
@@ -140,13 +167,16 @@ $(document).ready(function() {
         Loads the player weapon fire events of a CS:GO match from the file and calls
         dependant displaying functions.
     */
-    function load_weapon_fire() {        
+    function load_weapon_fire() {       
         d3.json(file_player_weaponfire, function(error, data) {
             if (!error) {
                 if (render_weapon_fire) {
                     add_shots_fired(data);
                 }
-                add_weapon_fired_statistics(data);
+				if(weapon_fire_visualization_flag === false){
+					weapon_fire_visualization_flag = true;
+					add_weapon_fired_statistics(data)
+				}
             }
             else {
                 console.log("Error: " + error);
@@ -157,7 +187,7 @@ $(document).ready(function() {
     
     /**
         Loads the player positions/footsteps of a CS:GO match from the file and calls
-        dependant displaying functions. It also removes the warmup round if the flag is set.
+        dependant displaying functions.
     */
     function load_player_footstep() {    
         d3.json(file_player_footsteps, function(error, data) {
@@ -188,15 +218,18 @@ $(document).ready(function() {
 */
     
     /**
-        Displays 
+        Displays the weapon areas in the visualization.
+        @param {json} data The foot steps data.
     */
     function add_weapon_areas(data) {
+        // calculate the intervals!
         var bin_offsets = []
         var bin_size = 1024/weapon_area_resolution;
         for (var i=0; i<1024; i+=bin_size) {
             bin_offsets.push([i, i+bin_size]);
         }
         
+        // prepare the bins!
         var bin = [];
         for (bx in bin_offsets) {
             bin.push([]);
@@ -209,7 +242,7 @@ $(document).ready(function() {
                                      return apply_filter(d);
                                   });
         
-        
+        // fill the bins!
         data_filtered.forEach(function(d, i) {
             var bin_x = -1;
             var bin_y = -1;
@@ -231,8 +264,7 @@ $(document).ready(function() {
             bin[bin_x][bin_y][d.weapon]++;
         });
         
-        //console.log(JSON.stringify(bin));
-        
+        // sort the bin contents!
         bin_weapons = [];
         for (bx in bin_offsets) {
             for (by in bin_offsets) {
@@ -254,6 +286,7 @@ $(document).ready(function() {
                                     return (wbin.wbin.length > 0);
                                 });
         
+        // plot the squares!
         var bin_squares = svg.select("#lyr_weapon_areas")
                              .selectAll("rect.weapon_area")
                              .data((weapon_area_show_empty_bins ? bin_weapons : bin_weapons_filtered))
@@ -307,11 +340,13 @@ $(document).ready(function() {
             }
         }
     
+    
+        var paths_filtered = paths.filter(function (d, i) {
+                                     return apply_filter(d[0]);
+                                  })
         var player_footpaths = svg.select("#lyr_player_paths")
                                   .selectAll("path.player_path")
-                                  .data(paths.filter(function (d, i) {
-                                     return apply_filter(d[0]);
-                                  }));
+                                  .data(paths_filtered);
         
         player_footpaths.enter()
                         .append("path")
@@ -332,7 +367,8 @@ $(document).ready(function() {
                             important_info = {
                                 "side": d[0].side,
                                 "player": d[0].player,
-                                "round" : d[0].round
+                                "round" : d[0].round,
+                                //"last_point": d[d.length-1]
                             }
                             tooltip_show(stringify_pretty_print(important_info));
                         })
@@ -357,7 +393,7 @@ $(document).ready(function() {
         player_deaths.enter()
                      .append("circle")
                      .attr("class", "player_death")
-                     .attr("r",  8)
+                     .attr("r",  11)
                      .attr("cx", function(d, i) {
                         posx = translate_x(d.position.x);
                         return posx;
@@ -424,37 +460,7 @@ $(document).ready(function() {
                          .on("mouseout", function(d, i) {
                            tooltip_hide();
                          });
-        /*
-        player_foot_steps.enter()
-                     .append("circle")
-                     .attr("class", "footsteps")
-                     .attr("r", 4)
-                     .attr("cx", function(d, i) {
-                        posx = translate_x(d.position.x);
-                        return posx;
-                     })
-                     .attr("cy", function(d, i) {
-                        posy = translate_y(d.position.y);
-                        return posy;
-                     })
-                     .attr("fill", function(d, i) {
-                        if (d.side == "TERRORIST") {
-                            return "red";
-                        }
-                        else if (d.side == "CT") {
-                            return "blue";
-                        }
-                        else {
-                            return "yellow";
-                        }
-                     })
-                     .on("mouseover", function(d, i) {
-                       tooltip_show(stringify_pretty_print(d));
-                     })
-                     .on("mouseout", function(d, i) {
-                       tooltip_hide();
-                     });
-        */
+        
     };  
     
     
@@ -609,30 +615,31 @@ $(document).ready(function() {
     function get_player_paths(data) {
         var player_paths = {};
         
-        data.forEach(function (entry) {
+        data.forEach(function (entry, i) {
             // check for round end and create new path
             var round_current = get_round_from_tick(entry.tick);
-            if (round_current == undefined) {
-                round_current = 1;
-            }
-            
-            if (!(entry.guid in player_paths)) {
-                player_paths[entry.guid] = {};
-                for (var r in rounds) {
-                    if (rounds.hasOwnProperty(r)) {
-                        player_paths[entry.guid][r] = []
+            if (round_current != undefined) {
+            //TODO: check if the undefined case can always be ignored or not
+
+                if (!(entry.guid in player_paths)) {
+                    player_paths[entry.guid] = {};
+                    for (var r in rounds) {
+                        if (rounds.hasOwnProperty(r)) {
+                            player_paths[entry.guid][r] = []
+                        }
                     }
                 }
+               
+                player_paths[entry.guid][round_current].push({
+                    "tick": entry.tick,
+                    "pos": entry.position,
+                    "player": entry.player,
+                    "side": entry.side,
+                    "round": round_current,
+                    "guid": entry.guid
+                });
             }
-           
-            player_paths[entry.guid][round_current].push({
-                "tick": entry.tick,
-                "pos": entry.position,
-                "player": entry.player,
-                "side": entry.side,
-                "round": round_current,
-                "guid": entry.guid
-            });
+
         });
         
         return player_paths;
@@ -772,8 +779,8 @@ $(document).ready(function() {
         var ct_data = sides[0];
         var t_data = sides[1];
         
-        var ct_weapon = add_weapon_category(ct_data, "killed_by")
-        var t_weapon = add_weapon_category(t_data, "killed_by")
+        var ct_weapon = add_weapon_category(ct_data, "killed_with")
+        var t_weapon = add_weapon_category(t_data, "killed_with")
 
         draw_weapon_bar_chart(ct_weapon, "Counter Terrorists were killed by:", 4, "lightblue");
         draw_weapon_bar_chart(t_weapon, "Terrorists were killed by:", 4, "pink");
@@ -907,7 +914,7 @@ $(document).ready(function() {
         var ct = [];
         var t = [];
         data.forEach(function(entry) {
-            if(entry.side == "CT") ct.push(entry)
+            if(entry.side === "CT") ct.push(entry)
             else t.push(entry);
         });
         return [ct, t];
@@ -937,5 +944,77 @@ $(document).ready(function() {
 
         return sorted_weapons;
     }
+    
+    /**
+    ======================== MULTIPLE VIEW =================================================
+    The following code handles the changes between the views.
+    ========================================================================================
+    */
+    var page = 0;
+    var content = [
+        {
+        "page": 0,
+        "discovery": "In quis nibh metus. Vestibulum vehicula, lacus ut rhoncus mollis, quam nisl commodo enim, ut iaculis elit libero id metus.",
+        "players": ["apEX"],
+        "rounds": [7,8],
+		"sides": ["TERRORIST", "CT"]
+        },
+        {
+        "page": 1,
+        "discovery": "Sed mollis luctus interdum. Cras eget ipsum at arcu pellentesque hendrerit. Sed magna nulla, egestas a accumsan id, rutrum gravida enim.",
+        "players": ["KRIMZ"],
+        "rounds": [7,8],
+		"sides": ["TERRORIST", "CT"]
+        },
+        {
+        "page": 2,
+        "discovery": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
+        "players": ["apEX"],
+        "rounds": [1,2,3,4,5,6,7,8,9,10],
+		"sides": ["TERRORIST", "CT"]
+        },
+        {
+        "page": 3,
+        "discovery": "There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable. If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything embarrassing hidden in the middle of text. All the Lorem Ipsum generators on the Internet tend to repeat predefined chunks as necessary, making this the first true generator on the Internet. It uses a dictionary of over 200 Latin words, combined with a handful of model sentence structures, to generate Lorem Ipsum which looks reasonable. The generated Lorem Ipsum is therefore always free from repetition, injected humour, or non-characteristic words etc.",
+        "players": ["apEX"],
+        "rounds": [17,18],
+		"sides": ["TERRORIST", "CT"]
+        }
+    ];
+    $("#btn-right").click(function () {
+        page += 1;
+        toggle_button_visibility(page);
+        $('#discovery').html(content[page].discovery);
+        filter = content[page];
+        remove_all_layers();
+        add_layers();
+        load_meta_data();
+    });
+    
+    $("#btn-left").click(function () {
+        page -= 1;
+        toggle_button_visibility(page);
+        $('#discovery').html(content[page].discovery);
+        filter = content[page];
+        remove_all_layers();
+        add_layers();
+        load_meta_data();
+    });
+    
+    function toggle_button_visibility(page){
+        var first = 0;
+        var last = 3;
+        if(page === first){
+            $("#btn-left").hide();
+            $("#btn-right").attr('style',"width:100px; float:left; margin-left:929px");
+        }else if(page === last){
+            $("#btn-right").hide();
+        }else{
+            $("#btn-left").show();
+            $("#btn-right").show();
+            $("#btn-right").attr('style',"width:100px; float:left; margin-left:829px");
+        }
+    }
+    
     
 });
