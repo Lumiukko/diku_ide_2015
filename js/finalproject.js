@@ -20,15 +20,17 @@ $(document).ready(function() {
               it by weapon.
     */
     var filter = {
-        "players": ["JW", "apEX"],
-        "rounds": ["2", "3"]
+        "players": ["apEX"],
+        "rounds": [1]
     };
-    
-    var f_round = 31;
-    var f_player = "JW";
+
+    var render_foot_steps = true;
+    var render_foot_paths = true;
+    var render_weapon_fire = false;
+    var render_player_deaths = false;
  
     // Flag whether or not to remove the warmup rounds. (TODO: is this working globally?)
-    var remove_warmup = true;
+    var remove_warmup = false;
     
     // D3 initial variables
     var svg = d3.select("#visbox");
@@ -108,7 +110,9 @@ $(document).ready(function() {
     function load_player_deaths() {
         d3.json(file_player_deaths, function(error, data) {
             if (!error) {
-                add_player_deaths(data);
+                if (render_player_deaths) {
+                    add_player_deaths(data);
+                }
                 add_weapon_death_statistics(data);
             }
             else {
@@ -125,7 +129,9 @@ $(document).ready(function() {
     function load_weapon_fire() {        
         d3.json(file_player_weaponfire, function(error, data) {
             if (!error) {
-                //add_shots_fired(data);
+                if (render_weapon_fire) {
+                    add_shots_fired(data);
+                }
                 add_weapon_fired_statistics(data);
             }
             else {
@@ -159,8 +165,12 @@ $(document).ready(function() {
                     }
                 }
                 
-                add_player_paths(player_paths);
-                add_footsteps(data);
+                if (render_foot_paths) {
+                    add_player_paths(player_paths);
+                }
+                if (render_foot_steps) {
+                    add_footsteps(data);
+                }
             }
             else {
                 console.log("Error: " + error);
@@ -286,6 +296,31 @@ $(document).ready(function() {
                                    }));
         
         player_foot_steps.enter()
+                         .append("path")
+                         .attr("class", "footsteps")
+                         .attr("d", d3.svg.symbol().type("triangle-up"))
+                         .attr("transform", function (d, i) {
+                            return "translate(" + translate_x(d.position.x) + "," + translate_y(d.position.y) + ") rotate(" + (d.eye_angle.yaw-0) + ") scale(0.7 2.0) ";
+                         })
+                         .attr("fill", function(d, i) {
+                            if (d.side == "TERRORIST") {
+                                return "red";
+                            }
+                            else if (d.side == "CT") {
+                                return "blue";
+                            }
+                            else {
+                                return "yellow";
+                            }
+                         })
+                         .on("mouseover", function(d, i) {
+                           tooltip_show(stringify_pretty_print(d));
+                         })
+                         .on("mouseout", function(d, i) {
+                           tooltip_hide();
+                         });
+        /*
+        player_foot_steps.enter()
                      .append("circle")
                      .attr("class", "footsteps")
                      .attr("r", 4)
@@ -314,6 +349,7 @@ $(document).ready(function() {
                      .on("mouseout", function(d, i) {
                        tooltip_hide();
                      });
+        */
     };  
     
     
@@ -332,7 +368,7 @@ $(document).ready(function() {
         shots_fired.enter()
                    .append("circle")
                    .attr("class", "shot_fired")
-                   .attr("r", 2)
+                   .attr("r", 3.5)
                    .attr("cx", function(d, i) {
                       posx = translate_x(d.position.x);
                       return posx;
@@ -373,8 +409,11 @@ $(document).ready(function() {
         @return {boolean} Returns true if the data is contained or false if it is filtered out.
     */
     function apply_filter(datapoint) {
-        return    ($.inArray(datapoint.round, filter.rounds)   > -1 || filter.rounds.length  == 0)
-               && ($.inArray(datapoint.player, filter.players) > -1 || filter.players.length == 0);
+        return    (   filter.rounds.length  == 0
+                   || $.inArray(parseInt(datapoint.round), filter.rounds)   > -1)
+               && (   filter.players.length == 0
+                   || $.inArray(datapoint.player, filter.players) > -1
+                   || $.inArray(datapoint.guid, filter.players) > -1);
     }
     
     
@@ -396,21 +435,22 @@ $(document).ready(function() {
                 round_current = 1;
             }
             
-            if (!(entry.uid in player_paths)) {
-                player_paths[entry.uid] = {};
+            if (!(entry.guid in player_paths)) {
+                player_paths[entry.guid] = {};
                 for (var r in rounds) {
                     if (rounds.hasOwnProperty(r)) {
-                        player_paths[entry.uid][r] = []
+                        player_paths[entry.guid][r] = []
                     }
                 }
             }
            
-            player_paths[entry.uid][round_current].push({
+            player_paths[entry.guid][round_current].push({
                 "tick": entry.tick,
                 "pos": entry.position,
                 "player": entry.player,
                 "side": entry.side,
-                "round": round_current
+                "round": round_current,
+                "guid": entry.guid
             });
         });
         
