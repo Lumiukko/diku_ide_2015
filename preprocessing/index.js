@@ -16,7 +16,6 @@ var event_subscriptions = {};
 process.argv.forEach(function (val, index, array) {
     if (index > 1) {
         if (val == 'all') {
-            event_subscriptions = events;
             return;
         }
         if (val in events) {
@@ -26,12 +25,39 @@ process.argv.forEach(function (val, index, array) {
         }
     }
 });
-
+if (event_subscriptions.length == 0) {
+    // all selected or no parameters given
+    event_subscriptions = events;
+}
 console.log('Parsing events ' + Object.keys(event_subscriptions).join(', ') + '.');
 
 fs.readFile('demos/' + demo_name + '.dem', function(err, data) {
+    var demo = new jsgo.Demo();
+    // keep track of alive players
+    var alive_players = {};
     var last_pos_tick = 0;
-    demo = new jsgo.Demo();
+    demo.on('game.round_start', function(event) {
+        for (var player in alive_players) {
+            if (alive_players.hasOwnProperty(player)) {
+                alive_players[player] = true;
+            }
+        }
+        if (this.getRound() !== 1) return;
+        teams = this.getTeams();
+        // only add "real" players (not spectators, commentators, etc.)
+        for (var i in teams) {
+            if (typeof teams[i].getClanName === 'function' && teams[i].getClanName()) {
+                var team_players = teams[i].getPlayers(this);
+                for (var x in team_players) {
+                    alive_players[team_players[x].getGuid()] = true;
+                }
+            } 
+        }
+    });
+    demo.on('game.player_death', function(event) {
+        alive_players[event.player.getGuid()] = false;
+    });
+    
     if ('game.weapon_fire' in event_subscriptions) {
         demo.on('game.weapon_fire', function(event) {
             var player = event.player;
@@ -49,47 +75,30 @@ fs.readFile('demos/' + demo_name + '.dem', function(err, data) {
             });
         });
     }
+    
     if ('game.player_death' in event_subscriptions) {
         demo.on('game.player_death', function(event) {
             var player = event.player;
             var team = player.getTeam(this);
+            var weapon = player.getActiveWeapon().classInfo.name;
+            console.log();
             event_subscriptions['game.player_death'].push({
                 'guid': player.getGuid(),
                 'tick': demo.getTick(),
                 'round': demo.getRound(),
                 'player': player.getName(),
+                'curr_weapon': weapon.replace(/^(CWeapon|C)/, '').toLowerCase(),
                 'team': team.getClanName(),
                 'side': team.getSide(),
                 'position': compress_position(player.getPosition()),
                 'last_place_name': player.getLastPlaceName(),
                 'eye_angle': player.getEyeAngle(),
-                'killed_by': event.weapon
+                'killed_with': event.weapon,
             });
         });
     } 
+    
     if ('game.player_footstep' in event_subscriptions) {
-        var alive_players = {};
-        demo.on('game.round_start', function(event) {
-            for (var player in alive_players) {
-                if (alive_players.hasOwnProperty(player)) {
-                    alive_players[player] = true;
-                }
-            }
-            if (this.getRound() !== 1) return;
-            teams = this.getTeams();
-            // only add players from the real opposing teams
-            for (var i in teams) {
-                if (typeof teams[i].getClanName === 'function' && teams[i].getClanName()) {
-                    var team_players = teams[i].getPlayers(this);
-                    for (var x in team_players) {
-                        alive_players[team_players[x].getGuid()] = true;
-                    }
-                } 
-            }
-        });
-        demo.on('game.player_death', function(event) {
-            alive_players[event.player.getGuid()] = false;
-        });
         demo.on('entity_updated', function(event) {
             if (last_pos_tick + footstep_tick_sample > this.getTick()) {
                 return;
@@ -126,26 +135,67 @@ fs.readFile('demos/' + demo_name + '.dem', function(err, data) {
     }
     
     if ('game.meta' in event_subscriptions) {
+        var buy_time_ended = false;
+        var player_equipment = {};
+        var team_equipment = {};
         demo.on('game.round_start', function(event) {
+            buy_time_ended = false;
             event_subscriptions['game.meta'].push({
                 'event': 'game.round_start',
                 'tick': demo.getTick(),
                 'round': demo.getRound(),
             });
         });
+        demo.on('game.buytime_ended', function(event) {
+            buy_time_ended = true;
+        });
+        demo.on('game.player_footstep', function(event) {
+            if (buy_time_ended) return;
+            var player = event.player;
+            var team_num = player.getValue('m_iTeamNum');
+            var current_value = player.getCurrentEquipmentValue();
+            // team does not exist yet
+            if (!(team_num in team_equipment)) {
+                team_equipment[team_num] = current_value;
+                player_equipment[player.getGuid()] = current_value;
+                return;
+            }
+            // player does not exist, but team does
+            if (!(player.getGuid() in player_equipment)) {
+                player_equipment[player.getGuid()] = current_value;
+                team_equipment[team_num] += current_value;
+                return;
+            }
+            // player and team were seen before
+            if (player_equipment[player.getGuid()] < current_value) {
+                team_equipment[team_num] -= player_equipment[player.getGuid()];
+                player_equipment[player.getGuid()] = current_value;
+                team_equipment[team_num] += current_value;
+            }
+        });
         demo.on('game.round_end', function(event) {
             var teams = demo.getTeams();
             var score = {};
+            var flags = {};
+            var equipment = {};
+            var players = [];
+            console.log('round '+this.getRound());
             for (var i in teams) {
                 if (typeof teams[i].getClanName === 'function' && teams[i].getClanName()) {
                     score[teams[i].getClanName()] = teams[i].getScore();
+                    flags[teams[i].getClanName()] = teams[i].getFlag();
+                    equipment[teams[i].getClanName()] = team_equipment[teams[i].getTeamNumber()];
                 } 
             }
+            player_equipment = {};
+            team_equipment = {};
             event_subscriptions['game.meta'].push({
                 'event': 'game.round_end',
                 'tick': demo.getTick(),
                 'round': demo.getRound(),
                 'score': score,
+                'flags': flags,
+                'equipment': equipment,
             });
         });
         demo.on('game.round_announce_match_start', function(event) {
