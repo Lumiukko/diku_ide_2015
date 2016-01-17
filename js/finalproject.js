@@ -1,28 +1,63 @@
 $(document).ready(function() {
-    var remove_warmup = true;
-
+/**
+    ========== INITIALIZATION & GLOBAL VARS ================================================
+    This part contains all global variables after the document has been loaded and
+    calls the initial functions.
+    ========================================================================================
+*/
+    // Data files.
+    file_meta = "data/csgo/ESLOneCologne2015-fnatic-vs-envyus-dust2_meta.json";
+    file_player_deaths = "data/csgo/ESLOneCologne2015-fnatic-vs-envyus-dust2_player_death.json";
+    file_player_weaponfire = "data/csgo/ESLOneCologne2015-fnatic-vs-envyus-dust2_weapon_fire.json";
+    file_player_footsteps = "data/csgo/ESLOneCologne2015-fnatic-vs-envyus-dust2_player_footstep.json";
+    
+    // Filter (currently player and rounds).
+    //     An empty array means that no filer is applied for the category, everything is shown.
+    //TODO: Introduce weapon filter that shows ALL data points if specified weapon is used/selected.
+    var filter = {
+        "players": ["JW", "apEX"],
+        "rounds": ["2", "3"]
+    };
+    
     var f_round = 31;
     var f_player = "JW";
-
+ 
+    // Flag whether or not to remove the warmup rounds. (TODO: is this working globally?)
+    var remove_warmup = true;
+    
+    // D3 initial variables
     var svg = d3.select("#visbox");
     
     var lineFunction = d3.svg.line()
-                         .x(function(d) { return Math.round(d.x).toFixed(2); })
-                         .y(function(d) { return Math.round(d.y).toFixed(2); })
+                         .x(function(d) { return to_fixed_2(d.x) })
+                         .y(function(d) { return to_fixed_2(d.y) })
                          .interpolate("cardinal");
     
-    // Layers: Change order to bring layers to front or back.
+    // SVG Layers: Change order to bring layers to front or back.
     svg.append("g").attr("id", "lyr_player_paths");
     svg.append("g").attr("id", "lyr_footsteps");
     svg.append("g").attr("id", "lyr_shots_fired");
     svg.append("g").attr("id", "lyr_player_death");
     
+    // Global Variables
     var rounds;
+    
+    // Start the loading process...
     load_meta_data();
     
 
+/**
+    ========== LOADING DATA ================================================================
+    These functions are loading the data and calls preprocessing or displaying functions.
+    ========================================================================================
+*/
+
+    /**
+        Loads the meta data of a CS:GO match from the file and calls other dependant
+        loading functions. The meta data contains round information.
+    */
     function load_meta_data() {
-        d3.json("data/csgo/ESLOneCologne2015-fnatic-vs-envyus-dust2_meta.json", function(error, data) {
+        d3.json(file_meta, function(error, data) {
             if (!error) {
                 rounds = {};
                 prev_round = -1;
@@ -50,8 +85,6 @@ $(document).ready(function() {
                     prev_round = entry.round;
                 });
                 
-                console.log(rounds);
-                
                 load_player_deaths();
                 load_weapon_fire();
                 load_player_footstep();
@@ -63,8 +96,12 @@ $(document).ready(function() {
     }
 
     
+    /**
+        Loads the player deaths of a CS:GO match from the file and calls dependant
+        displaying functions.
+    */
     function load_player_deaths() {
-        d3.json("data/csgo/ESLOneCologne2015-fnatic-vs-envyus-dust2_player_death.json", function(error, data) {
+        d3.json(file_player_deaths, function(error, data) {
             if (!error) {
                 add_player_deaths(data);
                 add_weapon_death_statistics(data);
@@ -76,8 +113,12 @@ $(document).ready(function() {
     }
     
     
+    /**
+        Loads the player weapon fire events of a CS:GO match from the file and calls
+        dependant displaying functions.
+    */
     function load_weapon_fire() {        
-        d3.json("data/csgo/ESLOneCologne2015-fnatic-vs-envyus-dust2_weapon_fire.json", function(error, data) {
+        d3.json(file_player_weaponfire, function(error, data) {
             if (!error) {
                 //add_shots_fired(data);
                 add_weapon_fired_statistics(data);
@@ -89,8 +130,12 @@ $(document).ready(function() {
     }
     
     
+    /**
+        Loads the player positions/footsteps of a CS:GO match from the file and calls
+        dependant displaying functions. It also removes the warmup round if the flag is set.
+    */
     function load_player_footstep() {    
-        d3.json("data/csgo/ESLOneCologne2015-fnatic-vs-envyus-dust2_player_footstep.json", function(error, data) {
+        d3.json(file_player_footsteps, function(error, data) {
             if (!error) {
                 var player_paths = get_player_paths(data);
                 
@@ -119,7 +164,18 @@ $(document).ready(function() {
     }
     
     
+/**
+    ========== DISPLAY / VISUALIZATION FUNCTONS ============================================
+    These functions are function that render data to the SVG element.
+    ========================================================================================
+*/
+    
+    /**
+        Displays all player paths in the visualization.
+        @param {json} data Player footstep data.
+    */
     function add_player_paths(player_paths) {
+        // Collecting all the paths from all players and rounds in one array.
         paths = [];
         for (var p in player_paths) {
             if (player_paths.hasOwnProperty(p)) {
@@ -147,9 +203,15 @@ $(document).ready(function() {
                             }
                         })
                         .attr("d", function(d, i) {
-                            if (d[0].round != f_round || d[0].player != f_player) return [];
-                             var translated = d.map(translate_path_point);
-                             return lineFunction(translated);
+                            // Apply filters by returning empty path if not included.
+                            if ($.inArray(d[0].round, filter.rounds) < 0 && filter.rounds.length > 0) {
+                                return [];
+                            }
+                            if ($.inArray(d[0].player, filter.players) < 0 && filter.players.length > 0) {
+                                return [];
+                            }
+                            var translated = d.map(translate_path_point);
+                            return lineFunction(translated);
                         })
                         .on("mouseover", function(d, i) {
                             important_info = {
@@ -165,6 +227,10 @@ $(document).ready(function() {
     }
     
     
+    /**
+        Displays all player deaths in the visualization.
+        @param {json} data Player death data.
+    */
     function add_player_deaths(data) {
         var player_deaths = svg.select("#lyr_player_death")
                                .selectAll("circle.player_death").data(data);
@@ -174,21 +240,21 @@ $(document).ready(function() {
                      .attr("class", "player_death")
                      .attr("r", function(d, i) {
                         d.round = get_round_from_tick(d.tick);
-                        if (d.round == f_round && d.player == f_player) {
-                            return 8;
-                        }
-                        else {
+                        // Apply filter by returning radius of 0 if not included.
+                        if ($.inArray(d.round, filter.rounds) < 0 && filter.rounds.length > 0) {
                             return 0;
                         }
+                        if ($.inArray(d.player, filter.players) < 0 && filter.players.length > 0) {
+                            return 0;
+                        }
+                        return 8;
                      })
                      .attr("cx", function(d, i) {
                         posx = translate_x(d.position.x);
-                        //console.log("posx: " + posx);
                         return posx;
                      })
                      .attr("cy", function(d, i) {
                         posy = translate_y(d.position.y);
-                        //console.log("posy: " + posy);
                         return posy;
                      })
                      .attr("fill", function(d, i) {
@@ -211,6 +277,10 @@ $(document).ready(function() {
     };
     
     
+    /**
+        Displays all player positions in the visualization.
+        @param {json} data Player footstep data.
+    */
     function add_footsteps(data) {
         var player_foot_steps = svg.select("#lyr_footsteps")
                                    .selectAll("circle.footsteps").data(data);
@@ -220,24 +290,21 @@ $(document).ready(function() {
                      .attr("class", "footsteps")
                      .attr("r", function (d, i) {
                         d.round = get_round_from_tick(d.tick);
-                        if (d.round == f_round && d.player == f_player) {
-                            return 4;
-                        }
-                        else if (d.round == f_round && d.player != f_player) {
+                        // Apply filter by returning radius of 0 if not included.
+                        if ($.inArray(d.round, filter.rounds) < 0 && filter.rounds.length > 0) {
                             return 0;
                         }
-                        else {
+                        if ($.inArray(d.player, filter.players) < 0 && filter.players.length > 0) {
                             return 0;
                         }
+                        return 4;
                      })
                      .attr("cx", function(d, i) {
                         posx = translate_x(d.position.x);
-                        //console.log("posx: " + posx);
                         return posx;
                      })
                      .attr("cy", function(d, i) {
                         posy = translate_y(d.position.y);
-                        //console.log("posy: " + posy);
                         return posy;
                      })
                      .attr("fill", function(d, i) {
@@ -260,6 +327,10 @@ $(document).ready(function() {
     };  
     
     
+    /**
+        Displays all attacks (melee and ranged) visualization.
+        @param {json} data Player weapon fired data.
+    */
     function add_shots_fired(data) {
         var shots_fired = svg.select("#lyr_shots_fired")
                              .selectAll("circle.shot_fired").data(data);
@@ -268,21 +339,22 @@ $(document).ready(function() {
                    .append("circle")
                    .attr("class", "shot_fired")
                    .attr("r", function(d, i) {
-                      if (d.weapon != "knife") {
-                          return 2;
-                      }
-                      else {
-                          return 0;
-                      }
+                        d.round = get_round_from_tick(d.tick);
+                        // Apply filter by returning radius of 0 if not included.
+                        if ($.inArray(d.round, filter.rounds) < 0 && filter.rounds.length > 0) {
+                            return 0;
+                        }
+                        if ($.inArray(d.player, filter.players) < 0 && filter.players.length > 0) {
+                            return 0;
+                        }
+                        return 2;
                    })
                    .attr("cx", function(d, i) {
                       posx = translate_x(d.position.x);
-                      //console.log("posx: " + posx);
                       return posx;
                    })
                    .attr("cy", function(d, i) {
                       posy = translate_y(d.position.y);
-                      //console.log("posy: " + posy);
                       return posy;
                    })
                    .attr("fill", function(d, i) {
@@ -304,14 +376,22 @@ $(document).ready(function() {
                    });
     };
 
+/**
+    ========== UTILITY FUNCTONS ============================================================
+    These functions are utility functions.
+    ========================================================================================
+*/
     
+    
+    /**
+        Uses the player footstep data and returns an object containing:
+        Each player ID as an attribute, where the value contains:
+        Each round number as an attribute, where the value contains:
+        Array of all positions that player has been in that round.
+        @param {json} data The player footsteps data.
+        @return {object} The data pre-processed as described.
+    */
     function get_player_paths(data) {
-        /**
-            player_paths is an object with player names as keys
-            each player key contains a list, where each entry
-            corresponds to one round. each round is a list of steps
-            that particular player made.
-        */
         var player_paths = {};
         
         data.forEach(function (entry) {
@@ -343,6 +423,13 @@ $(document).ready(function() {
     }
     
     
+    
+    /**
+        Uses the rounds global variable to determine the corresponding
+        round of a given tick.
+        @param {int} tick The tick we wish to know the round of.
+        @return {int} The round that contains the given tick.
+    */
     function get_round_from_tick(tick) {
         for (var r in rounds) {
             if (rounds.hasOwnProperty(r)) {
@@ -355,19 +442,46 @@ $(document).ready(function() {
     }
     
     
+    /**
+        Translates the x coordinate from the CS:GO map to the 
+        visualization coordinate system.
+        @param {float} x The x vector.
+        @return {float} The translated x vector.
+    */
     function translate_x(x) {
         return        (1024 * (x + 2480) / 4580);
     }
     
     
+    /**
+        Translates the y coordinate from the CS:GO map to the 
+        visualization coordinate system.
+        @param {float} y The y vector.
+        @return {float} The translated y vector.
+    */
     function translate_y(y) {
         return 1024 - (1024 * (y + 1130) / 4500);
     }
     
+    
+    /**
+        Translates the z coordinate from the CS:GO map to the 
+        visualization coordinate system.
+        @param {float} z The z vector.
+        @return {float} The translated z vector.
+    */
     function translate_z(z) {
         return z;
     }
     
+    
+    /**
+        Translates a point object containing 3D coordinates and
+        the corresponding tick from the CS:GO map coordinate system
+        into the coordinate system of the visualization.
+        @param {point object} point Point object with x, y, z, and t attributes.
+        @return {point object} Point object with x, y, z, and t attributes with translated x, y, and z coordinates.
+    */
     function translate_path_point(point) {
         var new_coord = {
             "x": translate_x(point.pos.x),
@@ -379,6 +493,11 @@ $(document).ready(function() {
     }
     
     
+    /**
+        Shows the tooltip at the current mouse position, which
+        displays the HTML code provided.
+        @param {html} html The HTML to display in the tooltip.
+    */
     function tooltip_show(html) {
         offset_x = 12;
         offset_y = -22;
@@ -392,21 +511,41 @@ $(document).ready(function() {
     }
     
     
+    /**
+        Hides the tooltip.
+    */
     function tooltip_hide() {
         d3.select("#tooltip").classed({"hidden": true});
-    }
-   
-   
-    function stringify_pretty_print(obj) {
-        // This function creates a JSON string out of an object, parsses it, and
-        // stringifies it again to introduce a nice indentions, aka pretty print.
-        return "<pre>" + JSON.stringify(JSON.parse(JSON.stringify(obj)),null,2) + "</pre>";
     }
     
     
     /**
-            ================  Weapon Visualization ================================
+        Rounds a floating point number to 2 decimal points.
+        This function is a lot faster than toFixed().
+        @param {float} number The float to be rounded.
+        @return {float} The given number rounded to 2 decimal points.
     */
+    function to_fixed_2(number) {
+        return Math.round(number * 100) / 100;
+    }
+    
+   
+    /**
+        Creates a JSON string out of an object, parses it, and stringifies it again
+        in order to introduce a nice indentions, aka pretty print.
+        @param {object} obj Object to be printed.
+        @return {string} Pretty formatted string.
+    */
+    function stringify_pretty_print(obj) {
+        return "<pre>" + JSON.stringify(JSON.parse(JSON.stringify(obj)),null,2) + "</pre>";
+    }
+    
+    
+/**
+    ========== STATIC WEAPON VISUALIZATION =================================================
+    The following code creates and renders the static visualizations.
+    ========================================================================================
+*/
     
     /**
         
