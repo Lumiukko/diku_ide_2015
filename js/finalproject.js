@@ -773,8 +773,8 @@ $(document).ready(function() {
         var ct_data = sides[0];
         var t_data = sides[1];
         
-        var ct_weapon = add_weapon_category(ct_data, "killed_by")
-        var t_weapon = add_weapon_category(t_data, "killed_by")
+        var ct_weapon = add_weapon_category(ct_data, "killed_with")
+        var t_weapon = add_weapon_category(t_data, "killed_with")
 
         draw_weapon_bar_chart(ct_weapon, "Counter Terrorists were killed by:", 4, "lightblue");
         draw_weapon_bar_chart(t_weapon, "Terrorists were killed by:", 4, "pink");
