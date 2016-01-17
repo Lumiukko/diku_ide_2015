@@ -31,6 +31,10 @@
     padding: 4px 8px;
 }
 
+#tooltip pre {
+    /* font-size: 0.7em; */
+}
+
 /**
     CS:GO Markers
 */
@@ -47,13 +51,15 @@
 }
 
 .footsteps {
+    stroke: black;
+    stroke-width: 0.5pt;
     opacity: 0.8;
 }
 
 .player_path {
     fill: none;
     stroke-width: 2pt;
-    opacity: 0.5;
+    opacity: 0.6;
 }
 
 /**

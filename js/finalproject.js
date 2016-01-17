@@ -21,7 +21,7 @@ $(document).ready(function() {
     */
     var filter = {
         "players": ["apEX"],
-        "rounds": [1]
+        "rounds": [7]
     };
 
     var render_foot_steps = true;
@@ -288,19 +288,20 @@ $(document).ready(function() {
         @param {json} data Player footstep data.
     */
     function add_footsteps(data) {
-        var player_foot_steps = svg.select("#lyr_footsteps")
-                                   .selectAll("circle.footsteps")
-                                   .data(data.filter(function (d, i) {
+        var data_filtered = data.filter(function (d, i) {
                                       d.round = get_round_from_tick(d.tick);
                                       return apply_filter(d);
-                                   }));
+                                   })
+        var player_foot_steps = svg.select("#lyr_footsteps")
+                                   .selectAll("circle.footsteps")
+                                   .data(data_filtered);
         
         player_foot_steps.enter()
                          .append("path")
                          .attr("class", "footsteps")
                          .attr("d", d3.svg.symbol().type("triangle-up"))
                          .attr("transform", function (d, i) {
-                            return "translate(" + translate_x(d.position.x) + "," + translate_y(d.position.y) + ") rotate(" + (d.eye_angle.yaw-0) + ") scale(0.7 2.0) ";
+                            return "rotate(" + (-d.eye_angle.yaw+90) + " " + translate_x(d.position.x) + "," + translate_y(d.position.y) + ") translate(" + translate_x(d.position.x) + "," + translate_y(d.position.y) + ") scale(0.7 2.0)";
                          })
                          .attr("fill", function(d, i) {
                             if (d.side == "TERRORIST") {
@@ -314,6 +315,7 @@ $(document).ready(function() {
                             }
                          })
                          .on("mouseover", function(d, i) {
+                            d.iteration = i;
                            tooltip_show(stringify_pretty_print(d));
                          })
                          .on("mouseout", function(d, i) {
