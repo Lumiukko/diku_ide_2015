@@ -20,14 +20,18 @@ $(document).ready(function() {
               it by weapon.
     */
     var filter = {
-        "players": ["apEX"],
-        "rounds": [7]
+        "players": [],
+        "rounds": [1,2,3]
     };
 
-    var render_foot_steps = true;
-    var render_foot_paths = true;
+    // Resolution per direction of the weapon area, should be power of 2!
+    var weapon_area_resolution = 16;
+    
+    var render_foot_steps = false;
+    var render_foot_paths = false;
     var render_weapon_fire = false;
     var render_player_deaths = false;
+    var render_weapon_areas = false;
  
     // Flag whether or not to remove the warmup rounds. (TODO: is this working globally?)
     var remove_warmup = false;
@@ -45,6 +49,7 @@ $(document).ready(function() {
     svg.append("g").attr("id", "lyr_footsteps");
     svg.append("g").attr("id", "lyr_shots_fired");
     svg.append("g").attr("id", "lyr_player_death");
+    svg.append("g").attr("id", "lyr_weapon_areas");
     
     // Global Variables
     var rounds;
@@ -150,26 +155,14 @@ $(document).ready(function() {
             if (!error) {
                 var player_paths = get_player_paths(data);
                 
-                // Remove warmup round if set in the remove_warmup variable.
-                if (remove_warmup) {
-                    for (var r in rounds) {
-                        if (rounds.hasOwnProperty(r)) {
-                            if (rounds[r].warmup) {
-                                for (var p in player_paths) {
-                                    if (player_paths.hasOwnProperty(p)) {
-                                        delete player_paths[p][r];
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                
                 if (render_foot_paths) {
                     add_player_paths(player_paths);
                 }
                 if (render_foot_steps) {
                     add_footsteps(data);
+                }
+                if (render_weapon_areas) {
+                    add_weapon_areas(data);
                 }
             }
             else {
@@ -184,6 +177,91 @@ $(document).ready(function() {
     These functions are function that render data to the SVG element.
     ========================================================================================
 */
+    
+    /**
+        Displays 
+    */
+    function add_weapon_areas(data) {
+        var bin_offsets = []
+        var bin_size = 1024/weapon_area_resolution;
+        for (var i=0; i<1024; i+=bin_size) {
+            bin_offsets.push([i, i+bin_size]);
+        }
+        
+        var bin = [];
+        for (bx in bin_offsets) {
+            bin.push([]);
+            for (by in bin_offsets) {
+                bin[bin.length-1].push({});
+            }
+        }
+        
+        data_filtered = data.filter(function (d, i) {
+                                     return apply_filter(d);
+                                  });
+        
+        
+        data_filtered.forEach(function(d, i) {
+            var bin_x = -1;
+            var bin_y = -1;
+            bin_offsets.forEach(function(bin_offset, bin_number) {
+                if (translate_x(d.position.x) > bin_offset[0] && translate_x(d.position.x) <= bin_offset[1]) {
+                    bin_x = bin_number;
+                }
+                if (translate_y(d.position.y) > bin_offset[0] && translate_y(d.position.y) <= bin_offset[1]) {
+                    bin_y = bin_number;
+                }
+            });
+            
+            if (bin[bin_x][bin_y][d.weapon] == undefined) {
+                bin[bin_x][bin_y][d.weapon] = 0;
+            }
+            bin[bin_x][bin_y][d.weapon]++;
+        });
+        
+        //console.log(JSON.stringify(bin));
+        
+        bin_weapons = [];
+        for (bx in bin_offsets) {
+            for (by in bin_offsets) {
+                var current_bin = bin[bx][by];
+                
+                var weapons = Object.keys(current_bin).map(function(key) {
+                    return [key, current_bin[key]];
+                });
+                weapons.sort(function(f, s) {
+                    return s[1] - f[1];
+                });
+                weapons = {"x": bx, "y": by, "wbin": weapons};
+                bin_weapons.push(weapons);
+            }
+        }
+        
+
+        
+        var bin_squares = svg.select("#lyr_weapon_areas")
+                             .selectAll("rect.weapon_area")
+                             .data(bin_weapons)
+                             .enter()
+                             .append("rect")
+                             .attr("class", "weapon_area")
+                             .attr("x", function(d, i) {
+                                return d.x * bin_size;
+                             })
+                             .attr("y", function(d, i) {
+                                return d.y * bin_size;
+                             })
+                             .attr("width", bin_size)
+                             .attr("height", bin_size)
+                             .on("mouseover", function(d, i) {
+                                tooltip_show(stringify_pretty_print(d));
+                             })    
+                             .on("mouseout", function(d, i) {
+                                tooltip_hide();
+                             });   
+        
+    }
+    
     
     /**
         Displays all player paths in the visualization.
