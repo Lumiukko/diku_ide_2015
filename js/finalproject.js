@@ -13,28 +13,35 @@ $(document).ready(function() {
     
     // Filter (currently player and rounds).
     //     An empty array means that no filer is applied for the category, everything is shown.
-    /**
-        TODO: Introduce weapon filter that shows ALL data points if specified weapon is used/selected.
-              Be careful when applying the filter to the path, since we only take the first element of the
-              path for the filtering. This should be re-written to fit our plans before attempting to filter
-              it by weapon.
-    */
     var filter = {
-        "players": [],
-        "rounds": [1,2,3]
+        "players": ["JW"],
+        "rounds": []
     };
 
     // Resolution per direction of the weapon area, should be power of 2!
-    var weapon_area_resolution = 16;
+    var weapon_area_resolution = 48;
+    var weapon_area_show_empty_bins = true;
     
     var render_foot_steps = false;
     var render_foot_paths = false;
     var render_weapon_fire = false;
     var render_player_deaths = false;
-    var render_weapon_areas = false;
- 
-    // Flag whether or not to remove the warmup rounds. (TODO: is this working globally?)
-    var remove_warmup = false;
+    var render_weapon_areas = true;
+    
+
+    // Color mapping for weapon categories:
+    var weapon_category_color = {
+        "pistol": "blue",
+        "melee": "white",
+        "rifle": "red",
+        "smg": "yellow",
+        "bomb": "#ff99cc",
+        "throwable": "green",
+        "mg": "fuchsia",
+        undefined: "black"
+    }
+    
+
     
     // D3 initial variables
     var svg = d3.select("#visbox");
@@ -213,6 +220,9 @@ $(document).ready(function() {
                 }
             });
             
+            // outcomment this for binning by weapon name
+            d.weapon = get_weapon_category(d.weapon);
+            
             if (bin[bin_x][bin_y][d.weapon] == undefined) {
                 bin[bin_x][bin_y][d.weapon] = 0;
             }
@@ -237,11 +247,14 @@ $(document).ready(function() {
             }
         }
         
-
+        
+        bin_weapons_filtered = bin_weapons.filter(function (wbin) {
+                                    return (wbin.wbin.length > 0);
+                                });
         
         var bin_squares = svg.select("#lyr_weapon_areas")
                              .selectAll("rect.weapon_area")
-                             .data(bin_weapons)
+                             .data((weapon_area_show_empty_bins ? bin_weapons : bin_weapons_filtered))
                              .enter()
                              .append("rect")
                              .attr("class", "weapon_area")
@@ -253,11 +266,21 @@ $(document).ready(function() {
                              })
                              .attr("width", bin_size)
                              .attr("height", bin_size)
+                             .attr("fill", function(d, i) {
+                                if (d.wbin[0] != undefined) {
+                                    return weapon_category_color[d.wbin[0][0]];
+                                }
+                                return "black";
+                             })
                              .on("mouseover", function(d, i) {
-                                tooltip_show(stringify_pretty_print(d));
+                                if (d.wbin.length > 0) {
+                                    tooltip_show(stringify_pretty_print(d));
+                                }
                              })    
                              .on("mouseout", function(d, i) {
-                                tooltip_hide();
+                                if (d.wbin.length > 0) {
+                                    tooltip_hide();
+                                }
                              });   
         
     }
@@ -481,6 +504,79 @@ $(document).ready(function() {
     These functions are utility functions.
     ========================================================================================
 */
+
+
+    /**
+        Returns the category of a given weapon by its name.
+        @param {string} weapon_name The weapon name.
+        @return {string} The category name.
+    */
+    function get_weapon_category(weapon_name) {
+        gun_categories = {
+            "revolver": "pistol",
+            "deagle": "pistol",
+            "fiveseven": "pistol",
+            "glock": "pistol",
+            "usp_silencer": "pistol",
+            "tec9": "pistol",
+            "cz75a": "pistol",
+            "p250": "pistol",
+            "usp": "pistol",
+            "p228": "pistol",
+            "elite": "pistol",
+            "hkp2000": "pistol",
+            "knife_butterfly": "melee",
+            "knife": "melee",
+            "knife_t": "melee",
+            "knifegg": "melee",
+            "knife_karambit": "melee",
+            "knife_m9_bayonett": "melee",
+            "bayonet": "melee",
+            "knife_falchion": "melee",
+            "knife_gut": "melee",
+            "knife_flip": "melee",
+            "knife_tactical": "melee",
+            "taser": "melee",
+            "awp": "rifle",
+            "m4a1_silencer": "rifle",
+            "ak47": "rifle",
+            "m4a1": "rifle",
+            "aug": "rifle",
+            "sg556": "rifle",
+            "ssg08": "rifle",
+            "famas": "rifle",
+            "scar20": "rifle",
+            "g3sg1": "rifle",
+            "scout": "rifle",
+            "galil": "rifle",
+            "sg552": "rifle",
+            "galilar": "rifle",
+            "scar17": "rifle",
+            "p90": "smg",
+            "ump45": "smg",
+            "mp7": "smg",
+            "mp5navy": "smg",
+            "mp5": "smg",
+            "mac10": "smg",
+            "bizon": "smg",
+            "mp9": "smg",
+            "tmp": "smg",
+            "molotov": "throwable",
+            "hegrenade": "throwable",
+            "smokegrenade": "throwable",
+            "decoy": "throwable",
+            "incgrenade": "throwable",
+            "flashbang": "throwable",
+            "m60": "mg",
+            "m249": "mg",
+            "negev": "mg",
+            "c4": "bomb",
+            "c4_training": "bomb"
+        }
+        result = gun_categories[weapon_name];
+        return result;
+    };
+    
     
     /**
         Applies the filter as defined in the global variable to a datapoint, i.e.

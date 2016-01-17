@@ -63,8 +63,7 @@
 }
 
 .weapon_area {
-    fill: fuchsia;
-    stroke: lime;
+    stroke: black;
     stroke-width: 1pt;
     opacity: 0.6;
 }
