@@ -29,6 +29,9 @@ $(document).ready(function() {
     var render_weapon_fire = true;
     var render_player_deaths = true;
     var render_weapon_areas = true;
+	
+	var weapon_death_visualization_flag = false;
+	var weapon_fire_visualization_flag = false;
    
     // Color mapping for weapon categories:
     var weapon_category_color = {
@@ -61,8 +64,6 @@ $(document).ready(function() {
     
     
     // Start the loading process...
-    // load_player_deaths();
-    // load_weapon_fire();
     add_layers();
     load_meta_data();
     
@@ -122,8 +123,8 @@ $(document).ready(function() {
                     prev_round = entry.round;
                 });
 				
-                // load_player_deaths();
-                // load_weapon_fire();
+                load_player_deaths();
+                load_weapon_fire();
                 load_player_footstep();
             }
             else {
@@ -150,7 +151,10 @@ $(document).ready(function() {
                 if (render_player_deaths) {
                     add_player_deaths(data);
                 }
-                add_weapon_death_statistics(data);
+				if(weapon_death_visualization_flag === false){
+					weapon_death_visualization_flag = true;
+					add_weapon_death_statistics(data);
+				}
             }
             else {
                 console.log("Error: " + error);
@@ -169,7 +173,10 @@ $(document).ready(function() {
                 if (render_weapon_fire) {
                     add_shots_fired(data);
                 }
-                add_weapon_fired_statistics(data)
+				if(weapon_fire_visualization_flag === false){
+					weapon_fire_visualization_flag = true;
+					add_weapon_fired_statistics(data)
+				}
             }
             else {
                 console.log("Error: " + error);
