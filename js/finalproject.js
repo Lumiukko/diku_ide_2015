@@ -21,7 +21,7 @@ $(document).ready(function() {
     */
     var filter = {
         "players": ["apEX"],
-        "rounds": [7]
+        "rounds": [7,8]
     };
 
     var render_foot_steps = true;
@@ -40,17 +40,37 @@ $(document).ready(function() {
                          .y(function(d) { return to_fixed_2(d.y) })
                          .interpolate("cardinal");
     
-    // SVG Layers: Change order to bring layers to front or back.
-    svg.append("g").attr("id", "lyr_player_paths");
-    svg.append("g").attr("id", "lyr_footsteps");
-    svg.append("g").attr("id", "lyr_shots_fired");
-    svg.append("g").attr("id", "lyr_player_death");
     
     // Global Variables
     var rounds;
+    var player_deaths_data = [];
+    var weapon_fired_data = [];
     
     // Start the loading process...
+    load_player_deaths();
+    load_weapon_fire();
+    add_layers();
     load_meta_data();
+    
+    /**
+        Appends layers to the svg
+    */
+    function add_layers(){
+        // SVG Layers: Change order to bring layers to front or back.
+        svg.append("g").attr("id", "lyr_player_paths");
+        svg.append("g").attr("id", "lyr_footsteps");
+        svg.append("g").attr("id", "lyr_shots_fired");
+        svg.append("g").attr("id", "lyr_player_death");
+          
+          
+    }
+    
+    /**
+        Removes all layers from the svg
+    */
+    function remove_all_layers(){
+        svg.selectAll("g").remove()
+    }
     
 
 /**
@@ -91,9 +111,9 @@ $(document).ready(function() {
                     
                     prev_round = entry.round;
                 });
-                
-                load_player_deaths();
-                load_weapon_fire();
+
+                // load_player_deaths();
+                // load_weapon_fire();
                 load_player_footstep();
             }
             else {
@@ -101,7 +121,14 @@ $(document).ready(function() {
             }
         });
     }
-
+    function clone(obj) {
+        if (null == obj || "object" != typeof obj) return obj;
+        var copy = obj.constructor();
+        for (var attr in obj) {
+            if (obj.hasOwnProperty(attr)) copy[attr] = obj[attr];
+        }
+        return copy;
+    }
     
     /**
         Loads the player deaths of a CS:GO match from the file and calls dependant
@@ -126,13 +153,13 @@ $(document).ready(function() {
         Loads the player weapon fire events of a CS:GO match from the file and calls
         dependant displaying functions.
     */
-    function load_weapon_fire() {        
+    function load_weapon_fire() {       
         d3.json(file_player_weaponfire, function(error, data) {
             if (!error) {
                 if (render_weapon_fire) {
-                    add_shots_fired(data);
+                    add_shots_fired(data);;
                 }
-                add_weapon_fired_statistics(data);
+                add_weapon_fired_statistics(data)
             }
             else {
                 console.log("Error: " + error);
@@ -728,7 +755,7 @@ $(document).ready(function() {
         var ct = [];
         var t = [];
         data.forEach(function(entry) {
-            if(entry.side == "CT") ct.push(entry)
+            if(entry.side === "CT") ct.push(entry)
             else t.push(entry);
         });
         return [ct, t];
@@ -758,5 +785,75 @@ $(document).ready(function() {
 
         return sorted_weapons;
     }
+    
+    /**
+    ======================== MULTIPLE VIEW =================================================
+    The following code handles the changes between the views.
+    ========================================================================================
+    */
+    var page = 0;
+    var content = [
+        {
+        "page": 0,
+        "discovery": "In quis nibh metus. Vestibulum vehicula, lacus ut rhoncus mollis, quam nisl commodo enim, ut iaculis elit libero id metus.",
+        "players": ["apEX"],
+        "rounds": [7,8]
+        },
+        {
+        "page": 1,
+        "discovery": "Sed mollis luctus interdum. Cras eget ipsum at arcu pellentesque hendrerit. Sed magna nulla, egestas a accumsan id, rutrum gravida enim.",
+        "players": ["KRIMZ"],
+        "rounds": [7,8]
+        },
+        {
+        "page": 2,
+        "discovery": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
+        "players": ["apEX"],
+        "rounds": [1,2,3,4,5,6,7,8,9,10]
+        },
+        {
+        "page": 3,
+        "discovery": "There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable. If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything embarrassing hidden in the middle of text. All the Lorem Ipsum generators on the Internet tend to repeat predefined chunks as necessary, making this the first true generator on the Internet. It uses a dictionary of over 200 Latin words, combined with a handful of model sentence structures, to generate Lorem Ipsum which looks reasonable. The generated Lorem Ipsum is therefore always free from repetition, injected humour, or non-characteristic words etc.",
+        "players": ["apEX"],
+        "rounds": [17,18]
+        }
+    ];
+    $("#btn-right").click(function () {
+        page += 1;
+        toggle_button_visibility(page);
+        $('#discovery').html(content[page].discovery);
+        filter = content[page];
+        console.log(page)
+        remove_all_layers();
+        add_layers();
+        load_meta_data();
+    });
+    
+    $("#btn-left").click(function () {
+        page -= 1;
+        toggle_button_visibility(page);
+        $('#discovery').html(content[page].discovery);
+        filter = content[page];
+        console.log(page)
+        remove_all_layers();
+        add_layers();
+        load_meta_data();
+    });
+    
+    function toggle_button_visibility(page){
+        var first = 0;
+        var last = 3;
+        if(page === first){
+            $("#btn-left").hide();
+            $("#btn-right").attr('style',"width:100px; float:left; margin-left:929px");
+        }else if(page === last){
+            $("#btn-right").hide();
+        }else{
+            $("#btn-left").show();
+            $("#btn-right").show();
+            $("#btn-right").attr('style',"width:100px; float:left; margin-left:829px");
+        }
+    }
+    
     
 });
