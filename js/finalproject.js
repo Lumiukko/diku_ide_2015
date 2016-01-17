@@ -13,6 +13,7 @@ $(document).ready(function() {
     
     // Filter (currently player and rounds).
     //     An empty array means that no filer is applied for the category, everything is shown.
+    //TODO: This overwrites the defined pages at the bottom of this file, don't forget that!!!
     var filter = {
         "players": [],
         "rounds": [1],
@@ -25,7 +26,7 @@ $(document).ready(function() {
     
     var render_foot_steps = true;
     var render_foot_paths = true;
-    var render_weapon_fire = false;
+    var render_weapon_fire = true;
     var render_player_deaths = true;
     var render_weapon_areas = true;
    
@@ -60,8 +61,8 @@ $(document).ready(function() {
     
     
     // Start the loading process...
-    load_player_deaths();
-    load_weapon_fire();
+    // load_player_deaths();
+    // load_weapon_fire();
     add_layers();
     load_meta_data();
     
@@ -75,8 +76,6 @@ $(document).ready(function() {
         svg.append("g").attr("id", "lyr_footsteps");
         svg.append("g").attr("id", "lyr_shots_fired");
         svg.append("g").attr("id", "lyr_player_death");
-          
-          
     }
     
     /**
@@ -168,7 +167,7 @@ $(document).ready(function() {
         d3.json(file_player_weaponfire, function(error, data) {
             if (!error) {
                 if (render_weapon_fire) {
-                    add_shots_fired(data);;
+                    add_shots_fired(data);
                 }
                 add_weapon_fired_statistics(data)
             }
@@ -980,7 +979,6 @@ $(document).ready(function() {
         toggle_button_visibility(page);
         $('#discovery').html(content[page].discovery);
         filter = content[page];
-        console.log(page)
         remove_all_layers();
         add_layers();
         load_meta_data();
@@ -991,7 +989,6 @@ $(document).ready(function() {
         toggle_button_visibility(page);
         $('#discovery').html(content[page].discovery);
         filter = content[page];
-        console.log(page)
         remove_all_layers();
         add_layers();
         load_meta_data();
