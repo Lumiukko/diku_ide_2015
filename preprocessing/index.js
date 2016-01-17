@@ -37,13 +37,13 @@ fs.readFile('demos/' + demo_name + '.dem', function(err, data) {
             var player = event.player;
             var team = player.getTeam(this);
             event_subscriptions['game.weapon_fire'].push({
-                'uid': player.getUserId(),
+                'guid': player.getGuid(),
                 'tick': demo.getTick(),
                 'round': demo.getRound(),
                 'player': player.getName(),
                 'team': team.getClanName(),
                 'side': team.getSide(),
-                'position': player.getPosition(),
+                'position': compress_position(player.getPosition()),
                 'eye_angle': player.getEyeAngle(),
                 'weapon': event.weapon
             });
@@ -54,13 +54,13 @@ fs.readFile('demos/' + demo_name + '.dem', function(err, data) {
             var player = event.player;
             var team = player.getTeam(this);
             event_subscriptions['game.player_death'].push({
-                'uid': player.getUserId(),
+                'guid': player.getGuid(),
                 'tick': demo.getTick(),
                 'round': demo.getRound(),
                 'player': player.getName(),
                 'team': team.getClanName(),
                 'side': team.getSide(),
-                'position': player.getPosition(),
+                'position': compress_position(player.getPosition()),
                 'last_place_name': player.getLastPlaceName(),
                 'eye_angle': player.getEyeAngle(),
                 'killed_by': event.weapon
@@ -68,27 +68,27 @@ fs.readFile('demos/' + demo_name + '.dem', function(err, data) {
         });
     } 
     if ('game.player_footstep' in event_subscriptions) {
-        var all_players = [];
-        var alive_players = [];
+        var alive_players = {};
         demo.on('game.round_start', function(event) {
-            alive_players = all_players.slice();
+            for (var player in alive_players) {
+                if (alive_players.hasOwnProperty(player)) {
+                    alive_players[player] = true;
+                }
+            }
             if (this.getRound() !== 1) return;
-            all_players = [];
             teams = this.getTeams();
             // only add players from the real opposing teams
             for (var i in teams) {
                 if (typeof teams[i].getClanName === 'function' && teams[i].getClanName()) {
                     var team_players = teams[i].getPlayers(this);
                     for (var x in team_players) {
-                        all_players.push(team_players[x].getUserId());
+                        alive_players[team_players[x].getGuid()] = true;
                     }
                 } 
             }
-            alive_players = all_players.slice();
         });
         demo.on('game.player_death', function(event) {
-            var index = alive_players.indexOf(event.player.getUserId());
-            alive_players.splice(index, 1);
+            alive_players[event.player.getGuid()] = false;
         });
         demo.on('entity_updated', function(event) {
             if (last_pos_tick + footstep_tick_sample > this.getTick()) {
@@ -98,24 +98,25 @@ fs.readFile('demos/' + demo_name + '.dem', function(err, data) {
             var players = this.getPlayers();
             for (var i in players) {
                 var player = players[i];
-                // don't add dead players
+                // don't add non-real players
                 if (!player || !player.getHealth || !player.getActiveWeapon()) {
                     continue;
                 }
-                if (alive_players.indexOf(player.getUserId()) === -1) {
+                if (!alive_players[player.getGuid()]) {
+                    // player already died  
                     continue;
                 }
                 var team = player.getTeam(this);
                 var weapon = player.getActiveWeapon().classInfo.name;
                 event_subscriptions['game.player_footstep'].push({
-                    'uid': player.getUserId(),
+                    'guid': player.getGuid(),
                     'tick': this.getTick(),
                     'round': this.getRound(),
                     'player': player.getName(),
                     'team': team.getClanName(),
                     'player_health': player.getHealth(),
                     'side': team.getSide(),
-                    'position': player.getPosition(),
+                    'position': compress_position(player.getPosition()),
                     'last_place_name': player.getLastPlaceName(),
                     'eye_angle': player.getEyeAngle(),
                     'weapon': weapon.replace(/^(CWeapon|C)/, '').toLowerCase(),
@@ -186,3 +187,10 @@ fs.readFile('demos/' + demo_name + '.dem', function(err, data) {
     });
     console.log('Finished');
 });
+
+function compress_position(pos) {
+    pos.x = Math.round(pos.x * 100) / 100;
+    pos.y = Math.round(pos.y * 100) / 100;
+    pos.z = Math.round(pos.z * 100) / 100;
+    return pos;
+}
