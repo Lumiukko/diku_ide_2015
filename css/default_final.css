@@ -41,7 +41,7 @@
 */
 
 .player_death {
-    stroke: black;
+    stroke: white;
     stroke-width: 0.8pt;
     opacity: 0.8;
 }
@@ -60,6 +60,12 @@
 .player_path {
     fill: none;
     stroke-width: 2pt;
+    opacity: 0.6;
+}
+
+.weapon_area {
+    stroke: black;
+    stroke-width: 1pt;
     opacity: 0.6;
 }
 
