@@ -13,7 +13,12 @@ $(document).ready(function() {
     
     // Filter (currently player and rounds).
     //     An empty array means that no filer is applied for the category, everything is shown.
-    //TODO: Introduce weapon filter that shows ALL data points if specified weapon is used/selected.
+    /**
+        TODO: Introduce weapon filter that shows ALL data points if specified weapon is used/selected.
+              Be careful when applying the filter to the path, since we only take the first element of the
+              path for the filtering. This should be re-written to fit our plans before attempting to filter
+              it by weapon.
+    */
     var filter = {
         "players": ["JW", "apEX"],
         "rounds": ["2", "3"]
