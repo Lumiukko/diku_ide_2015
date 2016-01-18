@@ -46,10 +46,20 @@ $(document).ready(function() {
         undefined: "black"
     }
     
-
-    
     // D3 initial variables
     var svg = d3.select("#visbox");
+    var background_images = [
+        "./img/de_dust2_radar.png",
+        "./img/dust2_overview_bomb.jpg",
+        "./img/dust2_overview_css.png"
+    ];
+    // Add background image to SVG.
+    svg.append("svg:image")
+       .attr("x", 0)
+       .attr("y", 0)
+       .attr("width", "1024px")
+       .attr("height", "1024px")
+       .attr("xlink:href", background_images[0])
     
     var lineFunction = d3.svg.line()
                          .x(function(d) { return to_fixed_2(d.x) })
@@ -307,6 +317,9 @@ $(document).ready(function() {
                                 }
                                 return "black";
                              })
+                             .attr("stroke", "black")
+                             .attr("stroke-width", "1pt")
+                             .attr("opacity", "0.6")
                              .on("mouseover", function(d, i) {
                                 if (d.wbin.length > 0) {
                                     tooltip_show(stringify_pretty_print(d));
@@ -363,6 +376,9 @@ $(document).ready(function() {
                             var translated = d.map(translate_path_point);
                             return lineFunction(translated);
                         })
+                        .attr("fill", "none")
+                        .attr("stroke-width", "2pt")
+                        .attr("opacity", "0.6")
                         .on("mouseover", function(d, i) {
                             important_info = {
                                 "side": d[0].side,
@@ -413,6 +429,9 @@ $(document).ready(function() {
                             return "black";
                         }
                      })
+                     .attr("stroke", "white")
+                     .attr("stroke-width", "0.8pt")
+                     .attr("opacity", "0.8")
                      .on("mouseover", function(d, i) {
                         tooltip_show(stringify_pretty_print(d));
                      })
@@ -453,6 +472,9 @@ $(document).ready(function() {
                                 return "yellow";
                             }
                          })
+                         .attr("stroke", "black")
+                         .attr("stroke-width", "0.5pt")
+                         .attr("opacity", "0.8")
                          .on("mouseover", function(d, i) {
                             d.iteration = i;
                            tooltip_show(stringify_pretty_print(d));
@@ -499,6 +521,8 @@ $(document).ready(function() {
                           return "black";
                       }
                    })
+                   .attr("stroke-width", "0.5pt")
+                   .attr("stroke", "black")
                    .on("mouseover", function(d, i) {
                       tooltip_show(stringify_pretty_print(d));
                    })

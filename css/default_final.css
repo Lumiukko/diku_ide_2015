@@ -9,10 +9,6 @@
 #visbox {
     width: 1024px;
     height: 1024px;
-    background-image: url("../img/de_dust2_radar.png");
-    /* background-image: url("../img/dust2_overview_bomb.jpg"); */
-    /* background-image: url("../img/dust2_overview_css.png"); */
-    background-size: cover;
     margin-top:35px;
 }
 
@@ -36,38 +32,6 @@
     /* font-size: 0.7em; */
 }
 
-/**
-    CS:GO Markers
-*/
-
-.player_death {
-    stroke: white;
-    stroke-width: 0.8pt;
-    opacity: 0.8;
-}
-
-.shot_fired {
-    stroke-width: 0.5pt;
-    opacity: 1.0;
-}
-
-.footsteps {
-    stroke: black;
-    stroke-width: 0.5pt;
-    opacity: 0.8;
-}
-
-.player_path {
-    fill: none;
-    stroke-width: 2pt;
-    opacity: 0.6;
-}
-
-.weapon_area {
-    stroke: black;
-    stroke-width: 1pt;
-    opacity: 0.6;
-}
 
 /**
     General Elements
