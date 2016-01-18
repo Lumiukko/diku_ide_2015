@@ -92,11 +92,11 @@ $(document).ready(function() {
     
     d3.select("#transition_test").on("click", function() {
         new_filter = clone(filter);
-        new_filter.render_player_deaths = true;
+        new_filter.render_player_deaths = !new_filter.render_player_deaths;
+        new_filter.render_weapon_areas = !new_filter.render_weapon_areas;
         redraw(new_filter);
         console.log(redraw);
     });
-    
     
     redraw = function redraw(new_filter) {
         filter = new_filter;
@@ -105,16 +105,12 @@ $(document).ready(function() {
         data_footsteps = complete_footstep_data.filter(function (d, i) { return apply_filter(d); });
         data_weapon_fire = complete_weapon_fire_data.filter(function (d, i) { return apply_filter(d); });
         
-        if (filter.render_player_deaths)
-            add_player_deaths(data_player_death);
-        if (filter.render_weapon_fire)
-            add_shots_fired(data_weapon_fire);
-        if (filter.render_foot_paths)
-            add_player_paths(data_footsteps);
-        if (filter.render_foot_steps)
-            add_footsteps(data_footsteps);
-        if (filter.render_weapon_areas)
-            add_weapon_areas(data_footsteps);
+        add_player_deaths((filter.render_player_deaths ? data_player_death : undefined));
+        add_shots_fired((filter.render_weapon_fire ? data_weapon_fire : undefined));
+        add_player_paths((filter.render_foot_paths ? data_footsteps : undefined));
+        add_footsteps((filter.render_foot_steps ? data_footsteps : undefined));
+        add_weapon_areas((filter.render_weapon_areas ? data_footsteps : undefined));
+        
         
     }
 
@@ -245,60 +241,65 @@ $(document).ready(function() {
         @param {json} data The foot steps data.
     */
     function add_weapon_areas(data_filtered) {
-        // calculate the intervals!
-        var bin_offsets = []
-        var bin_size = 1024 / filter.weapon_area_resolution;
-        for (var i=0; i<1024; i+=bin_size) {
-            bin_offsets.push([i, i+bin_size]);
+        if (data_filtered == undefined) {
+            bin_weapons = [];
         }
-        
-        // prepare the bins!
-        var bin = [];
-        for (bx in bin_offsets) {
-            bin.push([]);
-            for (by in bin_offsets) {
-                bin[bin.length-1].push({});
+        else {
+            // calculate the intervals!
+            var bin_offsets = []
+            var bin_size = 1024 / filter.weapon_area_resolution;
+            for (var i=0; i<1024; i+=bin_size) {
+                bin_offsets.push([i, i+bin_size]);
             }
-        }
-        
-        // fill the bins!
-        data_filtered.forEach(function(d, i) {
-            var current_weapon = d.weapon;
-            var bin_x = -1;
-            var bin_y = -1;
-            bin_offsets.forEach(function(bin_offset, bin_number) {
-                if (translate_x(d.position.x) > bin_offset[0] && translate_x(d.position.x) <= bin_offset[1]) {
-                    bin_x = bin_number;
+            
+            // prepare the bins!
+            var bin = [];
+            for (bx in bin_offsets) {
+                bin.push([]);
+                for (by in bin_offsets) {
+                    bin[bin.length-1].push({});
                 }
-                if (translate_y(d.position.y) > bin_offset[0] && translate_y(d.position.y) <= bin_offset[1]) {
-                    bin_y = bin_number;
+            }
+            
+            // fill the bins!
+            data_filtered.forEach(function(d, i) {
+                var current_weapon = d.weapon;
+                var bin_x = -1;
+                var bin_y = -1;
+                bin_offsets.forEach(function(bin_offset, bin_number) {
+                    if (translate_x(d.position.x) > bin_offset[0] && translate_x(d.position.x) <= bin_offset[1]) {
+                        bin_x = bin_number;
+                    }
+                    if (translate_y(d.position.y) > bin_offset[0] && translate_y(d.position.y) <= bin_offset[1]) {
+                        bin_y = bin_number;
+                    }
+                });
+                
+                // outcomment this for binning by weapon name,
+                // note that there are no color codes for specific weapon names
+                current_weapon = get_weapon_category(current_weapon);
+                
+                if (bin[bin_x][bin_y][current_weapon] == undefined) {
+                    bin[bin_x][bin_y][current_weapon] = 0;
                 }
+                bin[bin_x][bin_y][current_weapon]++;
             });
             
-            // outcomment this for binning by weapon name,
-            // note that there are no color codes for specific weapon names
-            current_weapon = get_weapon_category(current_weapon);
-            
-            if (bin[bin_x][bin_y][current_weapon] == undefined) {
-                bin[bin_x][bin_y][current_weapon] = 0;
-            }
-            bin[bin_x][bin_y][current_weapon]++;
-        });
-        
-        // sort the bin contents!
-        bin_weapons = [];
-        for (bx in bin_offsets) {
-            for (by in bin_offsets) {
-                var current_bin = bin[bx][by];
-                
-                var weapons = Object.keys(current_bin).map(function(key) {
-                    return [key, current_bin[key]];
-                });
-                weapons.sort(function(f, s) {
-                    return s[1] - f[1];
-                });
-                weapons = {"x": bx, "y": by, "wbin": weapons};
-                bin_weapons.push(weapons);
+            // sort the bin contents!
+            bin_weapons = [];
+            for (bx in bin_offsets) {
+                for (by in bin_offsets) {
+                    var current_bin = bin[bx][by];
+                    
+                    var weapons = Object.keys(current_bin).map(function(key) {
+                        return [key, current_bin[key]];
+                    });
+                    weapons.sort(function(f, s) {
+                        return s[1] - f[1];
+                    });
+                    weapons = {"x": bx, "y": by, "wbin": weapons};
+                    bin_weapons.push(weapons);
+                }
             }
         }
         
@@ -359,6 +360,8 @@ $(document).ready(function() {
         @param {json} data Player footstep data.
     */
     function add_player_paths(data) {
+        if (data == undefined) data = [];
+    
         // Collecting all the paths from all players and rounds in one array.
         player_paths = get_player_paths(data);
         paths = [];
@@ -419,6 +422,8 @@ $(document).ready(function() {
         @param {json} data Player death data.
     */
     function add_player_deaths(data) {
+        if (data == undefined) data = [];
+    
         var player_deaths = svg.select("#lyr_player_death")
                                .selectAll("circle.player_death")
                                .data(data);
@@ -466,6 +471,7 @@ $(document).ready(function() {
         @param {json} data Player footstep data.
     */
     function add_footsteps(data) {
+        if (data == undefined) data = [];
 
         var player_foot_steps = svg.select("#lyr_footsteps")
                                    .selectAll("path.footsteps")
@@ -511,6 +517,8 @@ $(document).ready(function() {
         @param {json} data Player weapon fired data.
     */
     function add_shots_fired(data) {
+        if (data == undefined) data = [];
+    
         var shots_fired = svg.select("#lyr_shots_fired")
                              .selectAll("circle.shot_fired")
                              .data(data);
