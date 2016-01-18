@@ -1,0 +1,46 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>A match to remember</title>
+        <link type="text/css" href="css/article.css" rel="stylesheet" />
+        <script src="js/jquery-1.11.3.min.js" type="application/javascript"></script>
+        <script src="js/d3.min.js" type="application/javascript" charset="utf-8"></script>
+        <script src="js/finalproject.js" type="application/javascript"></script>
+        <script src="js/article_nav.js" type="application/javascript"></script>
+    </head>
+    <body>
+        <header>
+            <h1>A match to remember</h1>
+            <p>Recap of the 2015 ESL One Final EnVyUS vs. Fnatic</p>
+            <span class="info">An interactive article by Marco Johns, Bogdan Pomohaci and Hauke L&uuml;bbers</span>
+            <span class="copy">
+                Images &copy; Helena Kristiansson and ESL
+            </span>
+        </header>
+        <article>
+            <h3 id="headline"></h2>
+            <p></p>
+        </article>
+        <svg version="1.1" baseProfile="full" id="visbox"
+                 xmlns="http://www.w3.org/2000/svg" class="visbox"
+             xmlns:xlink="http://www.w3.org/1999/xlink"
+             xmlns:ev="http://www.w3.org/2001/xml-events">
+        </svg>
+        <div id="tooltip" class="hidden"></div>
+        <div id="nav_btn_prev" class="nav_btn arrow-left"></div>
+        <div id="nav_btn_next" class="nav_btn arrow-right"></div>
+        <footer>
+            <a href="#" id="btn_tech">Learn More about the technology</a>
+            or
+            <a href="#linktotool">Explore the match on your own!</a>
+            <div id="tech_stuff">
+                <h3>How we did what we did</h3>
+                <p>We are using the <a href="https://github.com/mikeemoo/jsgo">JSGO</a> library for node.js to parse generic Counter Strike: Global Offensive demo recordings and extract information as json files. In the frontend we use <a href="https://d3js.org/">d3.js</a> and <a href="https://jquery.com/">jQuery</a> to visualize this information using SVGs.</p>
+                <p>The <a href="/preprocessing/index.js">index.js</a> file can be called with a number of arguments, depending on which events the user is interested in, for example <pre>node index.js game.player_death game.player_footstep</pre> The script then listens to the respective events emitted by the jsgo parsing process and stores this data in a number of JSON files.</p>
+                <p>These json files can be fed to the frontend code, which visualizes the data and allows the user to drill down into the data of individual players, specific rounds or certain types of rounds.</p>
+            </div>
+            <span>A DIKU Interactive Data Exploration Project 2015/2016</span>
+        </footer>
+    </body>
+</html>
