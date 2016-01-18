@@ -12,27 +12,23 @@ $(document).ready(function() {
     file_player_footsteps = "data/csgo/ESLOneCologne2015-fnatic-vs-envyus-dust2_player_footstep.json";
     
     // Filter (currently player and rounds).
+    //     Controls what is actually displayed.
     //     An empty array means that no filer is applied for the category, everything is shown.
     //TODO: This overwrites the defined pages at the bottom of this file, don't forget that!!!
     var filter = {
-        "players": [],
+        "render_foot_steps": true,
+        "render_foot_paths": true,
+        "render_weapon_fire": false,
+        "render_player_deaths": true,
+        "render_weapon_areas": true,
+        "weapon_area_resolution": 48,
+        "weapon_area_show_empty_bins": true,
+        "players": ["KRIMZ"],
         "rounds": [1],
-        "sides": ["TERRORIST", "CT"]
+        "sides": ["TERRORIST", "CT"],
+        "background": 0
     };
-
-    // Resolution per direction of the weapon area, should be power of 2!
-    var weapon_area_resolution = 48;
-    var weapon_area_show_empty_bins = true;
     
-    var render_foot_steps = true;
-    var render_foot_paths = true;
-    var render_weapon_fire = true;
-    var render_player_deaths = true;
-    var render_weapon_areas = true;
-	
-	var weapon_death_visualization_flag = false;
-	var weapon_fire_visualization_flag = false;
-   
     // Color mapping for weapon categories:
     var weapon_category_color = {
         "pistol": "blue",
@@ -45,6 +41,12 @@ $(document).ready(function() {
         "mg": "orange",
         undefined: "black"
     }
+
+	
+    //TODO: COMMENT! flags if something has been loaded?
+	var weapon_death_visualization_flag = false;
+	var weapon_fire_visualization_flag = false;
+  
     
     // D3 initial variables
     var svg = d3.select("#visbox");
@@ -59,8 +61,9 @@ $(document).ready(function() {
        .attr("y", 0)
        .attr("width", "1024px")
        .attr("height", "1024px")
-       .attr("xlink:href", background_images[0])
+       .attr("xlink:href", background_images[filter.background])
     
+    // line function used to plot player paths
     var lineFunction = d3.svg.line()
                          .x(function(d) { return to_fixed_2(d.x) })
                          .y(function(d) { return to_fixed_2(d.y) })
@@ -77,6 +80,7 @@ $(document).ready(function() {
     add_layers();
     load_meta_data();
     
+    
     /**
         Appends layers to the svg
     */
@@ -88,14 +92,13 @@ $(document).ready(function() {
         svg.append("g").attr("id", "lyr_shots_fired");
         svg.append("g").attr("id", "lyr_player_death");
     }
-    
+
     /**
         Removes all layers from the svg
     */
     function remove_all_layers(){
         svg.selectAll("g").remove()
     }
-    
 
 /**
     ========== LOADING DATA ================================================================
@@ -121,7 +124,7 @@ $(document).ready(function() {
                     if (entry.event == "game.round_start") {
                         rounds[entry.round]["start"] = entry.tick;
                         if (prev_round != -1) {
-                            rounds[prev_round]["end"] = entry.tick - 1;
+                            rounds[prev_round]["end"] = entry.tick;
                         }
                     }
                     else if (entry.event == "game.round_end") {
@@ -142,14 +145,7 @@ $(document).ready(function() {
             }
         });
     }
-    function clone(obj) {
-        if (null == obj || "object" != typeof obj) return obj;
-        var copy = obj.constructor();
-        for (var attr in obj) {
-            if (obj.hasOwnProperty(attr)) copy[attr] = obj[attr];
-        }
-        return copy;
-    }
+
     
     /**
         Loads the player deaths of a CS:GO match from the file and calls dependant
@@ -158,7 +154,7 @@ $(document).ready(function() {
     function load_player_deaths() {
         d3.json(file_player_deaths, function(error, data) {
             if (!error) {
-                if (render_player_deaths) {
+                if (filter.render_player_deaths) {
                     add_player_deaths(data);
                 }
 				if(weapon_death_visualization_flag === false){
@@ -180,7 +176,7 @@ $(document).ready(function() {
     function load_weapon_fire() {       
         d3.json(file_player_weaponfire, function(error, data) {
             if (!error) {
-                if (render_weapon_fire) {
+                if (filter.render_weapon_fire) {
                     add_shots_fired(data);
                 }
 				if(weapon_fire_visualization_flag === false){
@@ -204,13 +200,13 @@ $(document).ready(function() {
             if (!error) {
                 var player_paths = get_player_paths(data);
                 
-                if (render_foot_paths) {
+                if (filter.render_foot_paths) {
                     add_player_paths(player_paths);
                 }
-                if (render_foot_steps) {
+                if (filter.render_foot_steps) {
                     add_footsteps(data);
                 }
-                if (render_weapon_areas) {
+                if (filter.render_weapon_areas) {
                     add_weapon_areas(data);
                 }
             }
@@ -234,7 +230,7 @@ $(document).ready(function() {
     function add_weapon_areas(data) {
         // calculate the intervals!
         var bin_offsets = []
-        var bin_size = 1024/weapon_area_resolution;
+        var bin_size = 1024 / filter.weapon_area_resolution;
         for (var i=0; i<1024; i+=bin_size) {
             bin_offsets.push([i, i+bin_size]);
         }
@@ -299,18 +295,23 @@ $(document).ready(function() {
         // plot the squares!
         var bin_squares = svg.select("#lyr_weapon_areas")
                              .selectAll("rect.weapon_area")
-                             .data((weapon_area_show_empty_bins ? bin_weapons : bin_weapons_filtered))
+                             .data((filter.weapon_area_show_empty_bins ? bin_weapons : bin_weapons_filtered))
                              .enter()
                              .append("rect")
-                             .attr("class", "weapon_area")
+                             .attr("class", function(d, i) {
+                                if (d.wbin[0] != undefined) {
+                                    return "weapon_area";
+                                }
+                                return "weapon_area_empty";
+                             })
                              .attr("x", function(d, i) {
-                                return d.x * bin_size;
+                                return to_fixed_3(d.x * bin_size);
                              })
                              .attr("y", function(d, i) {
-                                return d.y * bin_size;
+                                return to_fixed_3(d.y * bin_size);
                              })
-                             .attr("width", bin_size)
-                             .attr("height", bin_size)
+                             .attr("width", to_fixed_3(bin_size))
+                             .attr("height", to_fixed_3(bin_size))
                              .attr("fill", function(d, i) {
                                 if (d.wbin[0] != undefined) {
                                     return weapon_category_color[d.wbin[0][0]];
@@ -320,9 +321,9 @@ $(document).ready(function() {
                              .attr("stroke", "black")
                              .attr("stroke-width", "1pt")
                              .attr("opacity", "0.6")
-                             .on("mouseover", function(d, i) {
+                             .on("mousemove", function(d, i) {
                                 if (d.wbin.length > 0) {
-                                    tooltip_show(stringify_pretty_print(d));
+                                    tooltip_show(d, "weapon_area");
                                 }
                              })    
                              .on("mouseout", function(d, i) {
@@ -379,14 +380,14 @@ $(document).ready(function() {
                         .attr("fill", "none")
                         .attr("stroke-width", "2pt")
                         .attr("opacity", "0.6")
-                        .on("mouseover", function(d, i) {
+                        .on("mousemove", function(d, i) {
                             important_info = {
                                 "side": d[0].side,
                                 "player": d[0].player,
                                 "round" : d[0].round,
                                 //"last_point": d[d.length-1]
                             }
-                            tooltip_show(stringify_pretty_print(important_info));
+                            tooltip_show(important_info, "player_path");
                         })
                         .on("mouseout", function(d, i) {
                             tooltip_hide();
@@ -432,8 +433,8 @@ $(document).ready(function() {
                      .attr("stroke", "white")
                      .attr("stroke-width", "0.8pt")
                      .attr("opacity", "0.8")
-                     .on("mouseover", function(d, i) {
-                        tooltip_show(stringify_pretty_print(d));
+                     .on("mousemove", function(d, i) {
+                        tooltip_show(d, "player_death");
                      })
                      .on("mouseout", function(d, i) {
                         tooltip_hide();
@@ -475,9 +476,9 @@ $(document).ready(function() {
                          .attr("stroke", "black")
                          .attr("stroke-width", "0.5pt")
                          .attr("opacity", "0.8")
-                         .on("mouseover", function(d, i) {
+                         .on("mousemove", function(d, i) {
                             d.iteration = i;
-                           tooltip_show(stringify_pretty_print(d));
+                           tooltip_show(d, "footstep");
                          })
                          .on("mouseout", function(d, i) {
                            tooltip_hide();
@@ -523,8 +524,8 @@ $(document).ready(function() {
                    })
                    .attr("stroke-width", "0.5pt")
                    .attr("stroke", "black")
-                   .on("mouseover", function(d, i) {
-                      tooltip_show(stringify_pretty_print(d));
+                   .on("mousemove", function(d, i) {
+                      tooltip_show(d, "shot_fired");
                    })
                    .on("mouseout", function(d, i) {
                       tooltip_hide();
@@ -537,6 +538,17 @@ $(document).ready(function() {
     ========================================================================================
 */
 
+    /**
+        TODO: COMMENT FFS!
+    */
+    function clone(obj) {
+        if (null == obj || "object" != typeof obj) return obj;
+        var copy = obj.constructor();
+        for (var attr in obj) {
+            if (obj.hasOwnProperty(attr)) copy[attr] = obj[attr];
+        }
+        return copy;
+    }
 
     /**
         Returns the category of a given weapon by its name.
@@ -741,13 +753,80 @@ $(document).ready(function() {
     
     
     /**
-        Shows the tooltip at the current mouse position, which
-        displays the HTML code provided.
-        @param {html} html The HTML to display in the tooltip.
+        Builds and displays the tooltip based on the type and info provided.
+        @param {json} info Object that cotains the info to be displayed.
+        @param {string} type Type of the object.
     */
-    function tooltip_show(html) {
-        offset_x = 12;
-        offset_y = -22;
+    function tooltip_show(info, type) {
+        html = "";
+        if (type == "player_path") {
+            html += "<span>Player Path</span>";
+            html += "<table>";
+            html += "<tr><td>Round: </td><td>" + info.round + "</td></tr>";
+            html += "<tr><td>Side: </td><td>" + info.side + "</td></tr>";
+            html += "<tr><td>Player: </td><td>" + info.player + "</td></tr>";
+            html += "</table>";
+        }
+        else if (type == "footstep") {
+            html += "<span>Player View Direction</span>";
+            html += "<table>";
+            html += "<tr><td>Round: </td><td>" + info.round + "</td></tr>";
+            html += "<tr><td>Side: </td><td>" + info.side + "</td></tr>";
+            html += "<tr><td>Player: </td><td>" + info.player + "</td></tr>";
+            html += "<tr><td>Health: </td><td>" + info.player_health + "</td></tr>";
+            html += "<tr><td>Weapon: </td><td>" + info.weapon + "</td></tr>";
+            html += "<tr><td>Position: </td><td>" + info.position.x + " / " + info.position.y + " / " + info.position.z + "</td></tr>";
+            html += "<tr><td>View Angle: </td><td>" + to_fixed_2(info.eye_angle.yaw) + "°</td></tr>";
+            html += "<tr><td>Place: </td><td>" + info.last_place_name + "</td></tr>";
+            html += "<tr><td>Tick: </td><td>" + info.tick + "</td></tr>";
+            html += "</table>";
+        }
+        else if (type == "player_death") {
+            html += "<span>Player Death</span>";
+            html += "<table>";
+            html += "<tr><td>Round: </td><td>" + info.round + "</td></tr>";
+            html += "<tr><td>Side: </td><td>" + info.side + "</td></tr>";
+            html += "<tr><td>Player: </td><td>" + info.player + "</td></tr>";
+            html += "<tr><td>Weapon: </td><td>" + info.curr_weapon + "</td></tr>";
+            html += "<tr><td>Killed with: </td><td>" + info.killed_with + "</td></tr>";
+            html += "<tr><td>Position: </td><td>" + info.position.x + " / " + info.position.y + " / " + info.position.z + "</td></tr>";
+            html += "<tr><td>View Angle: </td><td>" + to_fixed_2(info.eye_angle.yaw) + "°</td></tr>";
+            html += "<tr><td>Place: </td><td>" + info.last_place_name + "</td></tr>";
+            html += "<tr><td>Tick: </td><td>" + info.tick + "</td></tr>";
+            html += "</table>";
+        }
+        else if (type == "weapon_area") {
+            html += "<span>Weapon Histogram Bin</span>";
+            html += "<table>";
+            html += "<tr><td>Bin: </td><td>" + info.x + " / " + info.y + "</td></tr>";
+            html += "<tr><td>Most used weapon types: </td><td></td></tr>";
+            
+            if (info.wbin[0] != undefined)
+                html += "<tr><td class=\"indent\">1. " + info.wbin[0][0] + "</td><td>" + info.wbin[0][1] + " samples</td></tr>";
+            if (info.wbin[1] != undefined)
+                html += "<tr><td class=\"indent\">2. " + info.wbin[1][0] + "</td><td>" + info.wbin[1][1] + " samples</td></tr>";
+            if (info.wbin[2] != undefined)
+                html += "<tr><td class=\"indent\">3. " + info.wbin[1][0] + "</td><td>" + info.wbin[2][1] + " samples</td></tr>";
+            
+            html += "</table>";
+        }
+        else if (type == "shot_fired") {
+            html += "<span>Weapon Use</span>";
+            html += "<table>";
+            html += "<tr><td>Round: </td><td>" + info.round + "</td></tr>";
+            html += "<tr><td>Side: </td><td>" + info.side + "</td></tr>";
+            html += "<tr><td>Player: </td><td>" + info.player + "</td></tr>";
+            html += "<tr><td>Weapon: </td><td>" + info.weapon + "</td></tr>";
+            html += "<tr><td>Position: </td><td>" + info.position.x + " / " + info.position.y + " / " + info.position.z + "</td></tr>";
+            html += "<tr><td>View Angle: </td><td>" + to_fixed_2(info.eye_angle.yaw) + "°</td></tr>";
+            html += "<tr><td>Tick: </td><td>" + info.tick + "</td></tr>";
+            html += "</table>";
+        }
+        else {
+            html = stringify_pretty_print(object);
+        }
+        offset_x = 16;
+        offset_y = 16;
         pos = d3.mouse(document.body);
         d3.select("#tooltip")
           .html(html)
@@ -774,6 +853,18 @@ $(document).ready(function() {
     */
     function to_fixed_2(number) {
         return Math.round(number * 100) / 100;
+    }
+    
+    
+    
+    /**
+        Rounds a floating point number to 3 decimal points.
+        This function is a lot faster than toFixed().
+        @param {float} number The float to be rounded.
+        @return {float} The given number rounded to 3 decimal points.
+    */
+    function to_fixed_3(number) {
+        return Math.round(number * 1000) / 1000;
     }
     
    
@@ -977,32 +1068,32 @@ $(document).ready(function() {
     var page = 0;
     var content = [
         {
-        "page": 0,
-        "discovery": "In quis nibh metus. Vestibulum vehicula, lacus ut rhoncus mollis, quam nisl commodo enim, ut iaculis elit libero id metus.",
-        "players": ["apEX"],
-        "rounds": [7,8],
-		"sides": ["TERRORIST", "CT"]
+            "page": 0,
+            "discovery": "In quis nibh metus. Vestibulum vehicula, lacus ut rhoncus mollis, quam nisl commodo enim, ut iaculis elit libero id metus.",
+            "players": ["apEX"],
+            "rounds": [7,8],
+            "sides": ["TERRORIST", "CT"]
         },
         {
-        "page": 1,
-        "discovery": "Sed mollis luctus interdum. Cras eget ipsum at arcu pellentesque hendrerit. Sed magna nulla, egestas a accumsan id, rutrum gravida enim.",
-        "players": ["KRIMZ"],
-        "rounds": [7,8],
-		"sides": ["TERRORIST", "CT"]
+            "page": 1,
+            "discovery": "Sed mollis luctus interdum. Cras eget ipsum at arcu pellentesque hendrerit. Sed magna nulla, egestas a accumsan id, rutrum gravida enim.",
+            "players": ["KRIMZ"],
+            "rounds": [7,8],
+            "sides": ["TERRORIST", "CT"]
         },
         {
-        "page": 2,
-        "discovery": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
-        "players": ["apEX"],
-        "rounds": [1,2,3,4,5,6,7,8,9,10],
-		"sides": ["TERRORIST", "CT"]
+            "page": 2,
+            "discovery": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
+            "players": ["apEX"],
+            "rounds": [1,2,3,4,5,6,7,8,9,10],
+            "sides": ["TERRORIST", "CT"]
         },
         {
-        "page": 3,
-        "discovery": "There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable. If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything embarrassing hidden in the middle of text. All the Lorem Ipsum generators on the Internet tend to repeat predefined chunks as necessary, making this the first true generator on the Internet. It uses a dictionary of over 200 Latin words, combined with a handful of model sentence structures, to generate Lorem Ipsum which looks reasonable. The generated Lorem Ipsum is therefore always free from repetition, injected humour, or non-characteristic words etc.",
-        "players": ["apEX"],
-        "rounds": [17,18],
-		"sides": ["TERRORIST", "CT"]
+            "page": 3,
+            "discovery": "There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable. If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything embarrassing hidden in the middle of text. All the Lorem Ipsum generators on the Internet tend to repeat predefined chunks as necessary, making this the first true generator on the Internet. It uses a dictionary of over 200 Latin words, combined with a handful of model sentence structures, to generate Lorem Ipsum which looks reasonable. The generated Lorem Ipsum is therefore always free from repetition, injected humour, or non-characteristic words etc.",
+            "players": ["apEX"],
+            "rounds": [17,18],
+            "sides": ["TERRORIST", "CT"]
         }
     ];
     $("#btn-right").click(function () {
