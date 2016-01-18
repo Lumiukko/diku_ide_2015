@@ -18,14 +18,14 @@ $(document).ready(function() {
     //     An empty array means that no filer is applied for the category, everything is shown.
     var filter = {
         "render_foot_steps": false,
-        "render_foot_paths": false,
+        "render_foot_paths": true,
         "render_weapon_fire": false,
-        "render_player_deaths": false,
-        "render_weapon_areas": true,
+        "render_player_deaths": true,
+        "render_weapon_areas": false,
         "weapon_area_resolution": 32,
         "weapon_area_show_empty_bins": true,
-        "players": ["KRIMZ"],
-        "rounds": [1, 2, 3],
+        "players": [],
+        "rounds": [34],
         "sides": ["TERRORIST", "CT"],
         "background": 0
     };
@@ -168,7 +168,12 @@ $(document).ready(function() {
     function load_player_deaths() {
         d3.json(file_player_deaths, function(error, data) {
             if (!error) {
-                complete_player_deaths_data = clone(data);
+                complete_player_deaths_data = [];
+                data.forEach(function(entry, i) {
+                    if (get_round_from_tick(entry.tick) != undefined)
+                        complete_player_deaths_data.push(entry);
+                });
+                
                 if (filter.render_player_deaths) {
                     data_player_death = complete_player_deaths_data.filter(function (d, i) { return apply_filter(d); });
                     add_player_deaths(data_player_death);
@@ -189,7 +194,12 @@ $(document).ready(function() {
     function load_weapon_fire() {       
         d3.json(file_player_weaponfire, function(error, data) {
             if (!error) {
-                complete_weapon_fire_data = clone(data);
+                complete_weapon_fire_data = [];
+                data.forEach(function(entry, i) {
+                    if (get_round_from_tick(entry.tick) != undefined)
+                        complete_weapon_fire_data.push(entry);
+                });
+                
                 if (filter.render_weapon_fire) {
                     data_weapon_fire = complete_weapon_fire_data.filter(function (d, i) { return apply_filter(d); });
                     add_shots_fired(data_weapon_fire);
@@ -210,7 +220,12 @@ $(document).ready(function() {
     function load_player_footstep() {    
         d3.json(file_player_footsteps, function(error, data) {
             if (!error) {
-                complete_footstep_data = clone(data);
+                complete_footstep_data = [];
+                data.forEach(function(entry, i) {
+                    if (get_round_from_tick(entry.tick) != undefined)
+                        complete_footstep_data.push(entry);
+                });
+                
                 data_footsteps = complete_footstep_data.filter(function (d, i) { return apply_filter(d); });
                 
                 if (filter.render_foot_paths) {
