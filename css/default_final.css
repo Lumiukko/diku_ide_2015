@@ -17,7 +17,7 @@
     Hover effect
 */
 
-.weapon_area:hover,
+.nonempty.weapon_area:hover,
 .player_death:hover,
 .shot_fired:hover,
 .footsteps:hover

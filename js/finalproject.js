@@ -18,9 +18,9 @@ $(document).ready(function() {
         "render_foot_steps": false,
         "render_foot_paths": false,
         "render_weapon_fire": false,
-        "render_player_deaths": true,
-        "render_weapon_areas": false,
-        "weapon_area_resolution": 16,
+        "render_player_deaths": false,
+        "render_weapon_areas": true,
+        "weapon_area_resolution": 32,
         "weapon_area_show_empty_bins": true,
         "players": ["KRIMZ"],
         "rounds": [1, 2, 3],
@@ -70,8 +70,6 @@ $(document).ready(function() {
     var complete_weapon_fire_data;
     var complete_footstep_data;
     
-    
-    
     // Start the loading process...
     add_layers();
     load_meta_data();
@@ -87,21 +85,7 @@ $(document).ready(function() {
         svg.append("g").attr("id", "lyr_footsteps");
         svg.append("g").attr("id", "lyr_shots_fired");
         svg.append("g").attr("id", "lyr_player_death");
-    }
-    
-    
-    d3.select("#transition_test").on("click", function() {
-        if ($.inArray("JW", filter.players) > -1) {
-            console.log("Removed JW");
-            filter.players = ["KRIMZ"];
-        }
-        else {
-            console.log("Added JW");
-            filter.players.push("JW");
-        }
-        redraw(filter);
-    });
-    
+    }    
     
     function redraw(new_filter) {
         data_player_death = complete_player_deaths_data.filter(function (d, i) { return apply_filter(d); });
@@ -247,7 +231,7 @@ $(document).ready(function() {
         Displays the weapon areas in the visualization.
         @param {json} data The foot steps data.
     */
-    function add_weapon_areas(data) {
+    function add_weapon_areas(data_filtered) {
         // calculate the intervals!
         var bin_offsets = []
         var bin_size = 1024 / filter.weapon_area_resolution;
@@ -264,12 +248,9 @@ $(document).ready(function() {
             }
         }
         
-        data_filtered = data.filter(function (d, i) {
-                                     return apply_filter(d);
-                                  });
-        
         // fill the bins!
         data_filtered.forEach(function(d, i) {
+            var current_weapon = d.weapon;
             var bin_x = -1;
             var bin_y = -1;
             bin_offsets.forEach(function(bin_offset, bin_number) {
@@ -281,13 +262,14 @@ $(document).ready(function() {
                 }
             });
             
-            // outcomment this for binning by weapon name
-            d.weapon = get_weapon_category(d.weapon);
+            // outcomment this for binning by weapon name,
+            // note that there are no color codes for specific weapon names
+            current_weapon = get_weapon_category(current_weapon);
             
-            if (bin[bin_x][bin_y][d.weapon] == undefined) {
-                bin[bin_x][bin_y][d.weapon] = 0;
+            if (bin[bin_x][bin_y][current_weapon] == undefined) {
+                bin[bin_x][bin_y][current_weapon] = 0;
             }
-            bin[bin_x][bin_y][d.weapon]++;
+            bin[bin_x][bin_y][current_weapon]++;
         });
         
         // sort the bin contents!
@@ -315,42 +297,46 @@ $(document).ready(function() {
         // plot the squares!
         var bin_squares = svg.select("#lyr_weapon_areas")
                              .selectAll("rect.weapon_area")
-                             .data((filter.weapon_area_show_empty_bins ? bin_weapons : bin_weapons_filtered))
-                             .enter()
-                             .append("rect")
-                             .attr("class", function(d, i) {
-                                if (d.wbin[0] != undefined) {
-                                    return "weapon_area";
-                                }
-                                return "weapon_area_empty";
-                             })
-                             .attr("x", function(d, i) {
-                                return to_fixed_3(d.x * bin_size);
-                             })
-                             .attr("y", function(d, i) {
-                                return to_fixed_3(d.y * bin_size);
-                             })
-                             .attr("width", to_fixed_3(bin_size))
-                             .attr("height", to_fixed_3(bin_size))
-                             .attr("fill", function(d, i) {
-                                if (d.wbin[0] != undefined) {
-                                    return weapon_category_color[d.wbin[0][0]];
-                                }
-                                return "black";
-                             })
-                             .attr("stroke", "black")
-                             .attr("stroke-width", "1pt")
-                             .attr("opacity", "0.6")
-                             .on("mousemove", function(d, i) {
-                                if (d.wbin.length > 0) {
-                                    tooltip_show(d, "weapon_area");
-                                }
-                             })    
-                             .on("mouseout", function(d, i) {
-                                if (d.wbin.length > 0) {
-                                    tooltip_hide();
-                                }
-                             });   
+                             .data((filter.weapon_area_show_empty_bins ? bin_weapons : bin_weapons_filtered));
+
+        bin_squares.exit().remove();
+                             
+        bin_squares.enter()
+                   .append("rect")
+                   .attr("class", function(d, i) {
+                      if (d.wbin[0] != undefined) {
+                          return "weapon_area nonempty";
+                      }
+                      return "weapon_area";
+                   });
+                   
+        bin_squares.attr("x", function(d, i) {
+                      return to_fixed_3(d.x * bin_size);
+                   })
+                   .attr("y", function(d, i) {
+                      return to_fixed_3(d.y * bin_size);
+                   })
+                   .attr("width", to_fixed_3(bin_size))
+                   .attr("height", to_fixed_3(bin_size))
+                   .attr("fill", function(d, i) {
+                      if (d.wbin[0] != undefined) {
+                          return weapon_category_color[d.wbin[0][0]];
+                      }
+                      return "black";
+                   })
+                   .attr("stroke", "black")
+                   .attr("stroke-width", "1pt")
+                   .attr("opacity", "0.6")
+                   .on("mousemove", function(d, i) {
+                      if (d.wbin.length > 0) {
+                          tooltip_show(d, "weapon_area");
+                      }
+                   })    
+                   .on("mouseout", function(d, i) {
+                      if (d.wbin.length > 0) {
+                          tooltip_hide();
+                      }
+                   });   
         
     }
     
@@ -828,7 +814,7 @@ $(document).ready(function() {
             if (info.wbin[1] != undefined)
                 html += "<tr><td class=\"indent\">2. " + info.wbin[1][0] + "</td><td>" + info.wbin[1][1] + " samples</td></tr>";
             if (info.wbin[2] != undefined)
-                html += "<tr><td class=\"indent\">3. " + info.wbin[1][0] + "</td><td>" + info.wbin[2][1] + " samples</td></tr>";
+                html += "<tr><td class=\"indent\">3. " + info.wbin[2][0] + "</td><td>" + info.wbin[2][1] + " samples</td></tr>";
             
             html += "</table>";
         }
