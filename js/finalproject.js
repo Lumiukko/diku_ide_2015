@@ -100,7 +100,7 @@ $(document).ready(function() {
     
     redraw = function redraw(new_filter) {
         filter = new_filter;
-    
+        
         data_player_death = complete_player_deaths_data.filter(function (d, i) { return apply_filter(d); });
         data_footsteps = complete_footstep_data.filter(function (d, i) { return apply_filter(d); });
         data_weapon_fire = complete_weapon_fire_data.filter(function (d, i) { return apply_filter(d); });
@@ -851,8 +851,8 @@ $(document).ready(function() {
         pos = d3.mouse(document.body);
         d3.select("#tooltip")
           .html(html)
-          .style("left", pos[0] + offset_x)
-          .style("top", pos[1] + offset_y)
+          .style("left", pos[0] + offset_x + "px")
+          .style("top", pos[1] + offset_y + "px")
           .classed({"hidden": false});
         
     }
