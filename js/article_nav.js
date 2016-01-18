@@ -1,3 +1,5 @@
+var update_page;
+
 $(document).ready(function() {
     /**
     ======================== MULTIPLE VIEW =================================================
@@ -63,7 +65,7 @@ $(document).ready(function() {
     
     
     // updating the headline, the text and the filter of the visualization
-    function update_page() {
+    update_page = function() {
         toggle_button_visibility(page);
         document.getElementById('headline').scrollIntoView({behavior: "smooth"});
         $('article h3').fadeOut('fast', function() {
@@ -72,7 +74,9 @@ $(document).ready(function() {
         $('article p').fadeOut('fast', function() {
             $(this).html(content[page].discovery).fadeIn('fast');
         });
-        redraw(content[page]['filter']);
+        if (content[page]['filter']) {
+            redraw(content[page]['filter']);
+        }
     }
 
     function toggle_button_visibility(page){
