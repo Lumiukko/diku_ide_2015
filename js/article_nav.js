@@ -7,14 +7,16 @@ $(document).ready(function() {
     ========================================================================================
     */
     var page = 0;
+    var players = ['JW', 'pronax', 'KRIMZ', 'olofmeister', 'flusha',
+                   'Happy', 'NBK-', 'KennyS', 'kioShiMa', 'apEX'];
     var content = [{
         "headline": "Starting the Grand Final",
-        "discovery": "The two best Counter Strike: Global Offensive teams in the world batteling it out on de_dust2 in front of more than 1.2 million viewers. The ESL One Cologne Grand Final 2015 had the potential to be a gigantic camp-fest - but instead of relying on the old and battle-proven tactics, which got Fnatic and EnVyUS to the place where they were now, they showed the cards they got up their sleeves the whole time:<br />Already in the first pistol round KrimZ and JW on the CT side showed great aggression up to Top Mid.",
+        "discovery": "The two best Counter Strike: Global Offensive teams in the world batteling it out on de_dust2 in front of more than 1.2 million viewers. The ESL One Cologne Grand Final 2015 had the potential to be a gigantic camp-fest - but instead of relying on the old and battle-proven tactics, which got Fnatic and EnVyUS to the place where they were now, they showed the cards they got up their sleeves the whole time:<br />Already in the first pistol round KRIMZ and JW on the CT side showed great aggression up to Top Mid.",
         "filter": {
             "render_foot_steps": true,
             "render_foot_paths": true,
             "render_weapon_fire": false,
-            "render_player_deaths": false,
+            "render_player_deaths": true,
             "render_weapon_areas": false,
             "weapon_area_resolution": 16,
             "weapon_area_show_empty_bins": true,
@@ -25,11 +27,21 @@ $(document).ready(function() {
         }
     },
     {
-        "headline": "This is a headline3",
-        "discovery": "Sed mollis luctus interdum. Cras eget ipsum at arcu pellentesque hendrerit. Sed magna nulla, egestas a accumsan id, rutrum gravida enim.",
-        "players": ["KRIMZ"],
-        "rounds": [7,8],
-        "sides": ["TERRORIST", "CT"]
+        "headline": "Knive of Confusion",
+        "discovery": "And the first highlight of the game happened in the first round, too: After killing apEX with a pistol through a smoke grenade at B tunnels, flusha runs out of ammo. NBK- suffers the same fate, but draws his knive faster and gets the kill. EnVyUS takes the first round.",
+        "filter": {
+            "render_foot_steps": true,
+            "render_foot_paths": true,
+            "render_weapon_fire": false,
+            "render_player_deaths": true,
+            "render_weapon_areas": true,
+            "weapon_area_resolution": 16,
+            "weapon_area_show_empty_bins": true,
+            "players": ["apEX", "flusha", "NBK-"],
+            "rounds": [1],
+            "sides": [],
+            "background": 0            
+        }
     },
     {
         "headline": "This is a headline4",
@@ -63,7 +75,6 @@ $(document).ready(function() {
         return false;
     });
     
-    
     // updating the headline, the text and the filter of the visualization
     update_page = function() {
         toggle_button_visibility(page);
@@ -72,7 +83,41 @@ $(document).ready(function() {
             $(this).html(content[page].headline).fadeIn('fast');
         });
         $('article p').fadeOut('fast', function() {
-            $(this).html(content[page].discovery).fadeIn('fast');
+            $(this).html(content[page].discovery).fadeIn('fast', function() {
+                var words = content[page].discovery.split(' ');
+                for (var i in words) {
+                    if (players.indexOf(words[i]) >= 0) {
+                        words[i] = "<span class='show player" + words[i] + "'>" + words[i] + "</span>";
+                    }
+                }
+                $(this).html(words.join(' ')).fadeIn('slow');
+                $(".show").click(function() {
+                    var target = 'svg .' + $(this).attr('class').split(' ')[1];
+                    if ($(target).length > 0) {
+                        $(target).attr("class", function(attr_value) {
+                            return $(this).attr("class") + ' hover';  
+                        }); 
+                    }
+                    document.getElementById('visbox').scrollIntoView({behavior: 'smooth'});
+                    return false;
+                });
+
+                $(".show").on('mouseover', function() {
+                    var target = 'svg .' + $(this).attr('class').split(' ')[1];
+                    if ($(target).length > 0) {
+                        $(target).attr("class", function(attr_value) {
+                            return $(this).attr("class") + ' hover';  
+                        }); 
+                    }
+                });
+                
+                $(".show").on('mouseout', function() {
+                    $('.hover').attr("class", function(attr_value) {
+                        return $(this).attr("class").split(' ').slice(0, -1).join(' ');
+                    });
+                });
+    
+            });
         });
         if (content[page]['filter']) {
             redraw(content[page]['filter']);

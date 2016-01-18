@@ -413,6 +413,13 @@ $(document).ready(function() {
                                 return "blue";
                             }
                         })
+                        .attr("class", function(d, i) {
+                            var svg_class = ["player_path"];
+                            svg_class.push("side" + d[0].side);
+                            svg_class.push("player" + d[0].player);
+                            svg_class.push("round" + d[0].round);
+                            return svg_class.join(" ");
+                        })
                         .attr("d", function(d, i) {
                             var translated = d.map(translate_path_point);
                             return lineFunction(translated);
@@ -453,6 +460,13 @@ $(document).ready(function() {
                      .attr("class", "player_death");
                      
         player_deaths.attr("r",  11)
+                     .attr("class", function(d, i) {
+                        var svg_class = ["player_death"];
+                        svg_class.push("side" + d.side);
+                        svg_class.push("player" + d.player);
+                        svg_class.push("round" + d.round);
+                        return svg_class.join(" ");
+                     })
                      .attr("cx", function(d, i) {
                         posx = translate_x(d.position.x);
                         return posx;
