@@ -1,3 +1,5 @@
+var redraw;
+
 $(document).ready(function() {
 /**
     ========== INITIALIZATION & GLOBAL VARS ================================================
@@ -85,9 +87,20 @@ $(document).ready(function() {
         svg.append("g").attr("id", "lyr_footsteps");
         svg.append("g").attr("id", "lyr_shots_fired");
         svg.append("g").attr("id", "lyr_player_death");
-    }    
+    }
     
-    function redraw(new_filter) {
+    
+    d3.select("#transition_test").on("click", function() {
+        new_filter = clone(filter);
+        new_filter.render_player_deaths = true;
+        redraw(new_filter);
+        console.log(redraw);
+    });
+    
+    
+    redraw = function redraw(new_filter) {
+        filter = new_filter;
+    
         data_player_death = complete_player_deaths_data.filter(function (d, i) { return apply_filter(d); });
         data_footsteps = complete_footstep_data.filter(function (d, i) { return apply_filter(d); });
         data_weapon_fire = complete_weapon_fire_data.filter(function (d, i) { return apply_filter(d); });
