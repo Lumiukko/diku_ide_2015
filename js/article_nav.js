@@ -44,11 +44,21 @@ $(document).ready(function() {
         }
     },
     {
-        "headline": "This is a headline4",
-        "discovery": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
-        "players": ["apEX"],
-        "rounds": [1,2,3,4,5,6,7,8,9,10],
-        "sides": ["TERRORIST", "CT"]
+        "headline": "Round 2 and 3: Aggression leads to success",
+        "discovery": "In round 2 JW and flusha do everything they can to take the momentum from EnVyUs and even succeed in killing all enemy players, just to be unable to defuse the bomb in time. In round 3 they again show great presence especially in Mid - which is definitely not the standard play book for the defending CTs. But their aggression is rewarded in the end and Fnatic can take round 3 from EnVyUs - even though they were on a force round.",
+         "filter": {
+            "render_foot_steps": true,
+            "render_foot_paths": true,
+            "render_weapon_fire": true,
+            "render_player_deaths": true,
+            "render_weapon_areas": false,
+            "weapon_area_resolution": 16,
+            "weapon_area_show_empty_bins": true,
+            "players": ["JW", "flusha"],
+            "rounds": [2, 3],
+            "sides": [],
+            "background": 0            
+        }
     },
     {
         "headline": "This is a headline5",
