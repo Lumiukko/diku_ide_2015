@@ -49,6 +49,23 @@ $(document).ready(function() {
         }
     },
     {
+        "headline": "Which weapons where? Active weapons in the pistol rounds",
+        "discovery": "The first round and the first round after the switching of the sides, round 16, are always special: The players can only afford pistols and grenades. Still, those rounds often decide the setting for the next two or three rounds - or even the whole match.<br />Looking at the weapons the players have drawn at different locations, we can see that most players throw their grenades from safe positions, like B Tunnels, from T Spawn behind some boxes or the cover at bombside A. As a CT kennyS decides to throw grenades outside of the cover at A - and promptly dies when he is surprised by the rushing Terrorists.<br /><b>TL;DR:</b> Nade in your hand, can't make a stand.",
+        "filter": {
+            "render_foot_steps": false,
+            "render_foot_paths": false,
+            "render_weapon_fire": false,
+            "render_player_deaths": true,
+            "render_weapon_areas": true,
+            "weapon_area_resolution": 32,
+            "weapon_area_show_empty_bins": false,
+            "players": ['flusha', 'NBK-', 'kennyS'],
+            "rounds": [1, 16],
+            "sides": [],
+            "background": 0            
+        }
+    },
+    {
         "headline": "Round 2 and 3: Aggression leads to success",
         "discovery": "In round 2 JW and flusha do everything they can to take the momentum from EnVyUs and even succeed in killing all enemy players, just to be unable to defuse the bomb in time. In round 3 they again show great presence especially in Mid - which is definitely not the standard play book for the defending CTs. But their aggression is rewarded in the end and Fnatic can take round 3 from EnVyUs - even though they were on a force round.",
          "filter": {
