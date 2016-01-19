@@ -206,8 +206,10 @@ $(document).ready(function() {
             if (!error) {
                 complete_player_deaths_data = [];
                 data.forEach(function(entry, i) {
-                    if (get_round_from_tick(entry.tick) != undefined)
+                    if (get_round_from_tick(entry.tick) !== undefined) {
+                        entry.event_type = 'player_death';
                         complete_player_deaths_data.push(entry);
+                    }
                 });
                 
                 if (filter.render_player_deaths) {
@@ -488,16 +490,18 @@ $(document).ready(function() {
         if (data == undefined) data = [];
     
         var player_deaths = svg.select("#lyr_player_death")
-                               .selectAll("circle.player_death")
+                               .selectAll("path.player_death")
                                .data(data);
 			
         player_deaths.exit().remove()
         
         player_deaths.enter()
-                     .append("circle")
+                     .append("path")
                      .attr("class", "player_death");
                      
-        player_deaths.attr("r",  11)
+        player_deaths.attr("d", d3.svg.symbol().type("cross"))
+                     .attr("transform", function (d, i) {
+                            return "rotate(" + (-d.eye_angle.yaw+90) + " " + translate_x(d.position.x) + "," + translate_y(d.position.y) + ") translate(" + translate_x(d.position.x) + "," + translate_y(d.position.y) + ") scale(1.5, 1.5)"})
                      .attr("class", function(d, i) {
                         var svg_class = ["player_death"];
                         svg_class.push("side" + d.side);
@@ -505,14 +509,6 @@ $(document).ready(function() {
                         svg_class.push("team" + d.team);
                         svg_class.push("round" + d.round);
                         return svg_class.join(" ");
-                     })
-                     .attr("cx", function(d, i) {
-                        posx = translate_x(d.position.x);
-                        return posx;
-                     })
-                     .attr("cy", function(d, i) {
-                        posy = translate_y(d.position.y);
-                        return posy;
                      })
                      .attr("fill", function(d, i) {
                         if (d.side == "TERRORIST") {
@@ -750,8 +746,9 @@ $(document).ready(function() {
                    || $.inArray(datapoint.guid, filter.players) > -1)
                && (   filter.sides.length   == 0
                    || $.inArray(datapoint.side, filter.sides) > -1)
-               && (   filter.tick_interval.length == 0
-                   || (datapoint.tick >= filter.tick_interval[0] && datapoint.tick <= filter.tick_interval[1]));
+               && (   !filter.hasOwnProperty('tick_interval') || filter.tick_interval.length == 0
+                   || (datapoint.tick >= filter.tick_interval[0] && datapoint.tick <= filter.tick_interval[1])
+                   || (datapoint.hasOwnProperty('event_type') && datapoint.event_type == 'player_death' && datapoint.tick <= filter.replay_interval[1] && datapoint.tick <= filter.tick_interval[1]));
     }
     
     

@@ -32,25 +32,29 @@ $(document).ready(function() {
         }
     },
     {
-        "headline": "Knife of Confusion",
-        "discovery": "And the first highlight of the game happened in the first round, too: After killing apEX with a pistol through a smoke grenade at B tunnels, flusha finished his magazine. NBK- suffers the same fate, but draws his knife faster and gets the kill. EnVyUS takes the first round.",
+        "headline": "Knife of Confusion and a great pincher movement",
+        "discovery": "But the first round went to the Terrorists: After apEX got shot by flusha with his USP through the smoke in B Tunnels, NBK- cornered the reloading CT and got a knife kill. Shortly after Terrorist Happy pushes through Mid Doors and surprises JW and pronax, who prepare to enter Bombsite B, from the back.",
         "filter": {
             "render_foot_steps": true,
             "render_foot_paths": true,
-            "render_weapon_fire": false,
+            "render_weapon_fire": true,
             "render_player_deaths": true,
-            "render_weapon_areas": true,
+            "render_weapon_areas": false,
             "weapon_area_resolution": 16,
-            "weapon_area_show_empty_bins": true,
-            "players": ["apEX", "flusha", "NBK-"],
-            "rounds": [1],
+            "weapon_area_show_empty_bins": false,
+            "players": ["apEX", "flusha", "NBK-", "Happy", "JW", "pronax"],
+            "replay": true,
+            "replay_interval": [9000, 11800],
+            "tick_interval_size": 200,
+            "tick_interval": [],
+            "rounds": [],
             "sides": [],
             "background": 0            
         }
     },
     {
         "headline": "Which weapons where? Active weapons in the pistol rounds",
-        "discovery": "The first round and the first round after the switching of the sides, round 16, are always special: The players can only afford pistols and grenades. Still, those rounds often decide the setting for the next two or three rounds - or even the whole match.<br />Looking at the weapons the players have drawn at different locations, we can see that most players throw their grenades from safe positions, like B Tunnels, from T Spawn behind some boxes or the cover at bombside A. As a CT kennyS decides to throw grenades outside of the cover at A - and promptly dies when he is surprised by the rushing Terrorists.<br /><b>TL;DR:</b> Nade in your hand, can't make a stand.",
+        "discovery": "The first round and the first round after the switching of the sides, round 16, are always special: The players can only afford pistols and grenades. Still, those rounds often decide the setting for the next two or three rounds - or even the whole match.<br />Looking at the weapons the players have drawn at different locations, we can see that most players throw their grenades from safe positions, like B Tunnels, from T Spawn behind some boxes or the cover at bombside A. As a CT kennyS decides to throw grenades outside of the cover at A - and promptly dies when he is surprised by the rushing Terrorists. <br /><b>TL;DR:</b> Nade in your hand, can't make a stand.",
         "filter": {
             "render_foot_steps": false,
             "render_foot_paths": false,
@@ -118,7 +122,7 @@ $(document).ready(function() {
 	},
 	{
 	"headline": "EnVyUS - Ground covered  as Counter-Terrorists",
-	"discovery": "On the other hand, EnVyUS, including Happy, NBK-, kennyS, kioShiMa and apEX are a lot more aggresive and they are trying to cover more space, in comparizon with the second team.",
+	"discovery": "On the other hand, EnVyUS, including Happy, NBK-, kennyS, kioShiMa and apEX are a lot more aggresive and they are trying to cover more space, in comparizon with Fnatic.",
 	"filter": {
 		"render_foot_steps": false,
 		"render_foot_paths": true,
@@ -135,7 +139,7 @@ $(document).ready(function() {
     },
 	{
 	"headline": "EnVyUS - Number of deaths",
-	"discovery": "EnVyUS were killed  overall a total number of 112. When they played as Terrorists, the team members died 50 times, while as CTs they had a number of 62 deaths. Therefore, if we compare the higher number of deaths as Counter-Terrorists to the ground covered, we have seen in the previous articles, the more aggressive tactics they used, actually brought them more deaths.",
+	"discovery": "EnVyUS were killed  overall a total number of 112. When they playing as Terrorists the team members died 50 times, while as CTs they had a number of 62 deaths. Therefore, if we compare the higher number of deaths as Counter-Terrorists to the ground covered, we have seen in the previous articles, the more aggressive tactics they used, actually brought them more deaths.",
 	"filter": {
 		"render_foot_steps": false,
 		"render_foot_paths": false,
@@ -213,7 +217,7 @@ $(document).ready(function() {
     function auto_render_highlights(text) {
         var words = text.split(' ');
         for (var i in words) {
-            word = words[i].replace(/\.|,|;|<.$|^.>|:/, "");
+            word = words[i].replace(/\.|,|;|:/g, "");
             if (players.indexOf(word) >= 0) {
                 // player name recognized
                 words[i] = "<span class='show player" + word + "'>" + words[i] + "</span>";
