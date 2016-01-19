@@ -15,18 +15,20 @@ $(document).ready(function() {
     
     // Filter (currently player and rounds).
     //     Controls what is actually displayed.
-    //     An empty array means that no filer is applied for the category, everything is shown.
+    //     The default filter is only applied if no filter has been defined before.
+    //     An empty array means that no filter is applied for the category, everything is shown.
+    if (filter == undefined)
     var filter = {
         "render_foot_steps": false,
-        "render_foot_paths": false,
-        "render_weapon_fire": false,
+        "render_foot_paths": true,
+        "render_weapon_fire": true,
         "render_player_deaths": true,
         "render_weapon_areas": false,
         "weapon_area_resolution": 32,
-        "weapon_area_show_empty_bins": true,
+        "weapon_area_show_empty_bins": false,
         "players": [],
         "rounds": [1],
-        "sides": ["CT"],
+        "sides": [],
         "background": 0
     };
     
@@ -85,8 +87,8 @@ $(document).ready(function() {
 		svg.append("g").attr("id", "lyr_weapon_areas");
         svg.append("g").attr("id", "lyr_player_paths");
         svg.append("g").attr("id", "lyr_footsteps");
-        svg.append("g").attr("id", "lyr_shots_fired");
         svg.append("g").attr("id", "lyr_player_death");
+        svg.append("g").attr("id", "lyr_shots_fired");
     }
     
     
@@ -572,10 +574,10 @@ $(document).ready(function() {
                    })
                    .attr("fill", function(d, i) {
                       if (d.side == "TERRORIST") {
-                          return "yellow";
+                          return "#f2d500";
                       }
                       else if (d.side == "CT") {
-                          return "lime";
+                          return "#99ffe8";
                       }
                       else {
                           return "black";
@@ -1120,7 +1122,5 @@ $(document).ready(function() {
 
         return sorted_weapons;
     }
-    
-    
     
 });

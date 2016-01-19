@@ -1,5 +1,33 @@
 $(document).ready(function() {
 
+    // Default filter:
+    // WARNING: should match filter in finalproject.js!
+    var ui_filter = {
+        "render_foot_steps": false,
+        "render_foot_paths": true,
+        "render_weapon_fire": true,
+        "render_player_deaths": true,
+        "render_weapon_areas": false,
+        "weapon_area_resolution": 32,
+        "weapon_area_show_empty_bins": false,
+        "players": [
+            "apEX",
+            "Happy",
+            "kennyS",
+            "kioShiMa",
+            "NBK-",
+            "flusha",
+            "JW",
+            "KRIMZ",
+            "olofmeister",
+            "pronax"
+        ],
+        "rounds": [-1, 1],  // the -1 prevents all rounds from being shown if no round is selected
+        "sides": [],
+        "background": 0
+    };
+
+
     // Add players...
 
     var players_t1 = [
@@ -73,6 +101,23 @@ $(document).ready(function() {
     }
     
     
+    
+    // Set up default settings.
+    // WARNING: This should match the default filter!
+    $("#toolbox input").removeAttr("checked");
+    $("#tb_pp_enabled").prop("checked", true);
+    $("#tb_pd_enabled").prop("checked", true);
+    $("#tb_wu_enabled").prop("checked", true);
+    $("#tb_sides_b").prop("checked", true);
+    $("#tb_r_01").prop("checked", true);
+    $("#tb_display_players input").prop("checked", true);
+    $("#tb_wbin_r_32").prop("checked", true);
+    
+    
+
+    
+    
+    
     // Create jquery-ui buttons and button sets
     
     $("#tb_display_rounds_selectors").buttonset();
@@ -91,12 +136,84 @@ $(document).ready(function() {
     $("#tb_pwd_enabled").button();
     $("#tb_pd_enabled").button();
     $("#tb_wu_enabled").button();
+    $("#tb_wbin_enabled").button();
     $("#tb_wbin_showempty").button();
     
-    $("#tb_wbin_enabled").button();
     
     
     
+    // Add ALL THE EVENTS!!!
+    
+    $("#tb_pd_enabled").on("click", function() {
+        ui_filter.render_player_deaths = $("#tb_pd_enabled").prop("checked");
+        redraw(ui_filter);
+    });
+    
+    $("#tb_pp_enabled").on("click", function() {
+        ui_filter.render_foot_paths = $("#tb_pp_enabled").prop("checked");
+        redraw(ui_filter);
+    });
+    
+    $("#tb_wu_enabled").on("click", function() {
+        ui_filter.render_weapon_fire = $("#tb_wu_enabled").prop("checked");
+        redraw(ui_filter);
+    });
+    
+    $("#tb_pwd_enabled").on("click", function() {
+        ui_filter.render_foot_steps = $("#tb_pwd_enabled").prop("checked");
+        redraw(ui_filter);
+    });
+
+    $("#tb_wbin_enabled").on("click", function() {
+        ui_filter.render_weapon_areas = $("#tb_wbin_enabled").prop("checked");
+        redraw(ui_filter);
+    });
+    
+    $("#tb_wbin_showempty").on("click", function() {
+        ui_filter.weapon_area_show_empty_bins = $("#tb_wbin_showempty").prop("checked");
+        redraw(ui_filter);
+    });
+    
+    $("#tb_display_sides input").on("click", function() {
+        if ($("#tb_sides_ct").prop("checked") == true)
+            ui_filter.sides = ["CT"];
+        else if ($("#tb_sides_t").prop("checked") == true)
+            ui_filter.sides = ["TERRORIST"];
+        else
+            ui_filter.sides = [];
+        redraw(ui_filter);
+    });
+    
+    $("#tb_display_players input").on("click", function() {
+        var pname = this.value.substring(5);
+        var ppos = $.inArray(pname, ui_filter.players);
+        if (ppos == -1)
+            ui_filter.players.push(pname);
+        else
+            ui_filter.players.splice(ppos, 1);
+        redraw(ui_filter);
+    });
+    
+    $("#tb_display_rounds input").on("click", function() {
+        var rnum = parseInt(this.value.substring(5));
+        var rpos = $.inArray(rnum, ui_filter.rounds);
+        if (rpos == -1)
+            ui_filter.rounds.push(rnum);
+        else
+            ui_filter.rounds.splice(rpos, 1);
+
+        redraw(ui_filter);
+    });
+    
+    $("#tb_wbin_resolutions input").on("click", function() {
+        var res = parseInt(this.value.substring(10));
+        ui_filter.weapon_area_resolution = res;
+        redraw(ui_filter);
+    });
+    
+    
+
+
     // Utility functions
     
     function zero_pad(str, len) {
@@ -111,19 +228,19 @@ $(document).ready(function() {
         Source: https://gist.github.com/edersohe/760885
 */
 (function( $ ){
-//plugin buttonset vertical
-$.fn.buttonsetv = function() {
-  $(':radio, :checkbox', this).wrap('<div style="margin: 1px"/>');
-  $(this).buttonset();
-  $('label:first', this).removeClass('ui-corner-left').addClass('ui-corner-top');
-  $('label:last', this).removeClass('ui-corner-right').addClass('ui-corner-bottom');
-  mw = 0; // max witdh
-  $('label', this).each(function(index){
-     w = $(this).width();
-     if (w > mw) mw = w; 
-  })
-  $('label', this).each(function(index){
-    $(this).width(mw);
-  })
-};
+    //plugin buttonset vertical
+    $.fn.buttonsetv = function() {
+        $(':radio, :checkbox', this).wrap('<div style="margin: 1px"/>');
+        $(this).buttonset();
+        $('label:first', this).removeClass('ui-corner-left').addClass('ui-corner-top');
+        $('label:last', this).removeClass('ui-corner-right').addClass('ui-corner-bottom');
+        mw = 0; // max witdh
+        $('label', this).each(function(index){
+            w = $(this).width();
+            if (w > mw) mw = w;
+        })
+        $('label', this).each(function(index){
+            $(this).width(mw);
+        })
+    };
 })( jQuery );
