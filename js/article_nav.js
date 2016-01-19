@@ -8,8 +8,7 @@ $(document).ready(function() {
     */
     var page = 0;
     var players = ['JW', 'pronax', 'KRIMZ', 'olofmeister', 'flusha',
-                   'Happy', 'NBK-', 'KennyS', 'kioShiMa', 'apEX'];
-    
+                   'Happy', 'NBK-', 'kennyS', 'kioShiMa', 'apEX'];
     var content = [{
         "headline": "Starting the Grand Final",
         "discovery": "The two best Counter Strike: Global Offensive teams in the world batteling it out on de_dust2 in front of more than 1.2 million viewers. The ESL One Cologne Grand Final 2015 had the potential to be a gigantic camp-fest - but instead of relying on the old and battle-proven tactics, which got Fnatic and EnVyUS to the place where they are now, they showed the cards they got hidden up their sleeves the whole time:<br />Already in the first pistol round KRIMZ and JW on the CT side showed great aggression up to Top Mid.",
@@ -77,6 +76,40 @@ $(document).ready(function() {
             "sides": [],
             "background": 0            
         }
+    },
+	{
+	"headline": "Team 2 - Ground covered as Counter-Terrorists",
+	"discovery": "The second team, which includes JW , pronax , KRIMZ , olofmeister and flusha seem to be defensive and they are not covering a lot of ground. This style of defeding is known to be as the standard, when playing as Counter-Terrorists.",
+	"filter": {
+		"render_foot_steps": false,
+		"render_foot_paths": true,
+		"render_weapon_fire": false,
+		"render_player_deaths": false,
+		"render_weapon_areas": false,
+		"weapon_area_resolution": 16,
+		"weapon_area_show_empty_bins": false,
+		"players": ['JW', 'pronax', 'KRIMZ', 'olofmeister', 'flusha'],
+		"rounds": [],
+		"sides": ["CT"],
+		"background": 0            
+		}
+	},
+	{
+	"headline": "Team 1 - Ground covered  as Counter-Terrorists",
+	"discovery": "On the other hand, the first team, which includes Happy , NBK- , kennyS , kioShiMa and apEX are a lot more aggresive and they are trying to cover more space, in comparizon with the second team.",
+	"filter": {
+		"render_foot_steps": false,
+		"render_foot_paths": true,
+		"render_weapon_fire": false,
+		"render_player_deaths": false,
+		"render_weapon_areas": false,
+		"weapon_area_resolution": 16,
+		"weapon_area_show_empty_bins": false,
+		"players": ['Happy', 'NBK-', 'kennyS', 'kioShiMa', 'apEX'],
+		"rounds": [],
+		"sides": ["CT"],
+		"background": 0            
+		}
     }];
     
     $("#nav_btn_next").click(function () {
