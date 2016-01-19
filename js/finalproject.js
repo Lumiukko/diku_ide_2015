@@ -113,6 +113,7 @@ $(document).ready(function() {
             }
   
             setTimeout(function() {
+                if (!filter.hasOwnProperty('tick_interval')) return;
                 draw_frame();
                 if (filter.tick_interval[1] > filter.replay_interval[1]) {
                     filter.tick_interval = [
@@ -741,7 +742,7 @@ $(document).ready(function() {
                    || $.inArray(datapoint.guid, filter.players) > -1)
                && (   filter.sides.length   == 0
                    || $.inArray(datapoint.side, filter.sides) > -1)
-               && (   filter.tick_interval.length == 0
+               && (   !filter.hasOwnProperty('tick_interval') || filter.tick_interval.length == 0
                    || (datapoint.tick >= filter.tick_interval[0] && datapoint.tick <= filter.tick_interval[1])
                    || (datapoint.hasOwnProperty('event_type') && datapoint.event_type == 'player_death' && datapoint.tick <= filter.replay_interval[1] && datapoint.tick <= filter.tick_interval[1]));
     }
