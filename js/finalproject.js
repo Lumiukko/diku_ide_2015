@@ -203,6 +203,7 @@ $(document).ready(function() {
                 complete_player_deaths_data = [];
                 data.forEach(function(entry, i) {
                     if (get_round_from_tick(entry.tick) != undefined)
+                        entry.event_type = 'player_death';
                         complete_player_deaths_data.push(entry);
                 });
                 
@@ -741,7 +742,8 @@ $(document).ready(function() {
                && (   filter.sides.length   == 0
                    || $.inArray(datapoint.side, filter.sides) > -1)
                && (   filter.tick_interval.length == 0
-                   || (datapoint.tick >= filter.tick_interval[0] && datapoint.tick <= filter.tick_interval[1]));
+                   || (datapoint.tick >= filter.tick_interval[0] && datapoint.tick <= filter.tick_interval[1])
+                   || (datapoint.hasOwnProperty('event_type') && datapoint.event_type == 'player_death' && datapoint.tick <= filter.replay_interval[1] && datapoint.tick <= filter.tick_interval[1]));
     }
     
     
