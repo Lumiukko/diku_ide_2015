@@ -190,7 +190,7 @@ $(document).ready(function() {
 	},
     {
     "headline": "The Finals final",
-	"discovery": "Fnatic was now again playing as CT - knowing, that their first half as CT did definitely not go as planned. But they still had the advantage, as only onw round win separated them from winning the cup.<br />EnVyUs tried what worked in round 1: a nicely executed pincher movement towards B - a B split.<br />But this time Fnatic was having none of it: The entrance from B Tunnels was guarded by olofmeister on the AWP, while flusha awaited NBK- and KennyS, who tried to push through the middle.<br />",
+	"discovery": "Fnatic was now again playing as CT - knowing, that their first half as CT did definitely not go as planned. But they still had the advantage, as only onw round win separated them from winning the cup.<br />EnVyUs tried what worked in round 1: a nicely executed pincher movement towards B - a B split.<br />But this time Fnatic was having none of it: The entrance from B Tunnels was guarded by olofmeister on the AWP, while flusha awaited NBK- and KennyS, who tried to push through the middle. Fnatic wins!",
 	"filter": {
 		"render_foot_steps": true,
 		"render_foot_paths": true,
@@ -200,10 +200,10 @@ $(document).ready(function() {
 		"weapon_area_resolution": 16,
 		"weapon_area_show_empty_bins": false,
         "replay": true,
-        "replay_interval": [460000, 467587],
+        "replay_interval": [463500, 466600],
         "tick_interval_size": 200,
         "tick_interval": [],
-		"players": ["olofmeister", "JW", "flusha", "KennyS", "NBK-"],
+		"players": ["olofmeister", "Happy", "flusha", "kennyS", "NBK-"],
 		"rounds": [],
 		"sides": [],
 		"background": 0            
