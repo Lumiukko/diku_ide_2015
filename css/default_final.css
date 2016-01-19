@@ -108,6 +108,15 @@ a:hover {
     overflow: auto;
 }
 
+#toolbox input, label {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
 #toolbox div {
     margin: 4pt 0px 6pt 0px;
     padding: 0px;
@@ -143,6 +152,16 @@ a:hover {
     font-size: 9pt;
 }
 
+#toolbox .ui-icon {
+    float: right;
+    margin-right: 12pt;
+    cursor: pointer;
+}
+
+#toolbox button {
+    padding: 0pt 2pt;
+}
+
 #tb_display_players {
     text-align: center;
 }
@@ -160,11 +179,21 @@ a:hover {
     clear: left;
 }
 
+#tb_display_sides .ui-button {
+    width: 160px;
+}
+
 
 .ui-button  {
     height: 15pt;
 }
 
+.wbin_color {
+    display: inline-block;
+    height: 20pt;
+    width: 20pt;
+    opacity: 0.6;
+}
 
 
 

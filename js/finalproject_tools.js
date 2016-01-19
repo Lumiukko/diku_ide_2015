@@ -48,13 +48,13 @@ $(document).ready(function() {
     
     
     $("#tb_display_players").append("<div id=\"tb_display_players_t1\"></div>");
-    $("#tb_display_players_t1").append("<span>Team 1</span>");
+    $("#tb_display_players_t1").append("<span>EnVyUS</span>");
     players_t1.forEach(function(p) {
         $("#tb_display_players_t1").append("<input type=\"checkbox\" id=\"tb_p_" + p + "\" name=\"tb_p_" + p + "\" value=\"tb_p_" + p + "\" /><label for =\"tb_p_" + p + "\">" + p + "</label>");
     });
     
     $("#tb_display_players").append("<div id=\"tb_display_players_t2\"></div>");
-    $("#tb_display_players_t2").append("<span>Team 2</span>");
+    $("#tb_display_players_t2").append("<span>Fnatic</span>");
     players_t2.forEach(function(p) {
         $("#tb_display_players_t2").append("<input type=\"checkbox\" id=\"tb_p_" + p + "\" name=\"tb_p_" + p + "\" value=\"tb_p_" + p + "\" /><label for =\"tb_p_" + p + "\">" + p + "</label>");
     });
@@ -63,18 +63,16 @@ $(document).ready(function() {
     // Add rounds...
     
     $("#tb_display_rounds").append("<div id=\"tb_display_rounds_selectors\"></div>");
-    
-    // The round selectors have been removed, functionality is not implemented and it might
-    // cause people to select too many rounds to quickly. Without these buttons they have to
-    // select each round manually, which allows them to assess the performance and if they really want to select more.
-    /*
+   
     rs = "h1"
     $("#tb_display_rounds_selectors").append("<input type=\"checkbox\" id=\"tb_r_" + rs + "\" name=\"tb_r_" + rs + "\" value=\"tb_r_" + rs + "\" /><label for =\"tb_r_" + rs + "\">1st&nbsp;Half</label>");
+    
     rs = "h2"
     $("#tb_display_rounds_selectors").append("<input type=\"checkbox\" id=\"tb_r_" + rs + "\" name=\"tb_r_" + rs + "\" value=\"tb_r_" + rs + "\" /><label for =\"tb_r_" + rs + "\">2nd&nbsp;Half</label>");
+    
     rs = "ot"
     $("#tb_display_rounds_selectors").append("<input type=\"checkbox\" id=\"tb_r_" + rs + "\" name=\"tb_r_" + rs + "\" value=\"tb_r_" + rs + "\" /><label for =\"tb_r_" + rs + "\">Overtime</label>");
-    */
+    
     
     $("#tb_display_rounds").append("<div id=\"tb_display_rounds_h1\"></div>");
     for (var r=1; r<=15; r++) {
@@ -217,6 +215,188 @@ $(document).ready(function() {
         redraw(ui_filter);
     });
     
+    $("#tb_r_h1").on("click", function() {
+        if ($("#tb_r_h1").prop("checked")) {
+            for (var i=1; i<=15; i++) {
+                rpos = $.inArray(i, ui_filter.rounds);
+                if (rpos < 0) ui_filter.rounds.push(i);
+                $("#tb_r_" + zero_pad(i, 2)).prop("checked", true);
+                $("#tb_r_" + zero_pad(i, 2)).button("refresh");
+            }
+        }
+        else {
+            for (var i=1; i<=15; i++) {
+                rpos = $.inArray(i, ui_filter.rounds);
+                if (rpos != -1) ui_filter.rounds.splice(rpos, 1);
+                $("#tb_r_" + zero_pad(i, 2)).prop("checked", false);
+                $("#tb_r_" + zero_pad(i, 2)).button("refresh");
+            }
+        }
+        redraw(ui_filter);
+    });
+    
+    $("#tb_r_h2").on("click", function() {
+        if ($("#tb_r_h2").prop("checked")) {
+            for (var i=16; i<=30; i++) {
+                rpos = $.inArray(i, ui_filter.rounds);
+                if (rpos < 0) ui_filter.rounds.push(i);
+                $("#tb_r_" + zero_pad(i, 2)).prop("checked", true);
+                $("#tb_r_" + zero_pad(i, 2)).button("refresh");
+            }
+        }
+        else {
+            for (var i=16; i<=30; i++) {
+                rpos = $.inArray(i, ui_filter.rounds);
+                if (rpos != -1) ui_filter.rounds.splice(rpos, 1);
+                $("#tb_r_" + zero_pad(i, 2)).prop("checked", false);
+                $("#tb_r_" + zero_pad(i, 2)).button("refresh");
+            }
+        }
+        redraw(ui_filter);
+    });
+    
+    
+    $("#tb_r_ot").on("click", function() {
+        if ($("#tb_r_ot").prop("checked")) {
+            for (var i=31; i<=34; i++) {
+                rpos = $.inArray(i, ui_filter.rounds);
+                if (rpos < 0) ui_filter.rounds.push(i);
+                $("#tb_r_" + zero_pad(i, 2)).prop("checked", true);
+                $("#tb_r_" + zero_pad(i, 2)).button("refresh");
+            }
+        }
+        else {
+            for (var i=31; i<=34; i++) {
+                rpos = $.inArray(i, ui_filter.rounds);
+                if (rpos != -1) ui_filter.rounds.splice(rpos, 1);
+                $("#tb_r_" + zero_pad(i, 2)).prop("checked", false);
+                $("#tb_r_" + zero_pad(i, 2)).button("refresh");
+            }
+        }
+        redraw(ui_filter);
+    });
+    
+    
+    
+    // Information dialogs
+    
+    // --> Weapon Histogram
+    dc = "";
+    dc += "<div id=\"dialog_info_whisto\" title=\"Weapon Histogram\">";
+    dc += "    <p>This option divides the map into equally sized square areas and accumulates the weapon category depending on the weapon carried by a player within each of the squares. A sample is collected each second (or 64 ticks) of the match. The squares are color-coded by the most dominant weapon category.</p>"
+    dc += "    <p>The weapon categories are grouped into: ";
+    dc += "        <div class=\"wbin_color\" style=\"background-color: blue;\"></div> Pistols,";
+    dc += "        <div class=\"wbin_color\" style=\"background-color: white;\"></div> Knives,";
+    dc += "        <div class=\"wbin_color\" style=\"background-color: red;\"></div> Rifles,";
+    dc += "        <div class=\"wbin_color\" style=\"background-color: yellow;\"></div> Precision Rifles,";
+    dc += "        <div class=\"wbin_color\" style=\"background-color: fuchsia;\"></div> Submachine Gun,";
+    dc += "        <div class=\"wbin_color\" style=\"background-color: orange;\"></div> Machine Gun,";
+    dc += "        <div class=\"wbin_color\" style=\"background-color: green;\"></div> Throwables,";
+    dc += "        and the <div class=\"wbin_color\" style=\"background-color: #ff99cc;\"></div> Bomb.";
+    dc += "    </p>";
+    dc += "    <p>The squares can be decreased in size by choosing a larger resolution. Furthermore, one can select whether or not to show squares that do not contain any samples. If empty bins are shown, they will be displayed in black.</p>";
+    dc += "    <p>Please note that the histogram is not normalized. This means that we only count the total number of samples per weapon type and chose the biggest sample and do not divide by the total amount of all samples.</p>";
+    dc += "</div>";
+    $("body").prepend(dc);
+    
+    $("#dialog_info_whisto").dialog({"modal": true, "autoOpen": false});
+    $("#info_whisto").on("click", function() {
+        $("#dialog_info_whisto").dialog('widget').attr('id', 'dialog_info_whisto_div');
+        $("#dialog_info_whisto").dialog("open");
+        $("#dialog_info_whisto_div").css("width", (window.innerWidth*0.6));
+        $("#dialog_info_whisto_div").css("top", ($(document).scrollTop() + window.innerHeight/2) + "px");
+        $("#dialog_info_whisto_div").css("left", "200px");
+    });
+    
+    
+    
+    
+    
+    // --> Display
+    dc = "";
+    dc += "<div id=\"dialog_info_display\" title=\"Display\">";
+    dc += "    <p>This option chooses what will be shown in the visualization. One can select specific rounds, players, or the side. Note that, if no players are chosen, all players are displayed.</p>";
+    dc += "</div>";
+    $("body").prepend(dc);
+    
+    $("#dialog_info_display").dialog({"modal": true, "autoOpen": false});
+    $("#info_display").on("click", function() {
+        $("#dialog_info_display").dialog('widget').attr('id', 'dialog_info_display_div');
+        $("#dialog_info_display").dialog("open");
+        $("#dialog_info_display_div").css("width", (window.innerWidth*0.6));
+        $("#dialog_info_display_div").css("top", ($(document).scrollTop() + window.innerHeight/2) + "px");
+        $("#dialog_info_display_div").css("left", "200px");
+    });
+    
+    
+     
+     
+     // -> Player Path
+    dc = "";
+    dc += "<div id=\"dialog_info_ppath\" title=\"Player Path\">";
+    dc += "    <p>This option allows to display the trails of players movements. The trails are displayed as lines and effectively connect the same points as the ones used in the view direction. Specifically these points are samples from the demo recording taken with a frequency of one per second.</p>";
+    dc += "</div>";
+    $("body").prepend(dc);
+    
+    $("#dialog_info_ppath").dialog({"modal": true, "autoOpen": false});
+    $("#info_ppath").on("click", function() {
+        $("#dialog_info_ppath").dialog('widget').attr('id', 'dialog_info_ppath_div');
+        $("#dialog_info_ppath").dialog("open");
+        $("#dialog_info_ppath_div").css("width", (window.innerWidth*0.6));
+        $("#dialog_info_ppath_div").css("top", ($(document).scrollTop() + window.innerHeight/2) + "px");
+        $("#dialog_info_ppath_div").css("left", "200px");
+    });
+    
+    
+    // -> Player View Direction
+    dc = "";
+    dc += "<div id=\"dialog_info_viewdir\" title=\"Player View Direction\">";
+    dc += "    <p>This option allows to display view direction of the players. The view direction is indicated by an acute-angled triangle or arrow, pointing in the direction of the players view. The exact angle can be seen in tooltip by hovering over the arrow with the mouse.</p>";
+    dc += "</div>";
+    $("body").prepend(dc);
+    
+    $("#dialog_info_viewdir").dialog({"modal": true, "autoOpen": false});
+    $("#info_viewdir").on("click", function() {
+        $("#dialog_info_viewdir").dialog('widget').attr('id', 'dialog_info_viewdir_div');
+        $("#dialog_info_viewdir").dialog("open");
+        $("#dialog_info_viewdir_div").css("width", (window.innerWidth*0.6));
+        $("#dialog_info_viewdir_div").css("top", ($(document).scrollTop() + window.innerHeight/2) + "px");
+        $("#dialog_info_viewdir_div").css("left", "200px");
+    });
+   
+    
+    
+    // -> Player Death
+    dc = "";
+    dc += "<div id=\"dialog_info_pdeath\" title=\"Player Death\">";
+    dc += "    <p>This option allows to display the places players have died. The place is indicated by a medium sized circle in dark-red or dark-blue for terrorist and counter-terrorist players respectively.The tooltip gives additional information about current weapon selected, the weapon that killed the player, and more.</p>";
+    dc += "</div>";
+    $("body").prepend(dc);
+    
+    $("#dialog_info_pdeath").dialog({"modal": true, "autoOpen": false});
+    $("#info_pdeath").on("click", function() {
+        $("#dialog_info_pdeath").dialog('widget').attr('id', 'dialog_info_pdeath_div');
+        $("#dialog_info_pdeath").dialog("open");
+        $("#dialog_info_pdeath_div").css("width", (window.innerWidth*0.6));
+        $("#dialog_info_pdeath_div").css("top", ($(document).scrollTop() + window.innerHeight/2) + "px");
+        $("#dialog_info_pdeath_div").css("left", "200px");
+    });
+    
+    // -> Weapon use
+    dc = "";
+    dc += "<div id=\"dialog_info_wfire\" title=\"Weapon Use\">";
+    dc += "    <p>This option allows to display the places a player has used his weapon. This is indicated by a small sized circle in orange or aqua color for terrorist and counter-terrorist players respectively. Weapon usage can be any of the weapons, including knives. The tooltip gives additional information on the weapon used, the player, and more. The direction in which the weapon has been used is consistent with the direction of the view angle.</p>";
+    dc += "</div>";
+    $("body").prepend(dc);
+    
+    $("#dialog_info_wfire").dialog({"modal": true, "autoOpen": false});
+    $("#info_wfire").on("click", function() {
+        $("#dialog_info_wfire").dialog('widget').attr('id', 'dialog_info_wfire_dir');
+        $("#dialog_info_wfire").dialog("open");
+        $("#dialog_info_wfire_dir").css("width", (window.innerWidth*0.6));
+        $("#dialog_info_wfire_dir").css("top", ($(document).scrollTop() + window.innerHeight/2) + "px");
+        $("#dialog_info_wfire_dir").css("left", "200px");
+    });
     
 
 
