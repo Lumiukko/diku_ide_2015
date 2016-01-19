@@ -598,6 +598,18 @@ $(document).ready(function() {
     These functions are utility functions.
     ========================================================================================
 */
+    /*
+        Calculates the time position of a match that corresponds to a givent tick.
+        @param {int} tick The tick we want to know the time for.
+        @return {string} The time in minutes and seconds that the tick stands for.
+    */
+    function get_time_from_tick(tick) {
+        var seconds = Math.round(tick / 64);
+        var minutes = Math.round(seconds / 60);
+        seconds = seconds % 60;
+        return  (minutes >= 1 ? (minutes + "m ") : "") + seconds + "s";
+    }
+
 
     /**
         Copies an object.
@@ -841,7 +853,7 @@ $(document).ready(function() {
             html += "<tr><td>Position: </td><td>" + info.position.x + " / " + info.position.y + " / " + info.position.z + "</td></tr>";
             html += "<tr><td>View Angle: </td><td>" + to_fixed_2(info.eye_angle.yaw) + "°</td></tr>";
             html += "<tr><td>Place: </td><td>" + info.last_place_name + "</td></tr>";
-            html += "<tr><td>Tick: </td><td>" + info.tick + "</td></tr>";
+            html += "<tr><td>Time: </td><td>" + get_time_from_tick(info.tick) + ", Tick: " + info.tick + "</td></tr>";
             html += "</table>";
         }
         else if (type == "player_death") {
@@ -855,7 +867,7 @@ $(document).ready(function() {
             html += "<tr><td>Position: </td><td>" + info.position.x + " / " + info.position.y + " / " + info.position.z + "</td></tr>";
             html += "<tr><td>View Angle: </td><td>" + to_fixed_2(info.eye_angle.yaw) + "°</td></tr>";
             html += "<tr><td>Place: </td><td>" + info.last_place_name + "</td></tr>";
-            html += "<tr><td>Tick: </td><td>" + info.tick + "</td></tr>";
+            html += "<tr><td>Time: </td><td>" + get_time_from_tick(info.tick) + ", Tick: " + info.tick + "</td></tr>";
             html += "</table>";
         }
         else if (type == "weapon_area") {
@@ -882,7 +894,7 @@ $(document).ready(function() {
             html += "<tr><td>Weapon: </td><td>" + info.weapon + "</td></tr>";
             html += "<tr><td>Position: </td><td>" + info.position.x + " / " + info.position.y + " / " + info.position.z + "</td></tr>";
             html += "<tr><td>View Angle: </td><td>" + to_fixed_2(info.eye_angle.yaw) + "°</td></tr>";
-            html += "<tr><td>Tick: </td><td>" + info.tick + "</td></tr>";
+            html += "<tr><td>Time: </td><td>" + get_time_from_tick(info.tick) + ", Tick: " + info.tick + "</td></tr>";
             html += "</table>";
         }
         else {
