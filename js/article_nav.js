@@ -9,6 +9,7 @@ $(document).ready(function() {
     var page = 0;
     var players = ['JW', 'pronax', 'KRIMZ', 'olofmeister', 'flusha',
                    'Happy', 'NBK-', 'KennyS', 'kioShiMa', 'apEX'];
+    
     var content = [{
         "headline": "Starting the Grand Final",
         "discovery": "The two best Counter Strike: Global Offensive teams in the world batteling it out on de_dust2 in front of more than 1.2 million viewers. The ESL One Cologne Grand Final 2015 had the potential to be a gigantic camp-fest - but instead of relying on the old and battle-proven tactics, which got Fnatic and EnVyUS to the place where they are now, they showed the cards they got hidden up their sleeves the whole time:<br />Already in the first pistol round KRIMZ and JW on the CT side showed great aggression up to Top Mid.",
@@ -61,11 +62,21 @@ $(document).ready(function() {
         }
     },
     {
-        "headline": "This is a headline5",
-        "discovery": "There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable. If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything embarrassing hidden in the middle of text. All the Lorem Ipsum generators on the Internet tend to repeat predefined chunks as necessary, making this the first true generator on the Internet. It uses a dictionary of over 200 Latin words, combined with a handful of model sentence structures, to generate Lorem Ipsum which looks reasonable. The generated Lorem Ipsum is therefore always free from repetition, injected humour, or non-characteristic words etc.",
-        "players": ["apEX"],
-        "rounds": [17,18],
-        "sides": ["TERRORIST", "CT"]
+        "headline": "The comeback was not real",
+        "discovery": "But Team EnVyUS adapted to that aggressive style of play and awaited the offensive CTs. JW, pronax, KRIMZ and olofmeister were stopped dead in their tracks. Fnatic had to dramatically change their game, when in round 9 the score was 1:7...",
+        "filter": {
+            "render_foot_steps": false,
+            "render_foot_paths": true,
+            "render_weapon_fire": true,
+            "render_player_deaths": true,
+            "render_weapon_areas": false,
+            "weapon_area_resolution": 16,
+            "weapon_area_show_empty_bins": true,
+            "players": ["JW", "pronax", "KRIMZ", "olofmeister"],
+            "rounds": [4,5,6,7,8,9],
+            "sides": [],
+            "background": 0            
+        }
     }];
     
     $("#nav_btn_next").click(function () {
@@ -94,46 +105,56 @@ $(document).ready(function() {
         $('article h3').fadeOut('fast', function() {
             $(this).html(content[page].headline).fadeIn('fast');
         });
+        var text = auto_render_highlights(content[page].discovery);
         $('article p').fadeOut('fast', function() {
-            $(this).html(content[page].discovery).fadeIn('fast', function() {
-                var words = content[page].discovery.split(' ');
-                for (var i in words) {
-                    if (players.indexOf(words[i]) >= 0) {
-                        words[i] = "<span class='show player" + words[i] + "'>" + words[i] + "</span>";
-                    }
-                }
-                $(this).html(words.join(' ')).fadeIn('slow');
-                $(".show").click(function() {
-                    var target = 'svg .' + $(this).attr('class').split(' ')[1];
-                    if ($(target).length > 0) {
-                        $(target).attr("class", function(attr_value) {
-                            return $(this).attr("class") + ' hover';  
-                        }); 
-                    }
-                    document.getElementById('visbox').scrollIntoView({behavior: 'smooth'});
-                    return false;
-                });
-
-                $(".show").on('mouseover', function() {
-                    var target = 'svg .' + $(this).attr('class').split(' ')[1];
-                    if ($(target).length > 0) {
-                        $(target).attr("class", function(attr_value) {
-                            return $(this).attr("class") + ' hover';  
-                        }); 
-                    }
-                });
-                
-                $(".show").on('mouseout', function() {
-                    $('.hover').attr("class", function(attr_value) {
-                        return $(this).attr("class").split(' ').slice(0, -1).join(' ');
-                    });
-                });
-    
+            $(this).html(text).fadeIn('fast', function() {
+                auto_highlights_update_events();
             });
         });
         if (content[page]['filter']) {
             redraw(content[page]['filter']);
         }
+    }
+    
+    function auto_render_highlights(text) {
+        console.log(text);
+        var words = text.split(' ');
+        for (var i in words) {
+            word = words[i].replace(/\.|,|;|<.$|^.>|:/, "");
+            if (players.indexOf(word) >= 0) {
+                words[i] = "<span class='show player" + word + "'>" + words[i] + "</span>";
+            }
+        }
+        return words.join(' ');
+    }
+    
+    function auto_highlights_update_events() {
+        $(".show").click(function() {
+            var target = 'svg .' + $(this).attr('class').split(' ')[1];
+            if ($(target).length > 0) {
+                $(target).attr("class", function(attr_value) {
+                    return $(this).attr("class") + ' hover';  
+                }); 
+            }
+            document.getElementById('visbox').scrollIntoView({behavior: 'smooth'});
+            return false;
+        });
+
+        $(".show").on('mouseover', function() {
+            var target = 'svg .' + $(this).attr('class').split(' ')[1];
+            if ($(target).length > 0) {
+                $(target).attr("class", function(attr_value) {
+                    return $(this).attr("class") + ' hover';  
+                }); 
+            }
+        });
+
+        $(".show").on('mouseout', function() {
+            $('.hover').attr("class", function(attr_value) {
+                return $(this).attr("class").split(' ').slice(0, -1).join(' ');
+            });
+        });
+        $(".show").addClass('active');
     }
 
     function toggle_button_visibility(page){
