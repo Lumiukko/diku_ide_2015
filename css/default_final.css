@@ -165,7 +165,13 @@ a:hover {
     height: 15pt;
 }
 
-
+/**
+	Death statistics
+*/
+#no_of_deaths{
+	text-align: left;
+	display: block;
+}
 
 
 /**
@@ -181,6 +187,7 @@ a:hover {
     height: 1024px;
     margin-top:12px;
     margin-right: 240px;
+	margin-bottom: 20px;
 }
 
 

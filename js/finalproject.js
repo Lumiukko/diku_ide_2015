@@ -454,7 +454,7 @@ $(document).ready(function() {
         var player_deaths = svg.select("#lyr_player_death")
                                .selectAll("circle.player_death")
                                .data(data);
-
+			
         player_deaths.exit().remove()
         
         player_deaths.enter()
@@ -497,6 +497,7 @@ $(document).ready(function() {
                      .on("mouseout", function(d, i) {
                         tooltip_hide();
                      });
+		$("#no_of_deaths").text("Number of deaths displayed: " + data.length);
     };
     
     

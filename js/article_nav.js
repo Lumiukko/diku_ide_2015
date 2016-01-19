@@ -61,8 +61,8 @@ $(document).ready(function() {
         }
     },
 	{
-	"headline": "Team 2 - Ground covered as Counter-Terrorists",
-	"discovery": "The second team, which includes JW , pronax , KRIMZ , olofmeister and flusha seem to be defensive and they are not covering a lot of ground. This style of defeding is known to be as the standard, when playing as Counter-Terrorists.",
+	"headline": "Fnatic - Ground covered as Counter-Terrorists",
+	"discovery": "The Fnatic team, which includes JW , pronax , KRIMZ , olofmeister and flusha seem to be defensive and they are not covering a lot of ground. This style of defeding is known to be as the standard, when playing as Counter-Terrorists.",
 	"filter": {
 		"render_foot_steps": false,
 		"render_foot_paths": true,
@@ -78,8 +78,8 @@ $(document).ready(function() {
 		}
 	},
 	{
-	"headline": "Team 1 - Ground covered  as Counter-Terrorists",
-	"discovery": "On the other hand, the first team, which includes Happy , NBK- , kennyS , kioShiMa and apEX are a lot more aggresive and they are trying to cover more space, in comparizon with the second team.",
+	"headline": "EnVyUS - Ground covered  as Counter-Terrorists",
+	"discovery": "On the other hand, the EnVyUS team, which includes Happy , NBK- , kennyS , kioShiMa and apEX are a lot more aggresive and they are trying to cover more space, in comparizon with to Fnatic team.",
 	"filter": {
 		"render_foot_steps": false,
 		"render_foot_paths": true,
@@ -93,7 +93,42 @@ $(document).ready(function() {
 		"sides": ["CT"],
 		"background": 0            
 		}
-    }];
+    },
+	{
+	"headline": "EnVyUS - Number of deaths",
+	"discovery": "EnVyUS were killed  overall a total number of 112. When they played as Terrorists, the team members died 50 times, while as CTs they had a number of 62 deaths. Therefore, if we compare the higher number of deaths as Counter-Terrorists to the ground covered, we have seen in the previous articles, the more aggressive tactics they used, actually brought them more deaths.",
+	"filter": {
+		"render_foot_steps": false,
+		"render_foot_paths": false,
+		"render_weapon_fire": false,
+		"render_player_deaths": true,
+		"render_weapon_areas": false,
+		"weapon_area_resolution": 16,
+		"weapon_area_show_empty_bins": false,
+		"players": ['Happy', 'NBK-', 'kennyS', 'kioShiMa', 'apEX'],
+		"rounds": [],
+		"sides": [],
+		"background": 0            
+		}
+	},
+	{
+	"headline": "Fnatic - Number of deaths",
+	"discovery": "Fnatic were killed  overall a total number of 115. When they played as Terrorists, the members of the team died 58 times, while as CTs they had a number of 57 deaths. Compared to the other team, Fnatic had a more balanced number of deaths in both positions. Furthermore, even though Fnatic had a higher number of deaths overall, they managed to win the game.",
+	"filter": {
+		"render_foot_steps": false,
+		"render_foot_paths": false,
+		"render_weapon_fire": false,
+		"render_player_deaths": true,
+		"render_weapon_areas": false,
+		"weapon_area_resolution": 16,
+		"weapon_area_show_empty_bins": false,
+		"players": ['JW', 'pronax', 'KRIMZ', 'olofmeister', 'flusha'],
+		"rounds": [],
+		"sides": [],
+		"background": 0            
+		}
+	}
+	];
     
     $("#nav_btn_next").click(function () {
         page += 1;
