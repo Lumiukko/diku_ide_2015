@@ -9,6 +9,11 @@ $(document).ready(function() {
     var page = 0;
     var players = ['JW', 'pronax', 'KRIMZ', 'olofmeister', 'flusha',
                    'Happy', 'NBK-', 'kennyS', 'kioShiMa', 'apEX'];
+    var teams = ['Fnatic', 'EnVyUS'];
+    var sides = {
+        'CT': ['CT', 'CTs', 'Counter-Terrorist', 'Counter-Terrorists'],
+        'TERRORIST': ['Terrorist', 'Terrorists', 'Ts', 'T']
+    }
     var content = [{
         "headline": "Starting the Grand Final",
         "discovery": "The two best Counter Strike: Global Offensive teams in the world batteling it out on de_dust2 in front of more than 1.2 million viewers. The ESL One Cologne Grand Final 2015 had the potential to be a gigantic camp-fest - but instead of relying on the old and battle-proven tactics, which got Fnatic and EnVyUS to the place where they are now, they showed the cards they got hidden up their sleeves the whole time:<br />Already in the first pistol round KRIMZ and JW on the CT side showed great aggression up to Top Mid.",
@@ -60,9 +65,26 @@ $(document).ready(function() {
             "background": 0            
         }
     },
+    {
+        "headline": "The comeback was not real",
+        "discovery": "But Team EnVyUS adapted to that aggressive style of play and awaited the offensive CTs. JW, pronax, KRIMZ and olofmeister were stopped dead in their tracks. Fnatic had to dramatically change their game, when in round 9 the score was 1:7...",
+        "filter": {
+            "render_foot_steps": false,
+            "render_foot_paths": true,
+            "render_weapon_fire": true,
+            "render_player_deaths": true,
+            "render_weapon_areas": false,
+            "weapon_area_resolution": 16,
+            "weapon_area_show_empty_bins": true,
+            "players": ["JW", "pronax", "KRIMZ", "olofmeister"],
+            "rounds": [4,5,6,7,8,9],
+            "sides": [],
+            "background": 0            
+        }
+    },
 	{
 	"headline": "Fnatic - Ground covered as Counter-Terrorists",
-	"discovery": "The Fnatic team, which includes JW , pronax , KRIMZ , olofmeister and flusha seem to be defensive and they are not covering a lot of ground. This style of defeding is known to be as the standard, when playing as Counter-Terrorists.",
+	"discovery": "Fnatic, which includes JW, pronax, KRIMZ, olofmeister and flusha seem to be defensive and they are not covering a lot of ground. This style of defeding is known to be as the standard, when playing as Counter-Terrorists.",
 	"filter": {
 		"render_foot_steps": false,
 		"render_foot_paths": true,
@@ -79,7 +101,7 @@ $(document).ready(function() {
 	},
 	{
 	"headline": "EnVyUS - Ground covered  as Counter-Terrorists",
-	"discovery": "On the other hand, the EnVyUS team, which includes Happy , NBK- , kennyS , kioShiMa and apEX are a lot more aggresive and they are trying to cover more space, in comparizon with to Fnatic team.",
+	"discovery": "On the other hand, EnVyUS, including Happy, NBK-, kennyS, kioShiMa and apEX are a lot more aggresive and they are trying to cover more space, in comparizon with the second team.",
 	"filter": {
 		"render_foot_steps": false,
 		"render_foot_paths": true,
@@ -156,46 +178,69 @@ $(document).ready(function() {
         $('article h3').fadeOut('fast', function() {
             $(this).html(content[page].headline).fadeIn('fast');
         });
+        var text = auto_render_highlights(content[page].discovery);
         $('article p').fadeOut('fast', function() {
-            $(this).html(content[page].discovery).fadeIn('fast', function() {
-                var words = content[page].discovery.split(' ');
-                for (var i in words) {
-                    if (players.indexOf(words[i]) >= 0) {
-                        words[i] = "<span class='show player" + words[i] + "'>" + words[i] + "</span>";
-                    }
-                }
-                $(this).html(words.join(' ')).fadeIn('slow');
-                $(".show").click(function() {
-                    var target = 'svg .' + $(this).attr('class').split(' ')[1];
-                    if ($(target).length > 0) {
-                        $(target).attr("class", function(attr_value) {
-                            return $(this).attr("class") + ' hover';  
-                        }); 
-                    }
-                    document.getElementById('visbox').scrollIntoView({behavior: 'smooth'});
-                    return false;
-                });
-
-                $(".show").on('mouseover', function() {
-                    var target = 'svg .' + $(this).attr('class').split(' ')[1];
-                    if ($(target).length > 0) {
-                        $(target).attr("class", function(attr_value) {
-                            return $(this).attr("class") + ' hover';  
-                        }); 
-                    }
-                });
-                
-                $(".show").on('mouseout', function() {
-                    $('.hover').attr("class", function(attr_value) {
-                        return $(this).attr("class").split(' ').slice(0, -1).join(' ');
-                    });
-                });
-    
+            $(this).html(text).fadeIn('fast', function() {
+                auto_highlights_update_events();
             });
         });
         if (content[page]['filter']) {
             redraw(content[page]['filter']);
         }
+    }
+    
+    
+    /* parsing text and adding classes to words that should highlight elements
+    *  in the visualization.
+    */
+    function auto_render_highlights(text) {
+        var words = text.split(' ');
+        for (var i in words) {
+            word = words[i].replace(/\.|,|;|<.$|^.>|:/, "");
+            if (players.indexOf(word) >= 0) {
+                // player name recognized
+                words[i] = "<span class='show player" + word + "'>" + words[i] + "</span>";
+            } else if (teams.indexOf(word) >= 0) {
+                // team name recognized
+                words[i] = "<span class='show team" + word + "'>" + words[i] + "</span>";
+            } else {
+                for (var side in sides) {
+                   if (sides[side].indexOf(word) >= 0) {
+                       words[i] = "<span class='show side" + side + "'>" + words[i] + "</span>";
+                   }
+                }
+            }
+        }
+        return words.join(' ');
+    }
+    
+    function auto_highlights_update_events() {
+        $(".show").click(function() {
+            var target = 'svg .' + $(this).attr('class').split(' ')[1];
+            if ($(target).length > 0) {
+                $(target).attr("class", function(attr_value) {
+                    return $(this).attr("class") + ' hover';  
+                }); 
+            }
+            document.getElementById('visbox').scrollIntoView({behavior: 'smooth'});
+            return false;
+        });
+
+        $(".show").on('mouseover', function() {
+            var target = 'svg .' + $(this).attr('class').split(' ')[1];
+            if ($(target).length > 0) {
+                $(target).attr("class", function(attr_value) {
+                    return $(this).attr("class") + ' hover';  
+                }); 
+            }
+        });
+
+        $(".show").on('mouseout', function() {
+            $('.hover').attr("class", function(attr_value) {
+                return $(this).attr("class").split(' ').slice(0, -1).join(' ');
+            });
+        });
+        $(".show").addClass('active');
     }
 
     function toggle_button_visibility(page){

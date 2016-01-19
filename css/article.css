@@ -75,13 +75,19 @@ article span.show {
     text-decoration: underline;
     text-decoration-style: dotted;
     cursor: pointer;
+    text-decoration:none;
+    border-bottom: 1px dotted rgba(99, 9, 9, 0);
+    transition: border 1s ease 2s; 
+}
+
+article span.show.active {
+    border-bottom: 1px dotted rgba(99, 99, 99, 1);
 }
 
 article p {
-    width: 66%;
     display: block;
     float: left;
-    min-height: 100px;
+    min-height: 80px;
 }
 
 article img {
