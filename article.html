@@ -36,9 +36,15 @@
             <a href="finalproject.html">Explore the match on your own!</a>
             <div id="tech_stuff">
                 <h3>How we did what we did</h3>
-                <p>We are using the <a href="https://github.com/mikeemoo/jsgo">JSGO</a> library for node.js to parse generic Counter Strike: Global Offensive demo recordings and extract information as json files. In the frontend we use <a href="https://d3js.org/">d3.js</a> and <a href="https://jquery.com/">jQuery</a> to visualize this information using SVGs.</p>
+                <p>We are using the <a href="https://github.com/mikeemoo/jsgo">JSGO</a> library for node.js to parse generic Counter Strike: Global Offensive demo recordings and extract information as JSON files. In the frontend we use <a href="https://d3js.org/">d3.js</a> and <a href="https://jquery.com/">jQuery</a> to visualize this information using SVGs.</p>
                 <p>The <a href="/preprocessing/index.js">index.js</a> file can be called with a number of arguments, depending on which events the user is interested in, for example <pre>node index.js game.player_death game.player_footstep</pre> The script then listens to the respective events emitted by the jsgo parsing process and stores this data in a number of JSON files.</p>
-                <p>These json files can be fed to the frontend code, which visualizes the data and allows the user to drill down into the data of individual players, specific rounds or certain types of rounds.</p>
+                <p>These JSON files can be fed to the frontend code, which visualizes the data and allows the user to drill down into the data of individual players, specific rounds or certain types of rounds.</p>
+                <p>
+                The visualization takes a filter object, which defines what is effectively being displayed and removes any data that does not fit these criteria. The rest is then displayed in the visualization. The filter object describes things like rounds, players, sides (T or CT), as well as visualization options, such as view directions, movement trails, death sites, and even an animated game replay.
+                </p>
+                <p>
+                All these options can be applied to the match in the <a href="finalproject.html">"Explore the match on your own!"</a> section. The info buttons in the toolbar give some information on what the options do. Go ahead and try it yourself! 
+                </p>
             </div>
             <span>A <a href="http://diku.dk/english/">DIKU</a> Interactive Data Exploration Project 2015/2016</span>
         </footer>
