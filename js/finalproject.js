@@ -18,15 +18,15 @@ $(document).ready(function() {
     //     An empty array means that no filer is applied for the category, everything is shown.
     var filter = {
         "render_foot_steps": false,
-        "render_foot_paths": true,
+        "render_foot_paths": false,
         "render_weapon_fire": false,
         "render_player_deaths": true,
         "render_weapon_areas": false,
         "weapon_area_resolution": 32,
         "weapon_area_show_empty_bins": true,
         "players": [],
-        "rounds": [34],
-        "sides": ["TERRORIST", "CT"],
+        "rounds": [1],
+        "sides": ["CT"],
         "background": 0
     };
     

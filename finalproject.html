@@ -1,44 +1,72 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <title>Interactive Data Exploration, DIKU 2015</title>
+        <title>Interactive Data Exploration</title>
+        <link type="text/css" href="css/default_final.css" rel="stylesheet" />
+        <link type="text/css" href="js/jquery-ui-final/jquery-ui.css" rel="stylesheet">
         <script src="js/jquery-1.11.3.min.js" type="application/javascript"></script>
+        <script src="js/jquery-ui-final/jquery-ui.min.js" type="application/javascript"></script>
         <script src="js/d3.min.js" type="application/javascript" charset="utf-8"></script>
         <script src="js/finalproject.js" type="application/javascript"></script>
-        <script src="js/autotoc2.js" type="application/javascript"></script>
-        <link type="text/css" href="css/default_final.css" rel="stylesheet" />
+        <script src="js/finalproject_tools.js" type="application/javascript"></script>
     </head>
     <body>
         <header>
-            <h1>Interactive Data Exploration, DIKU 2015</h1>
-            <p>Final Project</p>
-            <p>Deadline: 19. January 2016, 23:59 </p>
+            <h1>A match to remember, Interactive Data Exploration</h1>
         </header>
         <section>
+            <h2>2015 ESL One Final EnVyUS vs. Fnatic</h2>
+            
+            <div id="toolbox">
+                <h3>Settings</h3>
+                
+                <h4>Display</h4>
+                
+                <span>Rounds:</span>
+                <div id="tb_display_rounds"><!-- auto generated --></div>
+                
+                <span>Sides:</span>
+                <div id="tb_display_sides"><form>
+                    <input type="radio" name="tb_sides" id="tb_sides_t" value="tb_sides_t" /><label for ="tb_sides_t">Terrorists</label><br />
+                    <input type="radio" name="tb_sides" id="tb_sides_ct" value="tb_sides_ct" /><label for ="tb_sides_ct">Counter-Terrorists</label><br />
+                    <input type="radio" name="tb_sides" id="tb_sides_b" value="tb_sides_b" /><label for ="tb_sides_b">Both</label>
+                </form></div>
+                
+                <span>Players:</span>
+                <div id="tb_display_players"><!-- auto generated --></div>
+                
+                <h4>Player Path</h4>
+                <div><input type="checkbox" id="tb_pp_enabled" name="tb_pp_enabled" value="tb_pp_enabled" /><label for ="tb_pp_enabled">Enabled</label></div>
+                
+                <h4>Player View Direction</h4>
+                <div><input type="checkbox" id="tb_pwd_enabled" name="tb_pwd_enabled" value="tb_pwd_enabled" /><label for ="tb_pwd_enabled">Enabled</label></div>
+                
+                <h4>Player Death</h4>
+                <div><input type="checkbox" id="tb_pd_enabled" name="tb_pd_enabled" value="tb_pd_enabled" /><label for ="tb_pd_enabled">Enabled</label></div>
 
-            <div class="section">
-                <h2>1. Part One</h2>
+                <h4>Weapon Use</h4>
+                <div><input type="checkbox" id="tb_wu_enabled" name="tb_wu_enabled" value="tb_wu_enabled" /><label for ="tb_wu_enabled">Enabled</label></div>
                 
-                <div class="subsection">
-                    <h3>1.1 Discoveries</h3>
-                        <p id="discovery">In quis nibh metus. Vestibulum vehicula, lacus ut rhoncus mollis, quam nisl commodo enim, ut iaculis elit libero id metus. Sed mollis luctus interdum.</p>
-                    <h3>1.2 Visualization</h3>
-                    <div id="transition_test">BUTTON</div>
-                    <div id="btns_container" style="position: absolute">
-                        <button id="btn-left" class="show_chart_btn" style="width:100px; float:left; display:none">Previous</button>
-                        <button id="btn-right" class="show_chart_btn" style="width:100px; float:left; margin-left:929px">Next</button>
-                    </div>
-                    <svg version="1.1" baseProfile="full" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:ev="http://www.w3.org/2001/xml-events" id="visbox" class="visbox"></svg>
-                    <div id="tooltip" class="hidden"></div>
-                </div>
+                <h4>Weapon Histogram</h4>
+                <div><input type="checkbox" id="tb_wbin_enabled" name="tb_wbin_enabled" value="tb_wbin_enabled" /><label for ="tb_wbin_enabled">Enabled</label></div>
+                <span>Resolution:</span>
+                <div id="tb_wbin_resolutions"><form><!-- auto generated --></form></div>
+                <span>Show Empty Areas:</span>
+                <div><input type="checkbox" id="tb_wbin_showempty" name="tb_wbin_showempty" value="tb_wbin_showempty" /><label for ="tb_wbin_showempty">Enabled</label></div>
                 
-                <div class="subsection">
-                    <h3>1.2 Weapon visualizations</h3>
-                    <div id="weapon_visbox"></div>
-                    <div class="tooltip" id="tooltip_weapon"></div>
-                </div>
             </div>
+            
+            <h3>Visualization of de_dust2</h3>
+            <svg version="1.1" baseProfile="full" id="visbox" class="visbox"
+                 xmlns="http://www.w3.org/2000/svg"
+                 xmlns:xlink="http://www.w3.org/1999/xlink"
+                 xmlns:ev="http://www.w3.org/2001/xml-events">
+            </svg>
+            <div id="tooltip" class="hidden"></div>
+
         </section>
-        <footer></footer>   
+        <footer>
+            <span>A <a href="http://diku.dk/english/">DIKU</a> Interactive Data Exploration Project 2015/2016</span>
+        </footer>   
     </body>
 </html>

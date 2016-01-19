@@ -1,4 +1,172 @@
 /**
+    General Elements
+*/
+
+html {
+    font-family: sans-serif;
+    font-size: 12pt;
+}
+
+body {
+    background-color: #151515;
+    color: #cdcdcd;
+}
+
+section, header {
+    margin: auto;
+}
+
+footer {
+    padding-top: 100px;
+}
+
+p {
+    text-align: justify;
+    line-height: 1.5em;
+}
+
+img {
+    border-radius: 18px;
+}
+
+h1 {
+    margin: 0 228px 0 0;
+    padding: 2% 0 0 0;
+    display: block;
+    font-size: 1.6em;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 1px 1px 2px #000;
+    border-bottom: 1px solid #fff;
+    text-align: left;
+    text-shadow: 3px 3px 2px #000;
+}
+
+h2, h3 {
+    margin-top: 4pt;
+}
+
+h2 {
+    font-size: 1.2em;
+}
+
+
+h3 {
+    margin-bottom: 5pt;
+    font-size: 13pt;
+}
+
+
+iframe{
+    margin-top: 10px;
+    border: 3px solid #999;
+}
+
+.subsection{
+    padding-bottom: 30px;
+    border-top: 1px solid #555;
+}
+
+.hidden {
+    display: none;
+}
+
+span.mathy {
+    font-family: serif;
+    font-style: italic;
+    color: #ac9d71;
+}
+
+a {
+    color: #d3d2a1;
+    text-decoration: none;
+    border-bottom: 1px dotted #d3d2a1;
+}
+
+a:hover {
+    color: white;
+    text-decoration: none;
+    border-bottom: 1px solid #d3d2a1;
+}
+
+
+/**
+    Tool box for exploration
+*/
+
+#toolbox {
+    color: #aaa;
+    position: fixed;
+    right: 0px;
+    top: 0px;
+    width: 226px;
+    height: 100%;
+    border-left: 1px solid white;
+    background-color: rgba(6, 6, 6, 0.75);
+    padding-left: 5pt;
+    overflow: auto;
+}
+
+#toolbox div {
+    margin: 4pt 0px 6pt 0px;
+    padding: 0px;
+}
+
+#toolbox label {
+    display: inline-block;
+    font-family: monospace;
+    color: white;
+    margin-left: 5pt;
+    font-size: 9pt;
+}
+
+#toolbox label {
+    margin-left: 1pt;
+}
+
+#toolbox h4 {
+    color: #bcbcbc;
+    border-top: 1px dotted #666;
+    margin-left: -8pt;
+    margin-top: 7pt;
+    margin-bottom: 0pt;
+    padding-bottom: 3pt;
+    padding-left: 8pt;
+    padding-top: 3pt;
+    font-size: 10pt;
+    background-color: rgba(33, 33, 33, 0.5);
+}
+
+#toolbox span {
+    font-size: 9pt;
+}
+
+#tb_display_players {
+    text-align: center;
+}
+
+#tb_display_players div {
+    margin: 0;
+}
+
+#tb_display_players_t1 {
+    float: left;
+}
+
+#tb_display_players_t1 {
+    float: left;
+    clear: left;
+}
+
+
+.ui-button  {
+    height: 15pt;
+}
+
+
+
+
+/**
     Visualization Container
 */
 
@@ -9,8 +177,10 @@
 #visbox {
     width: 1024px;
     height: 1024px;
-    margin-top:35px;
+    margin-top:12px;
+    margin-right: 226px;
 }
+
 
 
 /**
@@ -32,6 +202,9 @@
     stroke-width: 4.5pt;
     opacity: 0.75;
 }
+
+
+
 
 /**
     Tooltip
@@ -76,77 +249,7 @@ td.indent {
     padding-left: 16pt;
 }
 
-/**
-    General Elements
-*/
 
-html {
-    font-family: sans-serif;
-    font-size: 12pt;
-}
-
-body {
-    background-color: #151515;
-    color: #cdcdcd;
-    padding-bottom: 300px;
-}
-
-section, header {
-    margin: auto;
-}
-
-p {
-    text-align: justify;
-    line-height: 1.5em;
-}
-
-img {
-    border-radius: 18px;
-}
-
-h2, h3 {
-    margin-top: 18pt;
-}
-
-h2 {
-    border-top: 1px solid #ccc;
-    border-radius: 14pt;
-    margin-left: -20px;
-    padding-left: 20px;
-    padding-top: 8pt;
-}
-
-iframe{
-    margin-top: 10px;
-    border: 3px solid #999;
-}
-
-.subsection{
-    padding-bottom: 30px;
-    border-top: 1px solid #555;
-}
-
-.hidden {
-    display: none;
-}
-
-span.mathy {
-    font-family: serif;
-    font-style: italic;
-    color: #ac9d71;
-}
-
-a {
-    color: #d3d2a1;
-    text-decoration: none;
-    border-bottom: 1px dotted #d3d2a1;
-}
-
-a:hover {
-    color: white;
-    text-decoration: none;
-    border-bottom: 1px solid #d3d2a1;
-}
 
 /**
     Weapon bar chart
