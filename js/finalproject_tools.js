@@ -63,12 +63,18 @@ $(document).ready(function() {
     // Add rounds...
     
     $("#tb_display_rounds").append("<div id=\"tb_display_rounds_selectors\"></div>");
+    
+    // The round selectors have been removed, functionality is not implemented and it might
+    // cause people to select too many rounds to quickly. Without these buttons they have to
+    // select each round manually, which allows them to assess the performance and if they really want to select more.
+    /*
     rs = "h1"
     $("#tb_display_rounds_selectors").append("<input type=\"checkbox\" id=\"tb_r_" + rs + "\" name=\"tb_r_" + rs + "\" value=\"tb_r_" + rs + "\" /><label for =\"tb_r_" + rs + "\">1st&nbsp;Half</label>");
     rs = "h2"
     $("#tb_display_rounds_selectors").append("<input type=\"checkbox\" id=\"tb_r_" + rs + "\" name=\"tb_r_" + rs + "\" value=\"tb_r_" + rs + "\" /><label for =\"tb_r_" + rs + "\">2nd&nbsp;Half</label>");
     rs = "ot"
     $("#tb_display_rounds_selectors").append("<input type=\"checkbox\" id=\"tb_r_" + rs + "\" name=\"tb_r_" + rs + "\" value=\"tb_r_" + rs + "\" /><label for =\"tb_r_" + rs + "\">Overtime</label>");
+    */
     
     $("#tb_display_rounds").append("<div id=\"tb_display_rounds_h1\"></div>");
     for (var r=1; r<=15; r++) {
