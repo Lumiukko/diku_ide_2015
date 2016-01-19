@@ -54,10 +54,18 @@
                 <span>Show Empty Areas:</span>
                 <div><input type="checkbox" id="tb_wbin_showempty" name="tb_wbin_showempty" value="tb_wbin_showempty" /><label for ="tb_wbin_showempty">Enabled</label></div>
                 
+                <h4>Replay<span id="info_replay" class="ui-icon ui-icon-info"></span></h4>
+                <div><input type="checkbox" id="tb_replay_enabled" name="tb_replay_enabled" value="tb_replay_enabled" /><label for ="tb_replay_enabled">Enabled</label><span id="replay_tick">-</span></div>
+                
+                <span>Tick Range:</span>
+                <div id="tb_tick_range"></div>
+                <span id="tb_tick_start">3075</span>
+                <span id="tb_tick_end">11448</span>
+                
+                
             </div>
             
             <h3>Visualization of de_dust2</h3>
-            <span id="testbutton">PLAY</span>
             <svg version="1.1" baseProfile="full" id="visbox" class="visbox"
                  xmlns="http://www.w3.org/2000/svg"
                  xmlns:xlink="http://www.w3.org/1999/xlink"

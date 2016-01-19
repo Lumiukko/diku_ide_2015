@@ -183,6 +183,22 @@ a:hover {
     width: 160px;
 }
 
+#tb_tick_end {
+    float: right;
+    margin-right: 8pt;
+    clear: right;
+}
+
+#tb_tick_range  {
+    width: 190px;
+}
+#replay_tick  {
+    font-family: monospace;
+    display: inline-block;
+    margin-left: 6pt;
+    text-align: right;
+    width: 120px;
+}
 
 .ui-button  {
     height: 15pt;

@@ -30,7 +30,7 @@ $(document).ready(function() {
         "rounds": [1],
         "sides": [],
         "replay": false,
-        "replay_interval": [10000, 12000],
+        "replay_interval": [4990, 11448],
         "tick_interval_size": 200,
         "tick_interval": [],
         "background": 0
@@ -113,23 +113,27 @@ $(document).ready(function() {
             }
   
             setTimeout(function() {
-                draw_frame();
-                if (filter.tick_interval[1] > filter.replay_interval[1]) {
-                    filter.tick_interval = [
-                        filter.replay_interval[0],
-                        filter.replay_interval[0] + filter.tick_interval_size
-                    ];
-                }
-                else {
-                    filter.tick_interval = [
-                        filter.tick_interval[0] + filter.tick_interval_size/3,
-                        filter.tick_interval[1] + filter.tick_interval_size/3
-                    ];
+                if (filter.replay) {
+                    $("#replay_tick").html(JSON.stringify(filter.tick_interval));
+                    draw_frame();
+                    if (filter.tick_interval[1] > filter.replay_interval[1]) {
+                        filter.tick_interval = [
+                            Math.round(filter.replay_interval[0]),
+                            Math.round(filter.replay_interval[0] + filter.tick_interval_size)
+                        ];
+                    }
+                    else {
+                        filter.tick_interval = [
+                            Math.round(filter.tick_interval[0] + filter.tick_interval_size/3),
+                            Math.round(filter.tick_interval[1] + filter.tick_interval_size/3)
+                        ];
+                    }
                 }
                 redraw(filter);
             }, (filter.tick_interval_size/64*1000/3));
         }
         else {
+            $("#replay_tick").html("-");
             draw_frame();
         }
     }
@@ -181,7 +185,7 @@ $(document).ready(function() {
 
                     prev_round = entry.round;
                 });
-				
+
                 load_player_deaths();
                 load_weapon_fire();
                 load_player_footstep();

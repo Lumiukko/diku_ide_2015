@@ -24,6 +24,9 @@ $(document).ready(function() {
         ],
         "rounds": [-1, 1],  // the -1 prevents all rounds from being shown if no round is selected
         "sides": [],
+        "replay": false,
+        "replay_interval": [4990, 11448],
+        "tick_interval_size": 200,
         "tick_interval": [],
         "background": 0
     };
@@ -144,10 +147,36 @@ $(document).ready(function() {
     $("#tb_wbin_enabled").button();
     $("#tb_wbin_showempty").button();
     
+    $("#tb_replay_enabled").button();
     
+    $("#tb_tick_range").slider({
+        range: true,
+        min: 4990,
+        max: 467587,
+        step: 1000,
+        values: [ 4990, 11448 ],
+        slide: function( event, ui ) {
+            $("#tb_tick_end").html(ui.values[1]);
+            $("#tb_tick_start").html(ui.values[0]);
+        }
+    });
+
     
     
     // Add ALL THE EVENTS!!!
+    
+    $("#tb_replay_enabled").on("click", function() {
+        if ($("#tb_replay_enabled").prop("checked")) {
+            interval = $("#tb_tick_range").slider("option", "values");
+            ui_filter.replay_interval = [interval[0], interval[1]];
+            ui_filter.replay = true;
+        }
+        else {
+            ui_filter.replay = false;
+            ui_filter.tick_interval = [];
+        }
+        redraw(ui_filter);
+    });
     
     $("#tb_pd_enabled").on("click", function() {
         ui_filter.render_player_deaths = $("#tb_pd_enabled").prop("checked");
