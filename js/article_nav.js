@@ -60,12 +60,12 @@ $(document).ready(function() {
     
     $("#nav_btn_next").click(function () {
         page += 1;
-        update_page();
+        update_page(true);
     });
 
     $("#nav_btn_prev").click(function () {
         page -= 1;
-        update_page();
+        update_page(true);
     });
     
     $("#btn_tech").click(function () {
@@ -76,9 +76,11 @@ $(document).ready(function() {
     });
     
     // updating the headline, the text and the filter of the visualization
-    update_page = function() {
+    update_page = function(scroll) {
         toggle_button_visibility(page);
-        document.getElementById('headline').scrollIntoView({behavior: "smooth"});
+        if (scroll) {
+            document.getElementById('headline').scrollIntoView({behavior: "smooth"});
+        }
         $('article h3').fadeOut('fast', function() {
             $(this).html(content[page].headline).fadeIn('fast');
         });

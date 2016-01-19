@@ -155,8 +155,8 @@ $(document).ready(function() {
                 load_player_deaths();
                 load_weapon_fire();
                 load_player_footstep();
-                if (update_page !== undefined) {
-                    update_page();
+                if (typeof update_page === "function") {
+                    update_page(false);
                 }
             }
             else {
