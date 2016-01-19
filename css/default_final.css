@@ -108,6 +108,10 @@ a:hover {
     overflow: auto;
 }
 
+#toolbox>div:last-child {
+    margin-bottom: 30px;
+}
+
 #toolbox input, label {
     -webkit-touch-callout: none;
     -webkit-user-select: none;

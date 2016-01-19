@@ -421,11 +421,30 @@ $(document).ready(function() {
     
     $("#dialog_info_wfire").dialog({"modal": true, "autoOpen": false});
     $("#info_wfire").on("click", function() {
-        $("#dialog_info_wfire").dialog('widget').attr('id', 'dialog_info_wfire_dir');
+        $("#dialog_info_wfire").dialog('widget').attr('id', 'dialog_info_wfire_div');
         $("#dialog_info_wfire").dialog("open");
-        $("#dialog_info_wfire_dir").css("width", (window.innerWidth*0.6));
-        $("#dialog_info_wfire_dir").css("top", ($(document).scrollTop() + window.innerHeight/2) + "px");
-        $("#dialog_info_wfire_dir").css("left", "200px");
+        $("#dialog_info_wfire_div").css("width", (window.innerWidth*0.6));
+        $("#dialog_info_wfire_div").css("top", ($(document).scrollTop() + window.innerHeight/2) + "px");
+        $("#dialog_info_wfire_div").css("left", "200px");
+    });
+    
+    
+    
+    
+    // -> Weapon use
+    dc = "";
+    dc += "<div id=\"dialog_info_replay\" title=\"Replay\">";
+    dc += "    <p>This option allows to replay a certain interval of the match. The time can be set in ticks (i.e. 64 ticks = 1 second). When the Enabled button is turned on, the visualization will animate the progress of the game using the currently set display options. Note that the round selection is ignored to avoid confusing empty visualizations. Furthermore, the player deaths remain until the end of the round currently replayed.</p>";
+    dc += "</div>";
+    $("body").prepend(dc);
+    
+    $("#dialog_info_replay").dialog({"modal": true, "autoOpen": false});
+    $("#info_replay").on("click", function() {
+        $("#dialog_info_replay").dialog('widget').attr('id', 'dialog_info_replay_div');
+        $("#dialog_info_replay").dialog("open");
+        $("#dialog_info_replay_div").css("width", (window.innerWidth*0.6));
+        $("#dialog_info_replay_div").css("top", ($(document).scrollTop() + window.innerHeight/2) + "px");
+        $("#dialog_info_replay_div").css("left", "200px");
     });
     
 

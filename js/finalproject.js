@@ -740,6 +740,7 @@ $(document).ready(function() {
     */
     function apply_filter(datapoint) {
         return    (   filter.rounds.length  == 0
+                   || filter.replay
                    || $.inArray(parseInt(datapoint.round), filter.rounds)   > -1)
                && (   filter.players.length == 0
                    || $.inArray(datapoint.player, filter.players) > -1
@@ -748,7 +749,11 @@ $(document).ready(function() {
                    || $.inArray(datapoint.side, filter.sides) > -1)
                && (   !filter.hasOwnProperty('tick_interval') || filter.tick_interval.length == 0
                    || (datapoint.tick >= filter.tick_interval[0] && datapoint.tick <= filter.tick_interval[1])
-                   || (datapoint.hasOwnProperty('event_type') && datapoint.event_type == 'player_death' && datapoint.tick <= filter.replay_interval[1] && datapoint.tick <= filter.tick_interval[1]));
+                   || (datapoint.hasOwnProperty('event_type')
+                        && datapoint.event_type == 'player_death'
+                        && get_round_from_tick(datapoint.tick) == get_round_from_tick(filter.tick_interval[0])
+                        && datapoint.tick <= filter.replay_interval[1]
+                        && datapoint.tick <= filter.tick_interval[1]));
     }
     
     
