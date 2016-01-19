@@ -170,6 +170,44 @@ $(document).ready(function() {
 		"sides": [],
 		"background": 0            
 		}
+	},
+    {
+    "headline": "The overtime",
+	"discovery": "After a fantastic comeback as Terrorists by Fnatic the overtime began.<br /> Fnatic concentrated their fight on A Long and B via tunnels and won the first three rounds as Terrorists. The next round would decide the match and thereby the tournament...",
+	"filter": {
+		"render_foot_steps": false,
+		"render_foot_paths": false,
+		"render_weapon_fire": true,
+		"render_player_deaths": true,
+		"render_weapon_areas": false,
+		"weapon_area_resolution": 16,
+		"weapon_area_show_empty_bins": false,
+		"players": [],
+		"rounds": [31, 32, 33],
+		"sides": [],
+		"background": 0            
+		}
+	},
+    {
+    "headline": "The Finals final",
+	"discovery": "Fnatic was now again playing as CT - knowing, that their first half as CT did definitely not go as planned. But they still had the advantage, as only onw round win separated them from winning the cup.<br />EnVyUs tried what worked in round 1: a nicely executed pincher movement towards B - a B split.<br />But this time Fnatic was having none of it: The entrance from B Tunnels was guarded by olofmeister on the AWP, while flusha awaited NBK- and KennyS, who tried to push through the middle.<br />",
+	"filter": {
+		"render_foot_steps": true,
+		"render_foot_paths": true,
+		"render_weapon_fire": true,
+		"render_player_deaths": true,
+		"render_weapon_areas": false,
+		"weapon_area_resolution": 16,
+		"weapon_area_show_empty_bins": false,
+        "replay": true,
+        "replay_interval": [460000, 467587],
+        "tick_interval_size": 200,
+        "tick_interval": [],
+		"players": ["olofmeister", "JW", "flusha", "KennyS", "NBK-"],
+		"rounds": [],
+		"sides": [],
+		"background": 0            
+		}
 	}
 	];
     
