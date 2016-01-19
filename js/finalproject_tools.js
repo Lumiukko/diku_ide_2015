@@ -24,6 +24,7 @@ $(document).ready(function() {
         ],
         "rounds": [-1, 1],  // the -1 prevents all rounds from being shown if no round is selected
         "sides": [],
+        "tick_interval": [],
         "background": 0
     };
 

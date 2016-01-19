@@ -29,6 +29,10 @@ $(document).ready(function() {
         "players": [],
         "rounds": [1],
         "sides": [],
+        "replay": false,
+        "replay_interval": [10000, 12000],
+        "tick_interval_size": 200,
+        "tick_interval": [],
         "background": 0
     };
     
@@ -79,6 +83,7 @@ $(document).ready(function() {
     load_meta_data();
     
     
+    
     /**
         Appends layers to the svg
     */
@@ -102,7 +107,34 @@ $(document).ready(function() {
     
     redraw = function redraw(new_filter) {
         filter = new_filter;
-        
+        if (filter.replay) {
+            if (filter.tick_interval.length < 2) {
+                filter.tick_interval = [filter.replay_interval[0], filter.replay_interval[0] + filter.tick_interval_size];
+            }
+  
+            setTimeout(function() {
+                draw_frame();
+                if (filter.tick_interval[1] > filter.replay_interval[1]) {
+                    filter.tick_interval = [
+                        filter.replay_interval[0],
+                        filter.replay_interval[0] + filter.tick_interval_size
+                    ];
+                }
+                else {
+                    filter.tick_interval = [
+                        filter.tick_interval[0] + filter.tick_interval_size/3,
+                        filter.tick_interval[1] + filter.tick_interval_size/3
+                    ];
+                }
+                redraw(filter);
+            }, (filter.tick_interval_size/64*1000/3));
+        }
+        else {
+            draw_frame();
+        }
+    }
+    
+    function draw_frame() {
         data_player_death = complete_player_deaths_data.filter(function (d, i) { return apply_filter(d); });
         data_footsteps = complete_footstep_data.filter(function (d, i) { return apply_filter(d); });
         data_weapon_fire = complete_weapon_fire_data.filter(function (d, i) { return apply_filter(d); });
@@ -112,8 +144,6 @@ $(document).ready(function() {
         add_player_paths((filter.render_foot_paths ? data_footsteps : undefined));
         add_footsteps((filter.render_foot_steps ? data_footsteps : undefined));
         add_weapon_areas((filter.render_weapon_areas ? data_footsteps : undefined));
-        
-        
     }
 
 /**
@@ -155,9 +185,6 @@ $(document).ready(function() {
                 load_player_deaths();
                 load_weapon_fire();
                 load_player_footstep();
-                if (typeof update_page === "function") {
-                    update_page(false);
-                }
             }
             else {
                 console.log("Error: " + error);
@@ -241,6 +268,10 @@ $(document).ready(function() {
                 }
                 if (filter.render_weapon_areas) {
                     add_weapon_areas(data_footsteps);
+                }
+                
+                if (typeof update_page === "function") {
+                    update_page(false);
                 }
             }
             else {
@@ -714,7 +745,9 @@ $(document).ready(function() {
                    || $.inArray(datapoint.player, filter.players) > -1
                    || $.inArray(datapoint.guid, filter.players) > -1)
                && (   filter.sides.length   == 0
-                   || $.inArray(datapoint.side, filter.sides) > -1);
+                   || $.inArray(datapoint.side, filter.sides) > -1)
+               && (   filter.tick_interval.length == 0
+                   || (datapoint.tick >= filter.tick_interval[0] && datapoint.tick <= filter.tick_interval[1]));
     }
     
     
