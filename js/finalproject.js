@@ -456,7 +456,7 @@ $(document).ready(function() {
                             var svg_class = ["player_path"];
                             svg_class.push("side" + d[0].side);
                             svg_class.push("player" + d[0].player);
-                            svg_class.push("team" + d[0].team);
+                            svg_class.push("team" + d[0].team.replace('Team ', ''));
                             svg_class.push("round" + d[0].round);
                             return svg_class.join(" ");
                         })
@@ -506,7 +506,7 @@ $(document).ready(function() {
                         var svg_class = ["player_death"];
                         svg_class.push("side" + d.side);
                         svg_class.push("player" + d.player);
-                        svg_class.push("team" + d.team);
+                        svg_class.push("team" + d.team.replace('Team ', ''));
                         svg_class.push("round" + d.round);
                         return svg_class.join(" ");
                      })

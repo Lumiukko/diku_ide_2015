@@ -9,14 +9,14 @@ $(document).ready(function() {
     var page = 0;
     var players = ['JW', 'pronax', 'KRIMZ', 'olofmeister', 'flusha',
                    'Happy', 'NBK-', 'kennyS', 'kioShiMa', 'apEX'];
-    var teams = ['Fnatic', 'EnVyUS'];
+    var teams = ['Fnatic', 'EnVyUs'];
     var sides = {
         'CT': ['CT', 'CTs', 'Counter-Terrorist', 'Counter-Terrorists'],
         'TERRORIST': ['Terrorist', 'Terrorists', 'Ts', 'T']
     }
     var content = [{
         "headline": "Starting the Grand Final",
-        "discovery": "The two best Counter Strike: Global Offensive teams in the world batteling it out on de_dust2 in front of more than 1.2 million viewers. The ESL One Cologne Grand Final 2015 had the potential to be a gigantic camp-fest - but instead of relying on the old and battle-proven tactics, which got Fnatic and EnVyUS to the place where they are now, they showed the cards they got hidden up their sleeves the whole time:<br />Already in the first pistol round KRIMZ and JW on the CT side showed great aggression up to Top Mid.",
+        "discovery": "The two best Counter Strike: Global Offensive teams in the world batteling it out on de_dust2 in front of more than 1.2 million viewers. The ESL One Cologne Grand Final 2015 had the potential to be a gigantic camp-fest - but instead of relying on the old and battle-proven tactics, which got Fnatic and EnVyUs to the place where they are now, they showed the cards they got hidden up their sleeves the whole time:<br />Already in the first pistol round KRIMZ and JW on the CT side showed great aggression up to Top Mid.",
         "filter": {
             "render_foot_steps": true,
             "render_foot_paths": true,
@@ -88,7 +88,7 @@ $(document).ready(function() {
     },
     {
         "headline": "The comeback was not real",
-        "discovery": "But Team EnVyUS adapted to that aggressive style of play and awaited the offensive CTs. JW, pronax, KRIMZ and olofmeister were stopped dead in their tracks. Fnatic had to dramatically change their game, when in round 9 the score was 1:7...",
+        "discovery": "But Team EnVyUs adapted to that aggressive style of play and awaited the offensive CTs. JW, pronax, KRIMZ and olofmeister were stopped dead in their tracks. Fnatic had to dramatically change their game, when in round 9 the score was 1:7...",
         "filter": {
             "render_foot_steps": false,
             "render_foot_paths": true,
@@ -121,8 +121,8 @@ $(document).ready(function() {
 		}
 	},
 	{
-	"headline": "EnVyUS - Ground covered  as Counter-Terrorists",
-	"discovery": "On the other hand, EnVyUS, including Happy, NBK-, kennyS, kioShiMa and apEX are a lot more aggresive and they are trying to cover more space, in comparison to Fnatic.",
+	"headline": "EnVyUs - Ground covered  as Counter-Terrorists",
+	"discovery": "On the other hand, EnVyUs, including Happy, NBK-, kennyS, kioShiMa and apEX are a lot more aggresive and they are trying to cover more space, in comparison to Fnatic.",
 	"filter": {
 		"render_foot_steps": false,
 		"render_foot_paths": true,
@@ -138,8 +138,8 @@ $(document).ready(function() {
 		}
     },
 	{
-	"headline": "EnVyUS - Number of deaths",
-	"discovery": "EnVyUS were killed  overall a total number of 112. When they playing as Terrorists the team members died 50 times, while as CTs they had a number of 62 deaths. Therefore, if we compare the higher number of deaths as Counter-Terrorists to the ground covered, we have seen in the previous articles, the more aggressive tactics they used, actually brought them more deaths.",
+	"headline": "EnVyUs - Number of deaths",
+	"discovery": "EnVyUs were killed  overall a total number of 112. When they playing as Terrorists the team members died 50 times, while as CTs they had a number of 62 deaths. Therefore, if we compare the higher number of deaths as Counter-Terrorists to the ground covered, we have seen in the previous articles, the more aggressive tactics they used, actually brought them more deaths.",
 	"filter": {
 		"render_foot_steps": false,
 		"render_foot_paths": false,
