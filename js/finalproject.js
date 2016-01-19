@@ -203,9 +203,10 @@ $(document).ready(function() {
             if (!error) {
                 complete_player_deaths_data = [];
                 data.forEach(function(entry, i) {
-                    if (get_round_from_tick(entry.tick) != undefined)
+                    if (get_round_from_tick(entry.tick) !== undefined) {
                         entry.event_type = 'player_death';
                         complete_player_deaths_data.push(entry);
+                    }
                 });
                 
                 if (filter.render_player_deaths) {
