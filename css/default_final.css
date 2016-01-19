@@ -196,6 +196,15 @@ a:hover {
 }
 
 
+/**
+	Death statistics
+*/
+#no_of_deaths{
+	text-align: left;
+	display: block;
+}
+
+
 
 /**
     Visualization Container
@@ -210,6 +219,7 @@ a:hover {
     height: 1024px;
     margin-top:12px;
     margin-right: 240px;
+	margin-bottom: 20px;
 }
 
 
