@@ -105,7 +105,7 @@ $(document).ready(function() {
     },
 	{
 	"headline": "Fnatic - Ground covered as Counter-Terrorists",
-	"discovery": "Fnatic, which includes JW, pronax, KRIMZ, olofmeister and flusha seem to be defensive and they are not covering a lot of ground. This style of defeding is known to be as the standard, when playing as Counter-Terrorists.",
+	"discovery": "Fnatic, which includes JW, pronax, KRIMZ, olofmeister and flusha seem to be defensive and they are not covering a lot of ground. This style of defending is known to be as the standard, when playing as Counter-Terrorists.",
 	"filter": {
 		"render_foot_steps": false,
 		"render_foot_paths": true,
@@ -122,7 +122,7 @@ $(document).ready(function() {
 	},
 	{
 	"headline": "EnVyUS - Ground covered  as Counter-Terrorists",
-	"discovery": "On the other hand, EnVyUS, including Happy, NBK-, kennyS, kioShiMa and apEX are a lot more aggresive and they are trying to cover more space, in comparizon with Fnatic.",
+	"discovery": "On the other hand, EnVyUS, including Happy, NBK-, kennyS, kioShiMa and apEX are a lot more aggresive and they are trying to cover more space, in comparison to Fnatic.",
 	"filter": {
 		"render_foot_steps": false,
 		"render_foot_paths": true,
