@@ -11,7 +11,7 @@ $(document).ready(function() {
                    'Happy', 'NBK-', 'KennyS', 'kioShiMa', 'apEX'];
     var content = [{
         "headline": "Starting the Grand Final",
-        "discovery": "The two best Counter Strike: Global Offensive teams in the world batteling it out on de_dust2 in front of more than 1.2 million viewers. The ESL One Cologne Grand Final 2015 had the potential to be a gigantic camp-fest - but instead of relying on the old and battle-proven tactics, which got Fnatic and EnVyUS to the place where they were now, they showed the cards they got up their sleeves the whole time:<br />Already in the first pistol round KRIMZ and JW on the CT side showed great aggression up to Top Mid.",
+        "discovery": "The two best Counter Strike: Global Offensive teams in the world batteling it out on de_dust2 in front of more than 1.2 million viewers. The ESL One Cologne Grand Final 2015 had the potential to be a gigantic camp-fest - but instead of relying on the old and battle-proven tactics, which got Fnatic and EnVyUS to the place where they are now, they showed the cards they got hidden up their sleeves the whole time:<br />Already in the first pistol round KRIMZ and JW on the CT side showed great aggression up to Top Mid.",
         "filter": {
             "render_foot_steps": true,
             "render_foot_paths": true,
@@ -27,8 +27,8 @@ $(document).ready(function() {
         }
     },
     {
-        "headline": "Knive of Confusion",
-        "discovery": "And the first highlight of the game happened in the first round, too: After killing apEX with a pistol through a smoke grenade at B tunnels, flusha runs out of ammo. NBK- suffers the same fate, but draws his knive faster and gets the kill. EnVyUS takes the first round.",
+        "headline": "Knife of Confusion",
+        "discovery": "And the first highlight of the game happened in the first round, too: After killing apEX with a pistol through a smoke grenade at B tunnels, flusha finished his magazine. NBK- suffers the same fate, but draws his knife faster and gets the kill. EnVyUS takes the first round.",
         "filter": {
             "render_foot_steps": true,
             "render_foot_paths": true,
